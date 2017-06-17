@@ -2,6 +2,7 @@ package com.tripmate;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -105,6 +106,7 @@ public class AddTrip extends AppCompatActivity {
         }else{
             tilTripDesc.setErrorEnabled(false);
             TripModel trip = new TripModel(trip_name,trip_places,trip_desc,trip_date);
+            MainActivity.AppBase.addTrip(trip);
             Intent intent = new Intent(AddTrip.this,TripInfo.class);
             intent.putExtra("TripName",trip.getTrip_name());
             intent.putExtra("TripPlaces",trip.getTrip_places());

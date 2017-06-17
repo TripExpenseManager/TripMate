@@ -1,8 +1,11 @@
 package com.tripmate;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import java.util.ArrayList;
 
 /**
  * Created by Sai Krishna on 6/16/2017.
@@ -81,4 +84,73 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+NOTES_TABLE_NAME);
         onCreate(db);
     }
+
+    public boolean addTrip(TripModel trip){
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TRIPS_COLUMN_TRIP_NAME,trip.getTrip_name());
+        values.put(TRIPS_COLUMN_TRIP_PLACES,trip.getTrip_places());
+        values.put(TRIPS_COLUMN_TRIP_DESC,trip.getTrip_desc());
+        values.put(TRIPS_COLUMN_TRIP_DATE,trip.getTrip_date());
+
+        db.insert(TRIPS_TABLE_NAME,null,values);
+        db.close();
+        return true;
+    }
+    public String getTripId(String tripName){
+        SQLiteDatabase db = getReadableDatabase();
+        String tripId="";
+
+        Cursor cursor = db.query(TRIPS_TABLE_NAME,new String[]{TRIPS_COLUMN_ID,TRIPS_COLUMN_TRIP_NAME},
+                TRIPS_COLUMN_TRIP_NAME+"=?",new String[]{tripName},null,null,null);
+        if(cursor!=null && cursor.moveToFirst())
+            tripId = cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID));
+
+        db.close();
+        return  tripId;
+    }
+
+    public void addPersons(String tripName , ArrayList<Person> personsList){
+        SQLiteDatabase db = getWritableDatabase();
+        String tripId = getTripId(tripName);
+
+        for (Person person: personsList) {
+            ContentValues values = new ContentValues();
+            values.put(PERSONS_COLUMN_TRIP_ID,tripId);
+            values.put(PERSONS_COLUMN_PERSON_NAME,person.getName());
+            values.put(PERSONS_COLUMN_PERSON_MOBILE,person.getMobile());
+            values.put(PERSONS_COLUMN_PERSON_EMAIL,person.getEmail());
+            values.put(PERSONS_COLUMN_PERSON_DEPOSIT,person.getDeposit());
+            values.put(PERSONS_COLUMN_PERSON_ADMIN,person.getAdmin());
+
+            db.insert(PERSONS_TABLE_NAME,null,values);
+        }
+        db.close();
+    }
+
+    public ArrayList<Person> getPersons(String tripName){
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<Person> personsList = new ArrayList<Person>();
+        String tripId = getTripId(tripName);
+
+        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{tripName},
+                null,null,null);
+        if(cursor!=null && cursor.moveToFirst()){
+            do{
+                Person person = new Person();
+                person.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
+                person.setMobile(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_MOBILE)));
+                person.setEmail(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_EMAIL)));
+                person.setDeposit(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
+                person.setAdmin(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
+
+                personsList.add(person);
+
+            }while(cursor.moveToNext());
+        }
+
+        return  personsList;
+    }
+
 }

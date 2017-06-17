@@ -1,10 +1,13 @@
 package com.tripmate;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -16,7 +19,10 @@ public class TripInfo extends AppCompatActivity {
 
     ListView lvPersonDetails,lvPlacesToVisit;
     TextView tvDesc;
-    ArrayList<String> tripPlaces,tripPersons;
+    ArrayList<String> tripPlaces,tripPersonNames;
+    ArrayList<Person> tripPersons;
+    FloatingActionButton fabAddPerson;
+    TripModel trip;
 
 
     @Override
@@ -28,7 +34,7 @@ public class TripInfo extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        TripModel trip = new TripModel();
+        trip = new TripModel();
         trip.setTrip_name(intent.getStringExtra("TripName"));
         trip.setTrip_places(intent.getStringExtra("TripPlaces"));
         trip.setTrip_desc(intent.getStringExtra("TripDesc"));
@@ -43,11 +49,12 @@ public class TripInfo extends AppCompatActivity {
         lvPersonDetails = (ListView) findViewById(R.id.lvPersonDetails);
         lvPlacesToVisit = (ListView) findViewById(R.id.lvPlacesToVisit);
         tvDesc = (TextView) findViewById(R.id.tvDesc);
+        fabAddPerson = (FloatingActionButton) findViewById(R.id.fabAddPerson);
 
-        String persons = "Vineeth,Sai Krishna";
         // Persons
-        tripPersons = new ArrayList<>(Arrays.asList(persons.split(",")));
-        ArrayAdapter<String> personsAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tripPersons);
+        tripPersons = new ArrayList<>();
+        tripPersonNames = new ArrayList<>();
+        ArrayAdapter<String> personsAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tripPersonNames);
         lvPersonDetails.setAdapter(personsAdapter);
 
 
@@ -60,13 +67,23 @@ public class TripInfo extends AppCompatActivity {
         lvPlacesToVisit.setAdapter(placesAdapter);
 
 
-
+       // Add Person
+        fabAddPerson.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TripInfo.this);
+            }
+        });
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.action_ok:
+                MainActivity.AppBase.addTrip(trip);
+                MainActivity.AppBase.addPersons(trip.getTrip_name(),tripPersons);
                 return true;
             default:
                 return true;

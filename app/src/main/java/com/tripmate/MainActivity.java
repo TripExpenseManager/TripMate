@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     GridView trip_grid_view;
+    public static  DataBaseHelper AppBase;
 
     ArrayList<TripModel> trip_array_list = new ArrayList<>();
 
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        AppBase = new DataBaseHelper(MainActivity.this);
 
 
 
