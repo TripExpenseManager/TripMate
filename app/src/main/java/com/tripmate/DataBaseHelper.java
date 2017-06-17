@@ -111,46 +111,56 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  tripId;
     }
 
-    public void addPersons(String tripName , ArrayList<Person> personsList){
+    public void addPersons(String tripName , ArrayList<PersonModel> personsList){
         SQLiteDatabase db = getWritableDatabase();
         String tripId = getTripId(tripName);
 
-        for (Person person: personsList) {
+        for (PersonModel personModel : personsList) {
             ContentValues values = new ContentValues();
             values.put(PERSONS_COLUMN_TRIP_ID,tripId);
-            values.put(PERSONS_COLUMN_PERSON_NAME,person.getName());
-            values.put(PERSONS_COLUMN_PERSON_MOBILE,person.getMobile());
-            values.put(PERSONS_COLUMN_PERSON_EMAIL,person.getEmail());
-            values.put(PERSONS_COLUMN_PERSON_DEPOSIT,person.getDeposit());
-            values.put(PERSONS_COLUMN_PERSON_ADMIN,person.getAdmin());
+            values.put(PERSONS_COLUMN_PERSON_NAME, personModel.getName());
+            values.put(PERSONS_COLUMN_PERSON_MOBILE, personModel.getMobile());
+            values.put(PERSONS_COLUMN_PERSON_EMAIL, personModel.getEmail());
+            values.put(PERSONS_COLUMN_PERSON_DEPOSIT, personModel.getDeposit());
+            values.put(PERSONS_COLUMN_PERSON_ADMIN, personModel.getAdmin());
 
             db.insert(PERSONS_TABLE_NAME,null,values);
         }
         db.close();
     }
 
-    public ArrayList<Person> getPersons(String tripName){
+    public ArrayList<PersonModel> getPersons(String tripName){
         SQLiteDatabase db = getReadableDatabase();
-        ArrayList<Person> personsList = new ArrayList<Person>();
+        ArrayList<PersonModel> personsList = new ArrayList<PersonModel>();
         String tripId = getTripId(tripName);
 
         Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{tripName},
                 null,null,null);
         if(cursor!=null && cursor.moveToFirst()){
             do{
-                Person person = new Person();
-                person.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
-                person.setMobile(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_MOBILE)));
-                person.setEmail(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_EMAIL)));
-                person.setDeposit(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
-                person.setAdmin(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
+                PersonModel personModel = new PersonModel();
+                personModel.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
+                personModel.setMobile(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_MOBILE)));
+                personModel.setEmail(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_EMAIL)));
+                personModel.setDeposit(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
+                personModel.setAdmin(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
 
-                personsList.add(person);
+                personsList.add(personModel);
 
             }while(cursor.moveToNext());
         }
 
         return  personsList;
     }
+
+
+
+    public Cursor getTripsData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select * from "+TRIPS_TABLE_NAME, null );
+        return res;
+    }
+
+
 
 }

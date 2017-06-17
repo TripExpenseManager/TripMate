@@ -6,11 +6,11 @@
         android:icon="@drawable/icon_edit"
         android:title="Edit Trip"
         app:showAsAction="ifRoom"
-        android:orderInCategory="100"></item>
-        <item
-            android:id="@+id/action_ok"
-            android:icon="@drawable/icon_tick"
-            android:title="Trip Info"
-            app:showAsAction="ifRoom"
-            android:orderInCategory="101"></item>
+        android:orderInCategory="100" />
+    <item
+        android:id="@+id/action_ok"
+        android:icon="@drawable/icon_tick"
+        android:title="Trip Info"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="101" />
 </menu>

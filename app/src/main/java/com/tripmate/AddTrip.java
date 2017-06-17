@@ -2,12 +2,11 @@ package com.tripmate;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
@@ -28,6 +27,9 @@ public class AddTrip extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_trip);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         if(getSupportActionBar()!=null){
             getSupportActionBar().setTitle("Create New Trip");
@@ -107,7 +109,7 @@ public class AddTrip extends AppCompatActivity {
             tilTripDesc.setErrorEnabled(false);
             TripModel trip = new TripModel(trip_name,trip_places,trip_desc,trip_date);
             MainActivity.AppBase.addTrip(trip);
-            Intent intent = new Intent(AddTrip.this,TripInfo.class);
+            Intent intent = new Intent(AddTrip.this,TripInfo_AddTrip.class);
             intent.putExtra("TripName",trip.getTrip_name());
             intent.putExtra("TripPlaces",trip.getTrip_places());
             intent.putExtra("TripDesc",trip.getTrip_desc());

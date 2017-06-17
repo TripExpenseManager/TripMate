@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,12 +16,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TripInfo extends AppCompatActivity {
+public class TripInfo_AddTrip extends AppCompatActivity {
 
     ListView lvPersonDetails,lvPlacesToVisit;
     TextView tvDesc;
     ArrayList<String> tripPlaces,tripPersonNames;
-    ArrayList<Person> tripPersons;
+    ArrayList<PersonModel> tripPersonModels;
     FloatingActionButton fabAddPerson;
     TripModel trip;
 
@@ -30,7 +31,8 @@ public class TripInfo extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_info);
 
-
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
 
         Intent intent = getIntent();
@@ -51,8 +53,10 @@ public class TripInfo extends AppCompatActivity {
         tvDesc = (TextView) findViewById(R.id.tvDesc);
         fabAddPerson = (FloatingActionButton) findViewById(R.id.fabAddPerson);
 
+
+
         // Persons
-        tripPersons = new ArrayList<>();
+        tripPersonModels = new ArrayList<>();
         tripPersonNames = new ArrayList<>();
         ArrayAdapter<String> personsAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,tripPersonNames);
         lvPersonDetails.setAdapter(personsAdapter);
@@ -67,11 +71,11 @@ public class TripInfo extends AppCompatActivity {
         lvPlacesToVisit.setAdapter(placesAdapter);
 
 
-       // Add Person
+       // Add PersonModel
         fabAddPerson.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TripInfo.this);
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(TripInfo_AddTrip.this);
             }
         });
     }
@@ -83,7 +87,7 @@ public class TripInfo extends AppCompatActivity {
                 return true;
             case R.id.action_ok:
                 MainActivity.AppBase.addTrip(trip);
-                MainActivity.AppBase.addPersons(trip.getTrip_name(),tripPersons);
+                MainActivity.AppBase.addPersons(trip.getTrip_name(), tripPersonModels);
                 return true;
             default:
                 return true;
