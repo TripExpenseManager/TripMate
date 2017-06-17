@@ -6,7 +6,38 @@ package com.tripmate;
 
 public class TripModel {
 
-    String trip_name,trip_date,trip_amount;
+    private String trip_name;
+
+    public TripModel() {
+    }
+
+    private String trip_date;
+    private String trip_amount;
+    private String trip_places;
+    private String trip_desc;
+
+    public String getTrip_places() {
+        return trip_places;
+    }
+
+    public void setTrip_places(String trip_places) {
+        this.trip_places = trip_places;
+    }
+
+    public String getTrip_desc() {
+        return trip_desc;
+    }
+
+    public void setTrip_desc(String trip_desc) {
+        this.trip_desc = trip_desc;
+    }
+
+    public TripModel(String trip_name,String trip_places, String trip_desc, String trip_date) {
+        this.trip_name = trip_name;
+        this.trip_date = trip_date;
+        this.trip_places = trip_places;
+        this.trip_desc = trip_desc;
+    }
 
     public String getTrip_name() {
         return trip_name;
