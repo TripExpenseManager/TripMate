@@ -36,6 +36,11 @@
             android:numColumns="2"
             android:columnWidth="90dp"
             android:gravity="center"
+            android:padding="10dp"
+            android:clipToPadding="false"
+            android:scrollbarStyle="outsideOverlay"
+            android:verticalSpacing="10dp"
+            android:horizontalSpacing="10dp"
             android:stretchMode="columnWidth"/>
 
     </RelativeLayout>

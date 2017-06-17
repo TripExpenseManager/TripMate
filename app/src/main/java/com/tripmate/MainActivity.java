@@ -1,6 +1,7 @@
 package com.tripmate;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,9 +29,13 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     GridView trip_grid_view;
-    public static  DataBaseHelper AppBase;
+    public static  DataBaseHelper AppBase = null;
+
 
     ArrayList<TripModel> trip_array_list = new ArrayList<>();
+
+    TripAdapter grid_view_adapter  = new TripAdapter(this, trip_array_list);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,27 +62,27 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        AppBase = new DataBaseHelper(MainActivity.this);
+        AppBase = new DataBaseHelper(this);
 
+        Cursor cursor = AppBase.getTripsData();
+        trip_array_list.clear();
 
+        if (cursor.moveToFirst()){
+            do{
+                TripModel model= new TripModel();
+                model.setTrip_name(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_NAME)));
+                model.setTrip_date(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_DATE)));
+                model.setTrip_amount(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
+                trip_array_list.add(model);
+            }while(cursor.moveToNext());
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+            grid_view_adapter.notifyDataSetChanged();
+        }
+        cursor.close();
 
         trip_grid_view = (GridView) findViewById(R.id.trip_grid_view);
 
-        trip_grid_view.setAdapter(new TripAdapter(this, trip_array_list));
+        trip_grid_view.setAdapter(grid_view_adapter);
 
         trip_grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -111,6 +116,30 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(AppBase!=null){
+            Cursor cursor = AppBase.getTripsData();
+            trip_array_list.clear();
+
+            if (cursor.moveToFirst()){
+                do{
+                    TripModel model= new TripModel();
+                    model.setTrip_name(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_NAME)));
+                    model.setTrip_date(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_DATE)));
+                    model.setTrip_amount(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
+                    trip_array_list.add(model);
+                }while(cursor.moveToNext());
+
+                grid_view_adapter.notifyDataSetChanged();
+            }
+            cursor.close();
+        }
+
     }
 
     @Override

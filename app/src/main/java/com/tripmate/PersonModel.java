@@ -4,13 +4,13 @@ package com.tripmate;
  * Created by vinee_000 on 17-06-2017.
  */
 
-public class Person {
+public class PersonModel {
     private String name,mobile,email,deposit,admin;
 
-    public Person() {
+    public PersonModel() {
     }
 
-    public Person(String name, String mobile, String email, String deposit, String admin) {
+    public PersonModel(String name, String mobile, String email, String deposit, String admin) {
         this.name = name;
         this.mobile = mobile;
         this.email = email;

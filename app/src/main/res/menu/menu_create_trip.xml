@@ -5,6 +5,6 @@
       android:id="@+id/action_forward"
       app:showAsAction="always"
       android:title="Create Trip"
-      android:icon="@drawable/icon_forward_new">
+      android:icon="@drawable/icon_forward">
   </item>
 </menu>
