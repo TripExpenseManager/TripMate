@@ -13,6 +13,7 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class AddTrip extends AppCompatActivity {
@@ -23,6 +24,10 @@ public class AddTrip extends AppCompatActivity {
     int mYear,mMonth,mDay;
     String trip_date;
     DatePickerDialog.OnDateSetListener dateSetListener;
+    TripModel trip;
+    boolean is_edit = false;
+    ArrayList<PersonModel> tripPersonModels;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,8 +84,24 @@ public class AddTrip extends AppCompatActivity {
             }
         });
 
+        is_edit = getIntent().getBooleanExtra("is_edit",false);
+        if(is_edit){
+            Intent intent = getIntent();
+            trip = new TripModel();
+            trip.setTrip_name(intent.getStringExtra("TripName"));
+            trip.setTrip_places(intent.getStringExtra("TripPlaces"));
+            trip.setTrip_desc(intent.getStringExtra("TripDesc"));
+            trip.setTrip_date(intent.getStringExtra("TripDate"));
+            trip.setTrip_amount("0");
 
+            tilTripName.getEditText().setText(trip.getTrip_name());
+            tilTripPlaces.getEditText().setText(trip.getTrip_places());
+            tilTripDesc.getEditText().setText(trip.getTrip_desc());
+            tvDate.setText(trip.getTrip_date());
 
+            tripPersonModels = getIntent().getParcelableArrayListExtra("PersonsList");
+
+        }
 
 
 
@@ -108,13 +129,17 @@ public class AddTrip extends AppCompatActivity {
         }else{
             tilTripDesc.setErrorEnabled(false);
             TripModel trip = new TripModel(trip_name,trip_places,trip_desc,trip_date);
-            MainActivity.AppBase.addTrip(trip);
             Intent intent = new Intent(AddTrip.this,TripInfo_AddTrip.class);
             intent.putExtra("TripName",trip.getTrip_name());
             intent.putExtra("TripPlaces",trip.getTrip_places());
             intent.putExtra("TripDesc",trip.getTrip_desc());
             intent.putExtra("TripDate",trip.getTrip_date());
+            if(tripPersonModels!=null){
+                intent.putExtra("PersonsList",tripPersonModels);
+                intent.putExtra("is_edit",true);
+            }
             startActivity(intent);
+            finish();
         }
 
     }

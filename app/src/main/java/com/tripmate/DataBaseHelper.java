@@ -95,7 +95,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(TRIPS_COLUMN_TRIP_DATE,trip.getTrip_date());
 
         db.insert(TRIPS_TABLE_NAME,null,values);
-        db.close();
         return true;
     }
     public String getTripId(String tripName){
@@ -107,7 +106,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(cursor!=null && cursor.moveToFirst())
             tripId = cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID));
 
-        db.close();
         return  tripId;
     }
 
@@ -123,10 +121,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             values.put(PERSONS_COLUMN_PERSON_EMAIL, personModel.getEmail());
             values.put(PERSONS_COLUMN_PERSON_DEPOSIT, personModel.getDeposit());
             values.put(PERSONS_COLUMN_PERSON_ADMIN, personModel.getAdmin());
-
             db.insert(PERSONS_TABLE_NAME,null,values);
         }
-        db.close();
     }
 
     public ArrayList<PersonModel> getPersons(String tripName){
