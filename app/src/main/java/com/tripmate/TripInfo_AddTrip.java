@@ -177,6 +177,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                     return true;
                 }else{
                     Snackbar.make(findViewById(android.R.id.content), "Please add atleast one person.", Snackbar.LENGTH_LONG).show();
+                    return true;
                 }
 
             case R.id.action_edit:
