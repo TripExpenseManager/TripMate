@@ -89,52 +89,37 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(TRIPS_COLUMN_ID,trip.getTrip_id());
         values.put(TRIPS_COLUMN_TRIP_NAME,trip.getTrip_name());
         values.put(TRIPS_COLUMN_TRIP_PLACES,trip.getTrip_places());
         values.put(TRIPS_COLUMN_TRIP_DESC,trip.getTrip_desc());
         values.put(TRIPS_COLUMN_TRIP_DATE,trip.getTrip_date());
+        values.put(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT,trip.getTrip_amount());
 
         db.insert(TRIPS_TABLE_NAME,null,values);
-        db.close();
         return true;
     }
-    public String getTripId(String tripName){
-        SQLiteDatabase db = getReadableDatabase();
-        String tripId="";
 
-        Cursor cursor = db.query(TRIPS_TABLE_NAME,new String[]{TRIPS_COLUMN_ID,TRIPS_COLUMN_TRIP_NAME},
-                TRIPS_COLUMN_TRIP_NAME+"=?",new String[]{tripName},null,null,null);
-        if(cursor!=null && cursor.moveToFirst())
-            tripId = cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID));
 
-        db.close();
-        return  tripId;
-    }
-
-    public void addPersons(String tripName , ArrayList<PersonModel> personsList){
+    public void addPersons(String trip_id , ArrayList<PersonModel> personsList){
         SQLiteDatabase db = getWritableDatabase();
-        String tripId = getTripId(tripName);
-
         for (PersonModel personModel : personsList) {
             ContentValues values = new ContentValues();
-            values.put(PERSONS_COLUMN_TRIP_ID,tripId);
+            values.put(PERSONS_COLUMN_TRIP_ID,trip_id);
             values.put(PERSONS_COLUMN_PERSON_NAME, personModel.getName());
             values.put(PERSONS_COLUMN_PERSON_MOBILE, personModel.getMobile());
             values.put(PERSONS_COLUMN_PERSON_EMAIL, personModel.getEmail());
             values.put(PERSONS_COLUMN_PERSON_DEPOSIT, personModel.getDeposit());
             values.put(PERSONS_COLUMN_PERSON_ADMIN, personModel.getAdmin());
-
             db.insert(PERSONS_TABLE_NAME,null,values);
         }
-        db.close();
     }
 
-    public ArrayList<PersonModel> getPersons(String tripName){
+    public ArrayList<PersonModel> getPersons(String trip_id){
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<PersonModel> personsList = new ArrayList<PersonModel>();
-        String tripId = getTripId(tripName);
 
-        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{tripName},
+        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{trip_id},
                 null,null,null);
         if(cursor!=null && cursor.moveToFirst()){
             do{
@@ -155,10 +140,27 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
 
-    public Cursor getTripsData() {
+    public ArrayList<TripModel> getTripsData() {
+        ArrayList<TripModel> trip_array_list = new ArrayList<>();
+
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from "+TRIPS_TABLE_NAME, null );
-        return res;
+        Cursor cursor =  db.rawQuery( "select * from "+TRIPS_TABLE_NAME, null );
+
+        if (cursor.moveToFirst()) {
+            do {
+                TripModel model = new TripModel();
+                model.setTrip_name(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_NAME)));
+                model.setTrip_date(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DATE)));
+                model.setTrip_amount(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
+                model.setTrip_desc(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DESC)));
+                model.setTrip_id(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID)));
+                model.setTrip_places(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_PLACES)));
+
+                trip_array_list.add(model);
+            } while (cursor.moveToNext());
+        }
+
+        return trip_array_list;
     }
 
 

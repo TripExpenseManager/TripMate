@@ -1,10 +1,13 @@
 package com.tripmate;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by vinee_000 on 17-06-2017.
  */
 
-public class PersonModel {
+public class PersonModel implements Parcelable {
     private String name,mobile,email,deposit,admin;
 
     public PersonModel() {
@@ -57,4 +60,41 @@ public class PersonModel {
     public void setAdmin(String admin) {
         this.admin = admin;
     }
+
+    public String details(){
+        return "Name: "+name + " Mobile: " + mobile + " Deposit: " + deposit + " Email: "+email ;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(mobile);
+        dest.writeString(email);
+        dest.writeString(deposit);
+        dest.writeString(admin);
+
+    }
+    public static final Parcelable.Creator<PersonModel> CREATOR = new Parcelable.Creator<PersonModel>() {
+
+        @Override
+        public PersonModel createFromParcel(Parcel source) {
+            PersonModel personModel = new PersonModel();
+            personModel.setName(source.readString());
+            personModel.setMobile(source.readString());
+            personModel.setEmail(source.readString());
+            personModel.setDeposit(source.readString());
+            personModel.setAdmin(source.readString());
+            return  personModel;
+        }
+
+        @Override
+        public PersonModel[] newArray(int size) {
+            return new PersonModel[size];
+        }
+    };
 }

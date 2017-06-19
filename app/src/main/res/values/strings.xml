@@ -6,4 +6,6 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_add_trip">AddTrip</string>
+    <string name="title_activity_trip_desk">TripDesk</string>
+
 </resources>

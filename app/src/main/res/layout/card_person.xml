@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/personLL"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/ivLeftImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="5dp" />
+
+    <TextView
+        android:id="@+id/tvPersonName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:text="Person Name"
+        android:textStyle="bold"/>
+
+</LinearLayout>
