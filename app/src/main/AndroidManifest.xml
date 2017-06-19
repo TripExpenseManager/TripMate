@@ -11,8 +11,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
             android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,14 +20,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AddTrip"
+        <activity
+            android:name=".AddTrip"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"
-            />
-        <activity android:name=".TripInfo_AddTrip"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".TripInfo_AddTrip"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"
-           />
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".TripDesk"
+            android:label="@string/title_activity_trip_desk"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

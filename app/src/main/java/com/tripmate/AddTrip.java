@@ -1,17 +1,24 @@
 package com.tripmate;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -24,9 +31,9 @@ public class AddTrip extends AppCompatActivity {
     int mYear,mMonth,mDay;
     String trip_date;
     DatePickerDialog.OnDateSetListener dateSetListener;
-    TripModel trip;
-    boolean is_edit = false;
-    ArrayList<PersonModel> tripPersonModels;
+    ArrayList<PersonModel> tripPersonModels = new ArrayList<>();
+
+    LinearLayout commaInfoLL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,25 @@ public class AddTrip extends AppCompatActivity {
         tilTripDesc = (TextInputLayout) findViewById(R.id.tilTripDesc);
         tvDate = (TextView)findViewById(R.id.tvDate);
         ivDate = (ImageView) findViewById(R.id.ivDate);
+        commaInfoLL = (LinearLayout) findViewById(R.id.commaInfoLL);
+
+        tilTripPlaces.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                commaInfoLL.setVisibility(View.VISIBLE);
+            }
+        });
+
 
         // Setting of Date
 
@@ -80,29 +106,10 @@ public class AddTrip extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddTrip.this,dateSetListener,mYear,mMonth,mDay);
+                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
         });
-
-        is_edit = getIntent().getBooleanExtra("is_edit",false);
-        if(is_edit){
-            Intent intent = getIntent();
-            trip = new TripModel();
-            trip.setTrip_name(intent.getStringExtra("TripName"));
-            trip.setTrip_places(intent.getStringExtra("TripPlaces"));
-            trip.setTrip_desc(intent.getStringExtra("TripDesc"));
-            trip.setTrip_date(intent.getStringExtra("TripDate"));
-            trip.setTrip_amount("0");
-
-            tilTripName.getEditText().setText(trip.getTrip_name());
-            tilTripPlaces.getEditText().setText(trip.getTrip_places());
-            tilTripDesc.getEditText().setText(trip.getTrip_desc());
-            tvDate.setText(trip.getTrip_date());
-
-            tripPersonModels = getIntent().getParcelableArrayListExtra("PersonsList");
-
-        }
-
 
 
     }
@@ -116,6 +123,8 @@ public class AddTrip extends AppCompatActivity {
         }catch (Exception e){
             return;
         }
+
+
         String trip_date = tvDate.getText().toString();
         if(!validate(trip_name)){
             tilTripName.setError("Please Enter Trip Name");
@@ -127,6 +136,7 @@ public class AddTrip extends AppCompatActivity {
             tilTripPlaces.setErrorEnabled(false);
             tilTripDesc.setError("Please Enter something about this Trip");
         }else{
+
             tilTripDesc.setErrorEnabled(false);
             TripModel trip = new TripModel(trip_name,trip_places,trip_desc,trip_date);
             Intent intent = new Intent(AddTrip.this,TripInfo_AddTrip.class);
@@ -134,12 +144,9 @@ public class AddTrip extends AppCompatActivity {
             intent.putExtra("TripPlaces",trip.getTrip_places());
             intent.putExtra("TripDesc",trip.getTrip_desc());
             intent.putExtra("TripDate",trip.getTrip_date());
-            if(tripPersonModels!=null){
-                intent.putExtra("PersonsList",tripPersonModels);
-                intent.putExtra("is_edit",true);
-            }
-            startActivity(intent);
-            finish();
+            intent.putExtra("PersonsList",tripPersonModels);
+            startActivityForResult(intent,200);
+
         }
 
     }
@@ -147,6 +154,18 @@ public class AddTrip extends AppCompatActivity {
     public boolean validate(String textField){
         return  textField.length()>0;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode==200)
+        {
+            tripPersonModels = data.getParcelableArrayListExtra("PersonsList");
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -166,6 +185,28 @@ public class AddTrip extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_create_trip,menu);
         return  true;
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(AddTrip.this);
+
+        dialog.setMessage("Do you want to exit without creating the trip?");
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+              finish();
+            }
+        });
+        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        dialog.show();
+
     }
 }
 

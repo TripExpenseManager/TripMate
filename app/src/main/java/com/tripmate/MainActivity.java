@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
 
     ArrayList<TripModel> trip_array_list = new ArrayList<>();
 
-    TripAdapter grid_view_adapter  = new TripAdapter(this, trip_array_list);
+    TripAdapter grid_view_adapter;
 
 
     @Override
@@ -64,21 +64,10 @@ public class MainActivity extends AppCompatActivity
 
         AppBase = new DataBaseHelper(this);
 
-        Cursor cursor = AppBase.getTripsData();
-        trip_array_list.clear();
+        trip_array_list = AppBase.getTripsData();
+        //grid_view_adapter.notifyDataSetChanged();
 
-        if (cursor.moveToFirst()){
-            do{
-                TripModel model= new TripModel();
-                model.setTrip_name(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_NAME)));
-                model.setTrip_date(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_DATE)));
-                model.setTrip_amount(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
-                trip_array_list.add(model);
-            }while(cursor.moveToNext());
-
-            grid_view_adapter.notifyDataSetChanged();
-        }
-        cursor.close();
+        grid_view_adapter  = new TripAdapter(this, trip_array_list);
 
         trip_grid_view = (GridView) findViewById(R.id.trip_grid_view);
 
@@ -87,10 +76,10 @@ public class MainActivity extends AppCompatActivity
         trip_grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Toast.makeText(
-                        getApplicationContext(),
-                        ((TextView) v.findViewById(R.id.trip_name_tv))
-                                .getText(), Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(MainActivity.this,TripDesk.class);
+                intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
+                startActivity(intent);
 
             }
         });
@@ -123,21 +112,10 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
         if(AppBase!=null){
-            Cursor cursor = AppBase.getTripsData();
-            trip_array_list.clear();
 
-            if (cursor.moveToFirst()){
-                do{
-                    TripModel model= new TripModel();
-                    model.setTrip_name(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_NAME)));
-                    model.setTrip_date(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_DATE)));
-                    model.setTrip_amount(cursor.getString(cursor.getColumnIndex(AppBase.TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
-                    trip_array_list.add(model);
-                }while(cursor.moveToNext());
+            trip_array_list = AppBase.getTripsData();
+            grid_view_adapter.notifyDataSetChanged();
 
-                grid_view_adapter.notifyDataSetChanged();
-            }
-            cursor.close();
         }
 
     }
@@ -194,29 +172,26 @@ public class MainActivity extends AppCompatActivity
 
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View gridView;
-            if (convertView == null) {
-
-                gridView = inflater.inflate(R.layout.trip_item_grid_row, null);
-
-                TripModel model = trip_array_list.get(position);
-
-                TextView trip_name_tv = (TextView) gridView.findViewById(R.id.trip_name_tv);
-                TextView trip_date_tv = (TextView) gridView.findViewById(R.id.trip_date_tv);
-                TextView trip_amount_tv = (TextView) gridView.findViewById(R.id.trip_amount_tv);
-
-                trip_name_tv.setText(model.getTrip_name());
-                trip_date_tv.setText(model.getTrip_date());
-                trip_amount_tv.setText(model.getTrip_amount());
-
-
-
-            } else {
-                gridView = (View) convertView;
+            View v;
+            if(convertView==null)
+            {
+                LayoutInflater li = getLayoutInflater();
+                v = li.inflate(R.layout.trip_item_grid_row, null);
+            }else{
+                v = convertView;
             }
 
-            return gridView;
+            TripModel model = trip_array_list.get(position);
+
+            TextView trip_name_tv = (TextView) v.findViewById(R.id.trip_name_tv);
+            TextView trip_date_tv = (TextView) v.findViewById(R.id.trip_date_tv);
+            TextView trip_amount_tv = (TextView) v.findViewById(R.id.trip_amount_tv);
+
+            trip_name_tv.setText(model.getTrip_name());
+            trip_date_tv.setText(model.getTrip_date());
+            trip_amount_tv.setText(model.getTrip_amount());
+
+            return v;
         }
 
         @Override
