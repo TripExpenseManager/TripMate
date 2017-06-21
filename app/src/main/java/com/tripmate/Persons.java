@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import android.app.models.PersonModel;
 
 import java.util.ArrayList;
 
@@ -36,6 +38,8 @@ public class Persons extends Fragment {
 
     RecyclerView persons_recyclerview;
     String trip_id;
+
+    FloatingActionButton addExpenseFab;
 
     PersonsAdapter mAdapter = null;
 
@@ -58,6 +62,8 @@ public class Persons extends Fragment {
         View view = inflater.inflate(R.layout.fragment_persons, container, false);
         persons_recyclerview = (RecyclerView) view.findViewById(R.id.persons_recyclerview);
 
+        addExpenseFab = (FloatingActionButton) view.findViewById(R.id.fab);
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         persons_recyclerview.setLayoutManager(mLayoutManager);
 
@@ -66,6 +72,16 @@ public class Persons extends Fragment {
         ScaleInAnimationAdapter adapter = new ScaleInAnimationAdapter(mAdapter);
         adapter.setDuration(400);
         persons_recyclerview.setAdapter(adapter);
+
+
+        addExpenseFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),AddExpense.class);
+                intent.putExtra("trip_id",trip_id);
+                startActivity(intent);
+            }
+        });
 
         return view;
     }

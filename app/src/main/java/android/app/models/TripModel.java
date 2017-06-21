@@ -1,4 +1,4 @@
-package com.tripmate;
+package android.app.models;
 
 /**
  * Created by Sai Krishna on 6/17/2017.
@@ -12,7 +12,7 @@ public class TripModel {
     }
 
     private String trip_date;
-    private String trip_amount;
+    private Double trip_amount;
     private String trip_places;
     private String trip_desc;
     private String trip_id;
@@ -65,11 +65,11 @@ public class TripModel {
         this.trip_date = trip_date;
     }
 
-    public String getTrip_amount() {
+    public Double getTrip_amount() {
         return trip_amount;
     }
 
-    public void setTrip_amount(String trip_amount) {
+    public void setTrip_amount(Double trip_amount) {
         this.trip_amount = trip_amount;
     }
 }

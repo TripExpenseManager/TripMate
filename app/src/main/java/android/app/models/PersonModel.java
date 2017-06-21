@@ -1,4 +1,4 @@
-package com.tripmate;
+package android.app.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -8,12 +8,14 @@ import android.os.Parcelable;
  */
 
 public class PersonModel implements Parcelable {
-    private String name,mobile,email,deposit,admin;
+    private String name,mobile,email;
+    private  Double deposit;
+    private int admin;
 
     public PersonModel() {
     }
 
-    public PersonModel(String name, String mobile, String email, String deposit, String admin) {
+    public PersonModel(String name, String mobile, String email, Double deposit, int admin) {
         this.name = name;
         this.mobile = mobile;
         this.email = email;
@@ -45,19 +47,19 @@ public class PersonModel implements Parcelable {
         this.email = email;
     }
 
-    public String getDeposit() {
+    public Double getDeposit() {
         return deposit;
     }
 
-    public void setDeposit(String deposit) {
+    public void setDeposit(Double deposit) {
         this.deposit = deposit;
     }
 
-    public String getAdmin() {
+    public int getAdmin() {
         return admin;
     }
 
-    public void setAdmin(String admin) {
+    public void setAdmin(int admin) {
         this.admin = admin;
     }
 
@@ -75,8 +77,8 @@ public class PersonModel implements Parcelable {
         dest.writeString(name);
         dest.writeString(mobile);
         dest.writeString(email);
-        dest.writeString(deposit);
-        dest.writeString(admin);
+        dest.writeDouble(deposit);
+        dest.writeInt(admin);
 
     }
     public static final Parcelable.Creator<PersonModel> CREATOR = new Parcelable.Creator<PersonModel>() {
@@ -87,8 +89,8 @@ public class PersonModel implements Parcelable {
             personModel.setName(source.readString());
             personModel.setMobile(source.readString());
             personModel.setEmail(source.readString());
-            personModel.setDeposit(source.readString());
-            personModel.setAdmin(source.readString());
+            personModel.setDeposit(source.readDouble());
+            personModel.setAdmin(source.readInt());
             return  personModel;
         }
 

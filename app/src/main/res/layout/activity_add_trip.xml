@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -22,14 +21,14 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="15dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="15dp">
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilTripName"
@@ -54,33 +53,32 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Places To Visit"
-                    android:singleLine="true"
                     android:maxLines="1" />
 
                 <LinearLayout
+                    android:id="@+id/commaInfoLL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="2dp"
-                    android:id="@+id/commaInfoLL"
-                    android:visibility="gone"
-                    android:orientation="horizontal">
+                    android:layout_marginStart="2dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="15dp"
-                        android:tint="@color/black"
                         android:src="@drawable/info"
-                        />
+                        android:tint="@color/black" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="5dp"
-                        android:textSize="12dp"
-                        android:textColor="@color/black"
+                        android:layout_marginStart="5dp"
                         android:text="Use comma(,) to seperate places"
-                        />
+                        android:textColor="@color/black"
+                        android:textSize="12dp" />
                 </LinearLayout>
 
 
@@ -102,37 +100,39 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp">
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp">
 
                 <TextView
+                    android:id="@+id/tvDateTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Date"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:id="@+id/tvDateTitle"/>
+                    android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tvDateTitle"
                     android:layout_marginTop="5dp"
-                    android:text="17-06-2017"
-                    android:id="@+id/tvDate"/>
+                    android:text="17-06-2017" />
 
                 <ImageView
+                    android:id="@+id/ivDate"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_margin="10dp"
-                    android:id="@+id/ivDate"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/icon_calendar"
-                    android:scaleType="fitXY"/>
+                    android:layout_margin="10dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/icon_calendar" />
 
             </RelativeLayout>
 
         </LinearLayout>
+
 
     </android.support.v4.widget.NestedScrollView>
 
