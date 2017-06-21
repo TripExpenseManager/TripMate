@@ -63,8 +63,8 @@ public class Statistics extends Fragment {
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
                 switch (checkedId) {
                     case R.id.rbDashBoard:
-                       vpStatistics.setCurrentItem(0);
-                       break;
+                        vpStatistics.setCurrentItem(0);
+                        break;
                     case R.id.rbStatistics:
                         vpStatistics.setCurrentItem(1);
                         break;
@@ -100,7 +100,7 @@ public class Statistics extends Fragment {
 
 
 
-         return customview;
+        return customview;
     }
 
     public  void setUpViewPager(){
@@ -112,7 +112,7 @@ public class Statistics extends Fragment {
     }
 
 
-     class StatsPagerAdapter extends FragmentPagerAdapter {
+    class StatsPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 

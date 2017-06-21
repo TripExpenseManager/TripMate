@@ -1,51 +1,48 @@
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    tools:context="com.tripmate.Statistics">
+    <info.hoang8f.android.segmented.SegmentedGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/segmentedGroup"
+        android:padding="5dp"
+        android:weightSum="2"
+        android:background="@android:color/transparent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        segmentedgroup:sc_tint_color="@color/colorPrimary"
+        segmentedgroup:sc_checked_text_color="#FFFFFF"
+        segmentedgroup:sc_border_width="2dp"
+        segmentedgroup:sc_corner_radius="10dp"
+        android:gravity="center">
 
-    <LinearLayout
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/rbDashBoard"
+            android:text="DASHBOARD"
+            android:layout_weight="1"
+            style="@style/RadioButton"/>
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/rbStatistics"
+            android:layout_weight="1"
+            android:text="EXPENSES"
+            style="@style/RadioButton"/>
+
+    </info.hoang8f.android.segmented.SegmentedGroup>
+
+    <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-        <info.hoang8f.android.segmented.SegmentedGroup
-            xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/segmentedGroup"
-            android:padding="15dp"
-            segmentedgroup:sc_tint_color="@color/colorPrimary"
-            segmentedgroup:sc_checked_text_color="#FFFFFF"
-            segmentedgroup:sc_border_width="2dp"
-            segmentedgroup:sc_corner_radius="15dp"
-            android:layout_gravity="center_horizontal">
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/rbDashBoard"
-                android:text="DASHBOARD"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                style="@style/RadioButton"/>
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/rbStatistics"
-                android:text="STATISTICS"
-                android:paddingRight="10dp"
-                style="@style/RadioButton"/>
-        </info.hoang8f.android.segmented.SegmentedGroup>
+        android:id="@+id/vpStatistics"/>
 
-        <android.support.v4.view.ViewPager
-            android:layout_width="match_parent"
-            android:layout_height="500dp"
-            android:id="@+id/vpStatistics">
+</LinearLayout>
 
-        </android.support.v4.view.ViewPager>
-    </LinearLayout>
-
-
-
-</android.support.v4.widget.NestedScrollView>

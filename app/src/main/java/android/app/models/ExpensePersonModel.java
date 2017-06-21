@@ -1,14 +1,14 @@
-package com.tripmate;
+package android.app.models;
 
 /**
  * Created by vinee_000 on 19-06-2017.
  */
 
-public class ExpensePerson {
+public class ExpensePersonModel {
     private String name;
     private double amountSpent,amountShared,amountDue,amountDeposit;
 
-    public ExpensePerson(String name,double amountDeposit, double amountSpent, double amountShared) {
+    public ExpensePersonModel(String name, double amountDeposit, double amountSpent, double amountShared) {
         this.name = name;
         this.amountSpent = amountSpent;
         this.amountShared = amountShared;
@@ -20,7 +20,7 @@ public class ExpensePerson {
         return name;
     }
 
-    public ExpensePerson() {
+    public ExpensePersonModel() {
         this.name = name;
         this.amountSpent = 0.0;
         this.amountShared = 0.0;

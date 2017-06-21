@@ -1,14 +1,14 @@
-package com.tripmate;
+package android.app.models;
 
 /**
  * Created by vinee_000 on 19-06-2017.
  */
 
-public class GraphItem {
+public class GraphItemModel {
     private String name;
     private Double amount;
 
-    public GraphItem(String name, Double amount) {
+    public GraphItemModel(String name, Double amount) {
         this.name = name;
         this.amount = amount;
     }
@@ -29,7 +29,7 @@ public class GraphItem {
         this.amount = amount;
     }
 
-    public GraphItem() {
+    public GraphItemModel() {
     }
 }
 

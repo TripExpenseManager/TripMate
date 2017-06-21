@@ -1,5 +1,8 @@
 package com.tripmate;
 
+import android.app.models.ExpenseModel;
+import android.app.models.GraphItemModel;
+import android.app.models.PersonModel;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -41,9 +44,9 @@ public class ChartsFragment extends Fragment{
     ArrayList<String> dateList = new ArrayList<>();
 
     // Graph Items for 3 Spinner Items
-    ArrayList<GraphItem> personGraphItems = new ArrayList<>();
-    ArrayList<GraphItem> categoryGraphItems = new ArrayList<>();
-    ArrayList<GraphItem> dateGraphItems = new ArrayList<>();
+    ArrayList<GraphItemModel> personGraphItems = new ArrayList<>();
+    ArrayList<GraphItemModel> categoryGraphItems = new ArrayList<>();
+    ArrayList<GraphItemModel> dateGraphItems = new ArrayList<>();
 
     // Stats in form of Graph && list
     RecyclerView rvGraphItems;
@@ -127,13 +130,10 @@ public class ChartsFragment extends Fragment{
 
 
         //Setting Legend;
-        Legend l = pieChart.getLegend();
-        l.setDirection(Legend.LegendDirection.LEFT_TO_RIGHT);
-        l.setOrientation(Legend.LegendOrientation.VERTICAL);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+        pieChart.getLegend().setEnabled(false);
         pieChart.getDescription().setEnabled(false);
         pieChart.setEntryLabelColor(Color.BLACK);
+        pieChart.setRotationEnabled(false);
         pieChart.setCenterText("Total Expenses \n " + tripTotalAmount);
         pieChart.animateY(1400);
 
@@ -144,9 +144,9 @@ public class ChartsFragment extends Fragment{
         return customview;
     }
 
-    public void populateGraph(ArrayList<GraphItem> graphItems , String Label){
+    public void populateGraph(ArrayList<GraphItemModel> graphItems , String Label){
         ArrayList<PieEntry> yValues = new ArrayList<>();
-        for(GraphItem graphItem : graphItems) {
+        for(GraphItemModel graphItem : graphItems) {
             yValues.add(new PieEntry(graphItem.getAmount().floatValue(),graphItem.getName()));
         }
 
@@ -155,13 +155,18 @@ public class ChartsFragment extends Fragment{
         pieDataSet.setLabel("Expenses");
 
         PieData pieData = new PieData(pieDataSet);
+        pieData.setValueTextSize(11f);
+
         pieChart.setData(pieData);
         pieChart.animateY(1400);
 
-        GraphItemAdapter graphItemAdapter = new GraphItemAdapter(getContext(),graphItems,Label);
-        rvGraphItems.setAdapter(graphItemAdapter);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvGraphItems.setLayoutManager(linearLayoutManager);
+
+        GraphItemAdapter graphItemAdapter = new GraphItemAdapter(getContext(),graphItems,Label);
+        rvGraphItems.setAdapter(graphItemAdapter);
+
 
     }
 
@@ -169,13 +174,13 @@ public class ChartsFragment extends Fragment{
     // Adapter for Graph Items
     class GraphItemAdapter extends RecyclerView.Adapter<GraphItemAdapter.GraphItemHolder>{
         Context mcontext;
-        ArrayList<GraphItem> graphItemArrayList;
+        ArrayList<GraphItemModel> graphItemArrayList;
         String label;
 
-        public GraphItemAdapter(Context mcontext, ArrayList<GraphItem> graphItemArrayList,String label) {
-            Collections.sort(graphItemArrayList, new Comparator<GraphItem>() {
+        public GraphItemAdapter(Context mcontext, ArrayList<GraphItemModel> graphItemArrayList,String label) {
+            Collections.sort(graphItemArrayList, new Comparator<GraphItemModel>() {
                 @Override
-                public int compare(GraphItem o1, GraphItem o2) {
+                public int compare(GraphItemModel o1, GraphItemModel o2) {
                     return (int)(o2.getAmount()-o1.getAmount());
                 }
             });
@@ -207,7 +212,7 @@ public class ChartsFragment extends Fragment{
 
         @Override
         public void onBindViewHolder(GraphItemHolder holder, int position) {
-            GraphItem graphItem = graphItemArrayList.get(position);
+            GraphItemModel graphItem = graphItemArrayList.get(position);
             holder.tvRanking.setText(position+1+"");
             holder.tvName.setText(graphItem.getName());
             holder.tvAmount.setText(graphItem.getAmount()+"");
@@ -230,40 +235,40 @@ public class ChartsFragment extends Fragment{
 
         // Graph Items Persons
         for(PersonModel personModel : personsList){
-            GraphItem graphItemPerson = new GraphItem();
+            GraphItemModel graphItemPerson = new GraphItemModel();
             graphItemPerson.setName(personModel.getName());
             graphItemPerson.setAmount(getAmountOfPerson(personModel.getName()));
             personGraphItems.add(graphItemPerson);
         }
 
-        personGraphItems.add(new GraphItem("Vineeth",1500.00));
-        personGraphItems.add(new GraphItem("Krishna",2000.00));
-        personGraphItems.add(new GraphItem("Sai",500.00));
+        personGraphItems.add(new GraphItemModel("Vineeth",1500.00));
+        personGraphItems.add(new GraphItemModel("Krishna",2000.00));
+        personGraphItems.add(new GraphItemModel("Sai",500.00));
 
         // Graph Items Category
         for(String category : categoryList){
-            GraphItem graphItemCategory = new GraphItem();
+            GraphItemModel graphItemCategory = new GraphItemModel();
             graphItemCategory.setName(category);
             graphItemCategory.setAmount(getAmountOfPerson(category));
             categoryGraphItems.add(graphItemCategory);
         }
 
 
-        categoryGraphItems.add(new GraphItem("Food",1500.00));
-        categoryGraphItems.add(new GraphItem("Tickets",2000.00));
-        categoryGraphItems.add(new GraphItem("Hotel",500.00));
+        categoryGraphItems.add(new GraphItemModel("Food",1500.00));
+        categoryGraphItems.add(new GraphItemModel("Tickets",2000.00));
+        categoryGraphItems.add(new GraphItemModel("Hotel",500.00));
 
         // Graph Items Date
         for(String date : dateList){
-            GraphItem graphItemDate = new GraphItem();
+            GraphItemModel graphItemDate = new GraphItemModel();
             graphItemDate.setName(date);
             graphItemDate.setAmount(getAmountOfPerson(date));
             dateGraphItems.add(graphItemDate);
         }
 
-        dateGraphItems.add(new GraphItem("17-09-17",1500.00));
-        dateGraphItems.add(new GraphItem("18-09-17",2000.00));
-        dateGraphItems.add(new GraphItem("19-09-17",500.00));
+        dateGraphItems.add(new GraphItemModel("17-09-17",1500.00));
+        dateGraphItems.add(new GraphItemModel("18-09-17",2000.00));
+        dateGraphItems.add(new GraphItemModel("19-09-17",500.00));
 
 
 

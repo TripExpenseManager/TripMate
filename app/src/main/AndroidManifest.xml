@@ -31,6 +31,11 @@
         <activity
             android:name=".TripDesk"
             android:label="@string/title_activity_trip_desk"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AddExpense"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 

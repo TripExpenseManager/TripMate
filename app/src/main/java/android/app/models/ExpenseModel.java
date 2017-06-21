@@ -1,4 +1,4 @@
-package com.tripmate;
+package android.app.models;
 
 /**
  * Created by vinee_000 on 19-06-2017.

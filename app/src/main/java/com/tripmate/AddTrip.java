@@ -18,7 +18,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONException;
+import android.app.models.PersonModel;
+import android.app.models.TripModel;
 
 import java.util.ArrayList;
 import java.util.Calendar;

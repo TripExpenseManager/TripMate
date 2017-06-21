@@ -1,7 +1,6 @@
 package com.tripmate;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,22 +10,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import android.app.models.PersonModel;
+import android.app.models.TripModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +57,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
         trip.setTrip_places(intent.getStringExtra("TripPlaces"));
         trip.setTrip_desc(intent.getStringExtra("TripDesc"));
         trip.setTrip_date(intent.getStringExtra("TripDate"));
-        trip.setTrip_amount("0");
+        trip.setTrip_amount(0.0);
         tripPersonModels = getIntent().getParcelableArrayListExtra("PersonsList");
 
 
@@ -124,10 +122,15 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
                             PersonModel personModel = new PersonModel();
                             personModel.setName(tilPersonName.getEditText().getText().toString().trim());
-                            personModel.setDeposit(tilPersonDeposit.getEditText().getText().toString());
+
+                            if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
+                                personModel.setDeposit(0.0);
+                            }else{
+                                personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                            }
                             personModel.setMobile(tilPersonMobile.getEditText().getText().toString());
                             personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
-                            personModel.setAdmin("0");
+                            personModel.setAdmin(0);
                             tripPersonModels.add(personModel);
                             // Refresh Adapter
                             personsAdapter.notifyDataSetChanged();
@@ -152,7 +155,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
                     int res = 0;
                     for(int i=0;i<tripPersonModels.size();i++){
-                        if(tripPersonModels.get(i).getAdmin().equalsIgnoreCase("1")){
+                        if(tripPersonModels.get(i).getAdmin() == 1){
                             res=1;
                         }
                     }
@@ -227,12 +230,12 @@ public class TripInfo_AddTrip extends AppCompatActivity {
             personLL.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    tripPersonModels.get(position).setAdmin("1");
+                    tripPersonModels.get(position).setAdmin(1);
                     Toast.makeText(mContext,tripPersonModels.get(position).getName() + " is set as admin for the trip. Deposit amount will not account for this person.", Toast.LENGTH_SHORT).show();
 
                     for(int j=0;j<tripPersonModels.size();j++){
                         if(j!=position){
-                            tripPersonModels.get(j).setAdmin("0");
+                            tripPersonModels.get(j).setAdmin(0);
                         }
                     }
                     if(personsAdapter!=null){
@@ -249,7 +252,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
             TextDrawable drawable = TextDrawable.builder().buildRound((personName.charAt(0)+"").toUpperCase(),color);
 
 
-            if(personModels.get(position).getAdmin().equalsIgnoreCase("1")){
+            if(personModels.get(position).getAdmin() == 1){
                 tvPersonName.setText(personName + " (Admin)");
             }else{
                 tvPersonName.setText(personName);

@@ -1,11 +1,10 @@
 package com.tripmate;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,6 +20,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
+
+import android.app.models.TripModel;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -90,15 +91,42 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    @Override
+    boolean doubleBackToExitPressedOnce = false;
     public void onBackPressed() {
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+
+            int count = getSupportFragmentManager().getBackStackEntryCount();
+
+            if (count == 0) {
+                if (doubleBackToExitPressedOnce) {
+                    super.onBackPressed();
+                    finish();
+                    return;
+                }
+
+                this.doubleBackToExitPressedOnce = true;
+                Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        doubleBackToExitPressedOnce=false;
+                    }
+                }, 2000);
+
+
+            } else {
+                getSupportFragmentManager().popBackStack();
+            }
         }
+
     }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -189,7 +217,7 @@ public class MainActivity extends AppCompatActivity
 
             trip_name_tv.setText(model.getTrip_name());
             trip_date_tv.setText(model.getTrip_date());
-            trip_amount_tv.setText(model.getTrip_amount());
+            trip_amount_tv.setText(model.getTrip_amount()+"");
 
             return v;
         }

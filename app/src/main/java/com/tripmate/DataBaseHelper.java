@@ -5,6 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import android.app.models.ExpenseModel;
+import android.app.models.PersonModel;
+import android.app.models.TripModel;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -29,6 +34,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String ITEMS_TABLE_NAME = "items";
     private static final String ITEMS_COLUMN_TRIP_ID = "key_trip_id";
     private static final String ITEMS_COLUMN_ITEM_NAME = "key_item_name";
+    private static final String ITEMS_COLUMN_AMOUNT_TYPE = "key_amount_type";
     private static final String ITEMS_COLUMN_ITEM_AMOUNT = "key_item_amt";
     private static final String ITEMS_COLUMN_ITEM_EXP_BY = "key_item_exp_by";
     private static final String ITEMS_COLUMN_ITEM_CAT = "key_item_cat";
@@ -55,6 +61,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String NOTES_COLUMN_NOTE_CONTENT = "key_note_content";
     private static final String NOTES_COLUMN_NOTE_CONTENT_STATUS = "key_note_content_status";
 
+    private static final String CATEGORIES_TABLE_NAME = "categories";
+    private static final String CATEGORIES_COLUMN_CAT_NAME = "key_cat_name";
+
 
 
 
@@ -66,14 +75,24 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String CREATE_TRIPS_TABLE = "CREATE TABLE " + TRIPS_TABLE_NAME + " ( "+ TRIPS_COLUMN_ID + " TEXT PRIMARY KEY, " + TRIPS_COLUMN_TRIP_NAME + " TEXT, "+ TRIPS_COLUMN_TRIP_DESC + " TEXT, "+ TRIPS_COLUMN_TRIP_DATE+" TEXT, "+TRIPS_COLUMN_TRIP_PLACES+" TEXT, "+TRIPS_COLUMN_TRIP_TOTAL_AMOUNT+" REAL )";
-        String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
-        String CREATE_PERSONS_TABLE = "CREATE TABLE " + PERSONS_TABLE_NAME + "("+ PERSONS_COLUMN_TRIP_ID + " TEXT," + PERSONS_COLUMN_PERSON_NAME + " TEXT,"+ PERSONS_COLUMN_PERSON_MOBILE + " TEXT, "+PERSONS_COLUMN_PERSON_EMAIL+" TEXT,"+ PERSONS_COLUMN_PERSON_DEPOSIT+" REAL, "+PERSONS_COLUMN_PERSON_ADMIN+" TEXT )";
-        String CREATE_NOTES_TABLE = "CREATE TABLE " + NOTES_TABLE_NAME + "("+ NOTES_COLUMN_NOTE_ID + " TEXT PRIMARY KEY," + NOTES_COLUMN_TRIP_ID + " TEXT,"+ NOTES_COLUMN_NOTE_TITLE + " TEXT, " +NOTES_COLUMN_NOTE_CONTENT_TYPE+" TEXT, "+NOTES_COLUMN_NOTE_CONTENT+" TEXT, "+ NOTES_COLUMN_NOTE_CONTENT_STATUS + " TEXT )";
+        String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ITEMS_COLUMN_AMOUNT_TYPE+" INTEGER, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
+        String CREATE_PERSONS_TABLE = "CREATE TABLE " + PERSONS_TABLE_NAME + "("+ PERSONS_COLUMN_TRIP_ID + " TEXT," + PERSONS_COLUMN_PERSON_NAME + " TEXT,"+ PERSONS_COLUMN_PERSON_MOBILE + " TEXT, "+PERSONS_COLUMN_PERSON_EMAIL+" TEXT,"+ PERSONS_COLUMN_PERSON_DEPOSIT+" REAL, "+PERSONS_COLUMN_PERSON_ADMIN+" INTEGER )";
+        String CREATE_NOTES_TABLE = "CREATE TABLE " + NOTES_TABLE_NAME + "("+ NOTES_COLUMN_NOTE_ID + " TEXT PRIMARY KEY," + NOTES_COLUMN_TRIP_ID + " TEXT,"+ NOTES_COLUMN_NOTE_TITLE + " TEXT, " +NOTES_COLUMN_NOTE_CONTENT_TYPE+" INTEGER, "+NOTES_COLUMN_NOTE_CONTENT+" TEXT, "+ NOTES_COLUMN_NOTE_CONTENT_STATUS + " TEXT )";
+        String CREATE_CATEGORIES_TABLE = "CREATE TABLE "+CATEGORIES_TABLE_NAME+" ( "+CATEGORIES_COLUMN_CAT_NAME+" TEXT)";
 
         db.execSQL(CREATE_TRIPS_TABLE);
         db.execSQL(CREATE_ITEMS_TABLE);
         db.execSQL(CREATE_PERSONS_TABLE);
         db.execSQL(CREATE_NOTES_TABLE);
+        db.execSQL(CREATE_CATEGORIES_TABLE);
+
+        String cats[] = {"Drink","Entertainment","Food","Hotel","Medical","Miscellaneous","Parking","Shopping","Toll","Travel"};
+
+        for(int i=0;i>cats.length;i++){
+            ContentValues values = new ContentValues();
+            values.put(CATEGORIES_COLUMN_CAT_NAME,cats[i]);
+            db.insert(CATEGORIES_TABLE_NAME,null,values);
+        }
 
     }
 
@@ -83,6 +102,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+ITEMS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+PERSONS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+NOTES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+CATEGORIES_TABLE_NAME);
         onCreate(db);
     }
 
@@ -100,6 +120,24 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.insert(TRIPS_TABLE_NAME,null,values);
         return true;
     }
+
+    public String[] getCategories(){
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(CATEGORIES_TABLE_NAME,null,null,null,null,null,null);
+        String[] catList = new String[cursor.getCount()];
+        if(cursor!=null && cursor.moveToFirst()){
+            int i=0;
+            do{
+                catList[i] = cursor.getString(cursor.getColumnIndex(CATEGORIES_COLUMN_CAT_NAME));
+                i++;
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        return  catList;
+    }
+
+
 
 
     public void addPersons(String trip_id , ArrayList<PersonModel> personsList){
@@ -128,8 +166,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 personModel.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
                 personModel.setMobile(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_MOBILE)));
                 personModel.setEmail(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_EMAIL)));
-                personModel.setDeposit(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
-                personModel.setAdmin(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
+                personModel.setDeposit(cursor.getDouble(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
+                personModel.setAdmin(cursor.getInt(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
 
                 personsList.add(personModel);
 
@@ -169,7 +207,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 TripModel model = new TripModel();
                 model.setTrip_name(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_NAME)));
                 model.setTrip_date(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DATE)));
-                model.setTrip_amount(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
+                model.setTrip_amount(cursor.getDouble(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
                 model.setTrip_desc(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DESC)));
                 model.setTrip_id(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID)));
                 model.setTrip_places(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_PLACES)));
