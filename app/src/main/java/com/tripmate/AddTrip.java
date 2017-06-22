@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import android.app.models.PersonModel;
@@ -32,6 +33,7 @@ public class AddTrip extends AppCompatActivity {
     int mYear,mMonth,mDay;
     String trip_date;
     DatePickerDialog.OnDateSetListener dateSetListener;
+    RelativeLayout dateRL;
     ArrayList<PersonModel> tripPersonModels = new ArrayList<>();
 
     LinearLayout commaInfoLL;
@@ -55,6 +57,7 @@ public class AddTrip extends AppCompatActivity {
         tvDate = (TextView)findViewById(R.id.tvDate);
         ivDate = (ImageView) findViewById(R.id.ivDate);
         commaInfoLL = (LinearLayout) findViewById(R.id.commaInfoLL);
+        dateRL = (RelativeLayout) findViewById(R.id.dateRL);
 
         tilTripPlaces.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
@@ -73,8 +76,6 @@ public class AddTrip extends AppCompatActivity {
             }
         });
 
-
-        // Setting of Date
 
         // Getting Current Date and Time
         final Calendar c = Calendar.getInstance();
@@ -103,7 +104,7 @@ public class AddTrip extends AppCompatActivity {
             }
         };
 
-        ivDate.setOnClickListener(new View.OnClickListener() {
+        dateRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddTrip.this,dateSetListener,mYear,mMonth,mDay);

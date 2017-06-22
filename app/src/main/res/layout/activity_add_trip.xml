@@ -100,6 +100,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/dateRL"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp">
 
@@ -113,9 +114,10 @@
 
                 <TextView
                     android:id="@+id/tvDate"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/tvDateTitle"
+                    android:layout_toLeftOf="@+id/ivDate"
                     android:layout_marginTop="5dp"
                     android:text="17-06-2017" />
 

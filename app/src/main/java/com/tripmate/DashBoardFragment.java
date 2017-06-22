@@ -60,10 +60,6 @@ public class DashBoardFragment extends Fragment {
         DashBoardAdapter dashBoardAdapter = new DashBoardAdapter(getContext(),expensePersonArrayList);
         rvDashBoard.setAdapter(dashBoardAdapter);
 
-        rvDashBoard.setHasFixedSize(true);
-
-
-
         return customview;
     }
 
