@@ -119,7 +119,7 @@ public class AddTrip extends AppCompatActivity {
     public void addTrip(){
         String trip_name,trip_places,trip_desc;
         try {
-             trip_name = tilTripName.getEditText().getText().toString();
+             trip_name = tilTripName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilTripName.getEditText().getText().toString().trim().substring(1);
              trip_places = tilTripPlaces.getEditText().getText().toString();
              trip_desc = tilTripDesc.getEditText().getText().toString();
         }catch (Exception e){

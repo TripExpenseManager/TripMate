@@ -78,8 +78,14 @@ public class TripInfo_AddTrip extends AppCompatActivity {
         // Desc
         tvDesc.setText(trip.getTrip_desc());
 
+        String placesArray[] = trip.getTrip_places().split(",");
+        for(int i=0;i<placesArray.length;i++){
+            placesArray[i] = placesArray[i].trim();
+            placesArray[i] = placesArray[i].substring(0,1).toUpperCase() + placesArray[i].substring(1);
+        }
+
         // Places
-        tripPlaces = new ArrayList<>(Arrays.asList(trip.getTrip_places().split(",")));
+        tripPlaces = new ArrayList<>(Arrays.asList(placesArray));
         ArrayAdapter<String> placesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tripPlaces);
         lvPlacesToVisit.setAdapter(placesAdapter);
 
@@ -121,7 +127,9 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                         if(res==0){
 
                             PersonModel personModel = new PersonModel();
-                            personModel.setName(tilPersonName.getEditText().getText().toString().trim());
+
+                            String tempName = tilPersonName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilPersonName.getEditText().getText().toString().trim().substring(1);
+                            personModel.setName(tempName);
 
                             if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
                                 personModel.setDeposit(0.0);

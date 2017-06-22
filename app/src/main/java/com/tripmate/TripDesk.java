@@ -75,7 +75,9 @@ public class TripDesk extends AppCompatActivity {
 
                 }else if(tab.getPosition() == 1){
 
-                    fab.setVisibility(View.VISIBLE);
+                    fab.setVisibility(View.GONE);
+
+                /*    fab.setVisibility(View.VISIBLE);
 
                     fab.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -84,7 +86,7 @@ public class TripDesk extends AppCompatActivity {
                             intent.putExtra("trip_id",trip_id);
                             startActivity(intent);
                         }
-                    });
+                    });*/
 
                 }else if(tab.getPosition() == 2){
 

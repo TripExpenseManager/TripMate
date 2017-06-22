@@ -8,6 +8,9 @@ public class GraphItemModel {
     private String name;
     private Double amount;
 
+    public GraphItemModel() {
+    }
+
     public GraphItemModel(String name, Double amount) {
         this.name = name;
         this.amount = amount;
@@ -29,7 +32,6 @@ public class GraphItemModel {
         this.amount = amount;
     }
 
-    public GraphItemModel() {
-    }
+
 }
 

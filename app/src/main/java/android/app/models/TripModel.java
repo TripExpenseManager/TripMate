@@ -7,16 +7,24 @@ package android.app.models;
 public class TripModel {
 
     private String trip_name;
-
-    public TripModel() {
-    }
-
     private String trip_date;
     private Double trip_amount;
     private String trip_places;
     private String trip_desc;
     private String trip_id;
 
+
+
+    public TripModel() {
+    }
+
+
+    public TripModel(String trip_name,String trip_places, String trip_desc, String trip_date) {
+        this.trip_name = trip_name;
+        this.trip_date = trip_date;
+        this.trip_places = trip_places;
+        this.trip_desc = trip_desc;
+    }
 
     public String getTrip_id() {
         return trip_id;
@@ -42,12 +50,6 @@ public class TripModel {
         this.trip_desc = trip_desc;
     }
 
-    public TripModel(String trip_name,String trip_places, String trip_desc, String trip_date) {
-        this.trip_name = trip_name;
-        this.trip_date = trip_date;
-        this.trip_places = trip_places;
-        this.trip_desc = trip_desc;
-    }
 
     public String getTrip_name() {
         return trip_name;
