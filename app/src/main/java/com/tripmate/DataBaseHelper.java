@@ -1,5 +1,6 @@
 package com.tripmate;
 
+import android.app.models.AddExpenseByPersonModel;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +13,7 @@ import android.app.models.TripModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Created by Sai Krishna on 6/16/2017.
@@ -39,6 +41,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String ITEMS_COLUMN_ITEM_EXP_BY = "key_item_exp_by";
     private static final String ITEMS_COLUMN_ITEM_CAT = "key_item_cat";
     private static final String ITEMS_COLUMN_ITEM_DATE = "key_item_date";
+    private static final String ITEMS_COLUMN_ITEM_SHARE_BY_TYPE = "key_item_share_by_type";
     private static final String ITEMS_COLUMN_ITEM_SHARE_BY = "key_item_share_by";
     private static final String ITEMS_COLUMN_ITEM_DATE_VALUE = "key_item_date_value";
     private static final String ITEMS_COLUMN_ITEM_ID = "key_item_id";
@@ -75,7 +78,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String CREATE_TRIPS_TABLE = "CREATE TABLE " + TRIPS_TABLE_NAME + " ( "+ TRIPS_COLUMN_ID + " TEXT PRIMARY KEY, " + TRIPS_COLUMN_TRIP_NAME + " TEXT, "+ TRIPS_COLUMN_TRIP_DESC + " TEXT, "+ TRIPS_COLUMN_TRIP_DATE+" TEXT, "+TRIPS_COLUMN_TRIP_PLACES+" TEXT, "+TRIPS_COLUMN_TRIP_TOTAL_AMOUNT+" REAL )";
-        String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ITEMS_COLUMN_AMOUNT_TYPE+" INTEGER, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
+        String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ITEMS_COLUMN_AMOUNT_TYPE+" INTEGER, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY_TYPE+" INTEGER, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
         String CREATE_PERSONS_TABLE = "CREATE TABLE " + PERSONS_TABLE_NAME + "("+ PERSONS_COLUMN_TRIP_ID + " TEXT," + PERSONS_COLUMN_PERSON_NAME + " TEXT,"+ PERSONS_COLUMN_PERSON_MOBILE + " TEXT, "+PERSONS_COLUMN_PERSON_EMAIL+" TEXT,"+ PERSONS_COLUMN_PERSON_DEPOSIT+" REAL, "+PERSONS_COLUMN_PERSON_ADMIN+" INTEGER )";
         String CREATE_NOTES_TABLE = "CREATE TABLE " + NOTES_TABLE_NAME + "("+ NOTES_COLUMN_NOTE_ID + " TEXT PRIMARY KEY," + NOTES_COLUMN_TRIP_ID + " TEXT,"+ NOTES_COLUMN_NOTE_TITLE + " TEXT, " +NOTES_COLUMN_NOTE_CONTENT_TYPE+" INTEGER, "+NOTES_COLUMN_NOTE_CONTENT+" TEXT, "+ NOTES_COLUMN_NOTE_CONTENT_STATUS + " TEXT )";
         String CREATE_CATEGORIES_TABLE = "CREATE TABLE "+CATEGORIES_TABLE_NAME+" ( "+CATEGORIES_COLUMN_CAT_NAME+" TEXT)";
@@ -88,7 +91,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String cats[] = {"Drink","Entertainment","Food","Hotel","Medical","Miscellaneous","Parking","Shopping","Toll","Travel"};
 
-        for(int i=0;i>cats.length;i++){
+        for(int i=0;i<cats.length;i++){
             ContentValues values = new ContentValues();
             values.put(CATEGORIES_COLUMN_CAT_NAME,cats[i]);
             db.insert(CATEGORIES_TABLE_NAME,null,values);
@@ -137,6 +140,22 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  catList;
     }
 
+    public String[] getPersonsListAsString(String trip_id){
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(PERSONS_TABLE_NAME,new String[]{PERSONS_COLUMN_PERSON_NAME},PERSONS_COLUMN_TRIP_ID+"=?",new String[]{trip_id},null,null,null);
+        String[] personsList = new String[cursor.getCount()];
+        if(cursor!=null && cursor.moveToFirst()){
+            int i=0;
+            do{
+                personsList[i] = cursor.getString(0);
+                i++;
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        return  personsList;
+    }
+
 
 
 
@@ -156,7 +175,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public ArrayList<PersonModel> getPersons(String trip_id){
         SQLiteDatabase db = getReadableDatabase();
-        ArrayList<PersonModel> personsList = new ArrayList<PersonModel>();
+        ArrayList<PersonModel> personsList = new ArrayList<>();
 
         Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{trip_id},
                 null,null,null);
@@ -178,23 +197,53 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
-    public boolean addExpense(String trip_id , ExpenseModel expenseModel){
+
+    public boolean addExpense(String trip_id,String description,String category,String date,int amount_share_by_type,String expShareByPersonsSelected,int amount_type,ArrayList<AddExpenseByPersonModel> expenseByPersonList,Double fromDepositExpense,Long date_value){
         SQLiteDatabase db = getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(ITEMS_COLUMN_TRIP_ID,trip_id);
-        values.put(ITEMS_COLUMN_ITEM_NAME,expenseModel.getName());
-        values.put(ITEMS_COLUMN_ITEM_CAT,expenseModel.getCategory());
-        values.put(ITEMS_COLUMN_ITEM_AMOUNT,expenseModel.getAmount());
-        values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseModel.getExpBy());
-        values.put(ITEMS_COLUMN_ITEM_SHARE_BY,expenseModel.getShareBy());
-        values.put(ITEMS_COLUMN_ITEM_DATE,expenseModel.getDate());
-        values.put(ITEMS_COLUMN_ITEM_ID,expenseModel.getExp_id());
-        db.insert(ITEMS_TABLE_NAME,null,values);
+        if(amount_type == 1){
+
+            ContentValues values = new ContentValues();
+            values.put(ITEMS_COLUMN_TRIP_ID,trip_id);
+            values.put(ITEMS_COLUMN_ITEM_NAME,description);
+            values.put(ITEMS_COLUMN_AMOUNT_TYPE,amount_type);
+            values.put(ITEMS_COLUMN_ITEM_AMOUNT,fromDepositExpense);
+            values.put(ITEMS_COLUMN_ITEM_CAT,category);
+            values.put(ITEMS_COLUMN_ITEM_EXP_BY,"Deposit Money");
+            values.put(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE,amount_share_by_type);
+            values.put(ITEMS_COLUMN_ITEM_SHARE_BY,expShareByPersonsSelected);
+            values.put(ITEMS_COLUMN_ITEM_DATE,date);
+            values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
+            values.put(ITEMS_COLUMN_ITEM_ID,"ITEM"+ UUID.randomUUID().toString());
+
+            db.insert(ITEMS_TABLE_NAME,null,values);
+
+        }
+        else if(amount_type == 2){
+
+            for(int i=0;i<expenseByPersonList.size();i++){
+                ContentValues values = new ContentValues();
+                values.put(ITEMS_COLUMN_TRIP_ID,trip_id);
+                values.put(ITEMS_COLUMN_ITEM_NAME,description);
+                values.put(ITEMS_COLUMN_AMOUNT_TYPE,amount_type);
+                values.put(ITEMS_COLUMN_ITEM_CAT,category);
+                values.put(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE,amount_share_by_type);
+                values.put(ITEMS_COLUMN_ITEM_SHARE_BY,expShareByPersonsSelected);
+                values.put(ITEMS_COLUMN_ITEM_DATE,date);
+                values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
+                values.put(ITEMS_COLUMN_ITEM_ID,"ITEM"+ UUID.randomUUID().toString());
+
+                values.put(ITEMS_COLUMN_ITEM_AMOUNT,expenseByPersonList.get(i).getAmount());
+                values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseByPersonList.get(i).getName());
+
+                db.insert(ITEMS_TABLE_NAME,null,values);
+            }
+
+        }
 
         return true;
-
     }
+
 
     public ArrayList<TripModel> getTripsData() {
         ArrayList<TripModel> trip_array_list = new ArrayList<>();

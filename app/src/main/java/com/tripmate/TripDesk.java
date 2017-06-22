@@ -1,5 +1,6 @@
 package com.tripmate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -21,7 +22,10 @@ public class TripDesk extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    
+    String trip_id;
 
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +33,20 @@ public class TripDesk extends AppCompatActivity {
         setContentView(R.layout.activity_trip_desk);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        Intent tripIdIntent = getIntent();
+        trip_id = tripIdIntent.getStringExtra("trip_id");
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TripDesk.this,AddExpense.class);
+                intent.putExtra("trip_id",trip_id);
+                startActivity(intent);
+            }
+        });
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -39,7 +57,66 @@ public class TripDesk extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 0){
 
+                    fab.setVisibility(View.VISIBLE);
+
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(TripDesk.this,AddExpense.class);
+                            intent.putExtra("trip_id",trip_id);
+                            startActivity(intent);
+                        }
+                    });
+
+                }else if(tab.getPosition() == 1){
+
+                    fab.setVisibility(View.VISIBLE);
+
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(TripDesk.this,AddExpense.class);
+                            intent.putExtra("trip_id",trip_id);
+                            startActivity(intent);
+                        }
+                    });
+
+                }else if(tab.getPosition() == 2){
+
+                    fab.setVisibility(View.GONE);
+
+                }else if(tab.getPosition() == 3){
+
+                    fab.setVisibility(View.VISIBLE);
+
+                    fab.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            /*Intent intent = new Intent(TripDesk.this,AddExpense.class);
+                            intent.putExtra("trip_id",trip_id);
+                            startActivity(intent);*/
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        
     }
 
     @Override

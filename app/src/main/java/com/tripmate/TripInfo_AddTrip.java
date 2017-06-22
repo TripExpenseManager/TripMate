@@ -162,7 +162,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
                     if(res == 1){
 
-                        String trip_id = "TR"+UUID.randomUUID().toString();
+                        String trip_id = "TRIP"+UUID.randomUUID().toString();
 
                         trip.setTrip_id(trip_id);
                         DataBaseHelper dataBaseHelper = new DataBaseHelper(getApplicationContext());
