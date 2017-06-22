@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -13,7 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:layout_margin="10dp"
         >
 
         <ImageView
@@ -28,7 +27,12 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/imageView"
-            android:layout_margin="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="8dp"
+            android:id="@+id/clickLL"
+            android:layout_toLeftOf="@+id/textViewOptions"
             android:layout_toRightOf="@+id/imageView"
             android:orientation="vertical">
 
@@ -46,16 +50,6 @@
                 android:text="Saikrishna"
                 android:singleLine="true"
                 />
-
-            <TextView
-                android:id="@+id/textViewOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:text="&#8942;"
-                android:textColor="@color/black"
-                android:textAppearance="?android:textAppearanceLarge"
-                android:layout_alignParentRight="true" />
 
             </RelativeLayout>
 
@@ -94,6 +88,18 @@
 
 
         </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/textViewOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="&#8942;"
+            android:layout_marginRight="5dp"
+            android:textColor="@color/black"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:layout_alignParentRight="true" />
 
     </RelativeLayout>
 

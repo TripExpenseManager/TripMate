@@ -1,6 +1,7 @@
 package com.tripmate;
 
 import android.app.models.AddExpenseByPersonModel;
+import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,6 +14,11 @@ import android.app.models.TripModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -280,20 +286,22 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         if(cursor!=null && cursor.moveToFirst()){
             do {
                 ExpenseModel expenseModel = new ExpenseModel();
-                expenseModel.setTrip_id(trip_id);
-                expenseModel.setName(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_NAME)));
-                expenseModel.setCategory(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_CAT)));
+                expenseModel.setTripId(trip_id);
+                expenseModel.setItemName(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_NAME)));
                 expenseModel.setAmount(cursor.getDouble(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_AMOUNT)));
+                expenseModel.setAmountType(cursor.getInt(cursor.getColumnIndex(ITEMS_COLUMN_AMOUNT_TYPE)));
                 expenseModel.setExpBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_EXP_BY)));
-                expenseModel.setShareBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY)));
-                expenseModel.setExp_id(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_ID)));
+                expenseModel.setCategory(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_CAT)));
                 expenseModel.setDate(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE)));
+                expenseModel.setShareByType(cursor.getInt(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE)));
+                expenseModel.setShareBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY)));
+                expenseModel.setItemId(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_ID)));
+                expenseModel.setDateValue(cursor.getLong(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE_VALUE)));
 
                 expenseModelArrayList.add(expenseModel);
 
             }while(cursor.moveToNext());
         }
-
 
         cursor.close();
 
@@ -355,6 +363,161 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  amount;
     }
 
+
+
+
+    public ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummary(String trip_id){
+        SQLiteDatabase db = getReadableDatabase();
+
+        ArrayList<PersonWiseExpensesSummaryModel> result = new ArrayList<>();
+
+        HashMap<String,Double> depositAmountShareByPerson = new HashMap<>();
+        HashMap<String,Double> personalAmountShareByPerson = new HashMap<>();
+        HashMap<String,Double> personalAmountGiven = new HashMap<>();
+
+        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{trip_id},
+                null,null,null);
+        if(cursor!=null && cursor.moveToFirst()){
+            do{
+                PersonWiseExpensesSummaryModel model = new PersonWiseExpensesSummaryModel();
+                model.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
+                model.setMobile(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_MOBILE)));
+                model.setEmail(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_EMAIL)));
+                model.setDepositAmountGiven(cursor.getDouble(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
+                model.setAdmin(cursor.getInt(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
+
+                depositAmountShareByPerson.put(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)),0.0);
+                personalAmountShareByPerson.put(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)),0.0);
+                personalAmountGiven.put(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)),0.0);
+
+
+                result.add(model);
+
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+
+        int no_of_persons = result.size();
+
+        ArrayList<ExpenseModel> allExpensesList = getAllExpenses(trip_id);
+
+        Double totalDepositShare = 0.0,totalPersonalShare = 0.0;
+
+
+        for(int i=0;i<allExpensesList.size();i++){
+            ExpenseModel expenseModel = allExpensesList.get(i);
+
+            if(expenseModel.getAmountType() == 1){
+
+                if(expenseModel.getShareByType() == 1){
+                    totalDepositShare += (expenseModel.getAmount()/no_of_persons);
+                }else{
+
+                    String persons[] = expenseModel.getShareBy().split(",");
+                    int no_of_share_by_deposit = persons.length;
+                    Double sharedDepositAmount = expenseModel.getAmount()/no_of_share_by_deposit;
+
+                    for(int j=0;j<no_of_share_by_deposit;j++){
+                        Double itemToBeAdded = depositAmountShareByPerson.get(persons[j].trim())+ sharedDepositAmount;
+                        depositAmountShareByPerson.put(persons[j].trim(),itemToBeAdded);
+                    }
+
+                }
+
+            }else{
+
+                Double itemToBeAddedPersonal = personalAmountGiven.get(expenseModel.getExpBy()) + expenseModel.getAmount();
+                personalAmountGiven.put(expenseModel.getExpBy(),itemToBeAddedPersonal);
+
+                if(expenseModel.getShareByType() == 1){
+                    totalPersonalShare += (expenseModel.getAmount()/no_of_persons);
+                }else{
+
+                    String persons[] = expenseModel.getShareBy().split(",");
+                    int no_of_share_by_personal_amount = persons.length;
+                    Double sharedPersonalAmount = expenseModel.getAmount()/no_of_share_by_personal_amount;
+
+                    for(int j=0;j<no_of_share_by_personal_amount;j++){
+                        Double itemToBeAdded = personalAmountShareByPerson.get(persons[j].trim())+ sharedPersonalAmount;
+                        personalAmountShareByPerson.put(persons[j].trim(),itemToBeAdded);
+                    }
+
+
+                }
+
+            }
+        }
+
+        for(int i=0;i<result.size();i++){
+
+            result.get(i).setDepositAmountSpent(depositAmountShareByPerson.get(result.get(i).getName()));
+            result.get(i).setPersonalAmountSpent(personalAmountShareByPerson.get(result.get(i).getName()));
+            result.get(i).setPersonalAmountGiven(personalAmountGiven.get(result.get(i).getName()));
+
+            result.get(i).setDepositAmountSpent(result.get(i).getDepositAmountSpent()+totalDepositShare);
+            result.get(i).setDepositAmountRemaining(result.get(i).getDepositAmountGiven()-result.get(i).getDepositAmountSpent());
+
+            result.get(i).setPersonalAmountSpent(result.get(i).getPersonalAmountSpent()+totalPersonalShare);
+            result.get(i).setPersonalAmountRemaining(result.get(i).getPersonalAmountGiven()-result.get(i).getPersonalAmountSpent());
+
+            result.get(i).setTotalAmountGiven(result.get(i).getDepositAmountGiven()+result.get(i).getPersonalAmountGiven());
+            result.get(i).setTotalAmountSpent(result.get(i).getDepositAmountSpent() + result.get(i).getPersonalAmountSpent());
+            result.get(i).setTotalAmountRemaining(result.get(i).getDepositAmountRemaining()+result.get(i).getPersonalAmountRemaining());
+
+
+            result.get(i).setDepositAmountGiven(RoundOff(result.get(i).getDepositAmountGiven()));
+            result.get(i).setDepositAmountSpent(RoundOff(result.get(i).getDepositAmountSpent()));
+            result.get(i).setDepositAmountRemaining(RoundOff(result.get(i).getDepositAmountRemaining()));
+            result.get(i).setPersonalAmountGiven(RoundOff(result.get(i).getPersonalAmountGiven()));
+            result.get(i).setPersonalAmountSpent(RoundOff(result.get(i).getPersonalAmountSpent()));
+            result.get(i).setPersonalAmountRemaining(RoundOff(result.get(i).getPersonalAmountRemaining()));
+            result.get(i).setTotalAmountGiven(RoundOff(result.get(i).getTotalAmountGiven()));
+            result.get(i).setTotalAmountSpent(RoundOff(result.get(i).getTotalAmountSpent()));
+            result.get(i).setTotalAmountRemaining(RoundOff(result.get(i).getTotalAmountRemaining()));
+
+        }
+
+        Collections.sort(result, new Comparator<PersonWiseExpensesSummaryModel>() {
+            @Override
+            public int compare(PersonWiseExpensesSummaryModel o1, PersonWiseExpensesSummaryModel o2) {
+                return o2.getTotalAmountGiven().compareTo(o1.getTotalAmountGiven());
+
+            }
+        });
+
+        return  result;
+    }
+
+
+    void editPerson(String trip_id,PersonModel model){
+        SQLiteDatabase db = getReadableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PERSONS_COLUMN_PERSON_MOBILE,model.getMobile());
+        cv.put(PERSONS_COLUMN_PERSON_EMAIL,model.getEmail());
+        cv.put(PERSONS_COLUMN_PERSON_DEPOSIT,model.getDeposit());
+
+        db.update(PERSONS_TABLE_NAME, cv,PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+model.getName()+"\"", null);
+    }
+
+    void addAsAdmin(String trip_id,String name,String pastAdmin){
+        SQLiteDatabase db = getReadableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PERSONS_COLUMN_PERSON_ADMIN,1);
+        db.update(PERSONS_TABLE_NAME, cv,PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+name+"\"", null);
+
+
+        ContentValues cv1 = new ContentValues();
+        cv1.put(PERSONS_COLUMN_PERSON_ADMIN,0);
+        db.update(PERSONS_TABLE_NAME, cv1,PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+pastAdmin+"\"", null);
+
+    }
+
+
+    public Double RoundOff(Double d){
+        return Math.round(d * 100.0) / 100.0;
+    }
 
 
 

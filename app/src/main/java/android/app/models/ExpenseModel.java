@@ -5,54 +5,33 @@ package android.app.models;
  */
 
 public class ExpenseModel {
-    String trip_id,exp_id,name,expBy,shareBy,category,date;
+    String tripId,itemId,itemName,expBy,shareBy,category,date;
     Double amount;
+    int amountType,shareByType;
+    long dateValue;
 
-    public ExpenseModel() {
+    public String getTripId() {
+        return tripId;
     }
 
-    public ExpenseModel(String name, String expBy, String shareBy, String category, String date, Double amount) {
-        this.name = name;
-        this.expBy = expBy;
-        this.shareBy = shareBy;
-        this.category = category;
-        this.date = date;
-        this.amount = amount;
+    public void setTripId(String tripId) {
+        this.tripId = tripId;
     }
 
-    public ExpenseModel(String trip_id, String exp_id, String name, String expBy, String shareBy, String category, String date, Double amount) {
-        this.trip_id = trip_id;
-        this.exp_id = exp_id;
-        this.name = name;
-        this.expBy = expBy;
-        this.shareBy = shareBy;
-        this.category = category;
-        this.date = date;
-        this.amount = amount;
+    public String getItemId() {
+        return itemId;
     }
 
-    public String getTrip_id() {
-        return trip_id;
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 
-    public void setTrip_id(String trip_id) {
-        this.trip_id = trip_id;
+    public String getItemName() {
+        return itemName;
     }
 
-    public String getExp_id() {
-        return exp_id;
-    }
-
-    public void setExp_id(String exp_id) {
-        this.exp_id = exp_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     public String getExpBy() {
@@ -63,12 +42,20 @@ public class ExpenseModel {
         this.expBy = expBy;
     }
 
+    public int getShareByType() {
+        return shareByType;
+    }
+
     public String getShareBy() {
         return shareBy;
     }
 
     public void setShareBy(String shareBy) {
         this.shareBy = shareBy;
+    }
+
+    public void setShareByType(int shareByType) {
+        this.shareByType = shareByType;
     }
 
     public String getCategory() {
@@ -87,11 +74,29 @@ public class ExpenseModel {
         this.date = date;
     }
 
-    public Double getAmount() {
-        return amount;
+    public long getDateValue() {
+        return dateValue;
+    }
+
+    public void setDateValue(long dateValue) {
+        this.dateValue = dateValue;
     }
 
     public void setAmount(Double amount) {
         this.amount = amount;
     }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public int getAmountType() {
+        return amountType;
+    }
+
+    public void setAmountType(int amountType) {
+        this.amountType = amountType;
+    }
+
+
 }
