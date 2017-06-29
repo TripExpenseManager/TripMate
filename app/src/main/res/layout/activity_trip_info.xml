@@ -68,6 +68,36 @@
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
                         />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#e77979"
+                        android:layout_marginTop="2dp" />
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/red"
+                        android:text="Note 1 : If a person's money were found spent anywhere in the trip, he cannot be removed(To remove him, expenses recorded needed to be modified so that his money will not be accounted for spending anywhere in the trip"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:textColor="@color/red"
+                        android:text="Note 2 : Admin cannot be removed from the trip(To remove admin, change the admin and try to delete)"
+                        />
+
+
+
+
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>

@@ -122,6 +122,18 @@
             android:nestedScrollingEnabled="false" />
 
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:text="*here 'Amount' refers to the total amount spent (including deposit amount spent)."
+            />
+
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

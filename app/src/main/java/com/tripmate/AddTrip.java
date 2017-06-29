@@ -2,6 +2,7 @@ package com.tripmate;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
@@ -13,6 +14,7 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,8 +24,11 @@ import android.widget.TextView;
 import android.app.models.PersonModel;
 import android.app.models.TripModel;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class AddTrip extends AppCompatActivity {
 
@@ -87,6 +92,16 @@ public class AddTrip extends AppCompatActivity {
         trip_date = mDay + "-" + (mMonth + 1) + "-" + mYear;
         tvDate.setText(trip_date);
 
+        SimpleDateFormat f = new SimpleDateFormat("dd-MM-yyyy");
+        Long todaysOnlyDateValue = null;
+
+        try {
+            Date todaysDate = f.parse(trip_date);
+            todaysOnlyDateValue = todaysDate.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         // Date Picker
         dateSetListener = new DatePickerDialog.OnDateSetListener(){
 
@@ -104,12 +119,24 @@ public class AddTrip extends AppCompatActivity {
             }
         };
 
+        final Long finalTodaysOnlyDateValue = todaysOnlyDateValue;
         dateRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddTrip.this,dateSetListener,mYear,mMonth,mDay);
-                datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
+                datePickerDialog.getDatePicker().setMinDate(finalTodaysOnlyDateValue);
+                datePickerDialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
                 datePickerDialog.show();
+
+
+
+
+
             }
         });
 
@@ -119,7 +146,11 @@ public class AddTrip extends AppCompatActivity {
     public void addTrip(){
         String trip_name,trip_places,trip_desc;
         try {
-             trip_name = tilTripName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilTripName.getEditText().getText().toString().trim().substring(1);
+            if(!tilTripName.getEditText().getText().toString().equalsIgnoreCase("")){
+                trip_name = tilTripName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilTripName.getEditText().getText().toString().trim().substring(1);
+            }else{
+                trip_name = "";
+            }
              trip_places = tilTripPlaces.getEditText().getText().toString();
              trip_desc = tilTripDesc.getEditText().getText().toString();
         }catch (Exception e){
@@ -128,7 +159,7 @@ public class AddTrip extends AppCompatActivity {
 
 
         String trip_date = tvDate.getText().toString();
-        if(!validate(trip_name)){
+        if(!validate(trip_name) ){
             tilTripName.setError("Please Enter Trip Name");
         }else if(!validate(trip_places)){
             tilTripName.setErrorEnabled(false);
@@ -147,6 +178,7 @@ public class AddTrip extends AppCompatActivity {
             intent.putExtra("TripDesc",trip.getTrip_desc());
             intent.putExtra("TripDate",trip.getTrip_date());
             intent.putExtra("PersonsList",tripPersonModels);
+
             startActivityForResult(intent,200);
 
         }
@@ -185,7 +217,7 @@ public class AddTrip extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_create_trip,menu);
+        getMenuInflater().inflate(R.menu.menu_create_trip_activity,menu);
         return  true;
     }
 

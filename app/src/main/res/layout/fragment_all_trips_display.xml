@@ -1,0 +1,105 @@
+<com.yalantis.taurus.PullToRefreshView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/lib/com.tripmate"
+    android:id="@+id/pull_to_refresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:type="sun"
+   >
+
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/defaultcolor"
+    tools:context="com.tripmate.AllTripsDisplayFragment">
+
+    <GridView
+        android:id="@+id/trip_grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="2"
+        android:columnWidth="90dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"/>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:id="@+id/no_trips_RL"
+        >
+
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/no_trips_image"
+            android:src="@drawable/image_no_trips"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No trips recorded yet!"
+            android:layout_below="@+id/no_trips_image"
+            android:layout_marginTop="2dp"
+            android:textSize="18dp"
+            android:fontFamily="serif"
+            android:textColor="@color/colorPrimary"
+            android:layout_centerHorizontal="true"
+            />
+
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:id="@+id/no_trips_found_searched_RL"
+        >
+
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/no_trips_found_searched_image"
+            android:src="@drawable/image_no_trips"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No trips found!"
+            android:layout_below="@+id/no_trips_found_searched_image"
+            android:layout_marginTop="2dp"
+            android:textSize="18dp"
+            android:fontFamily="serif"
+            android:textColor="@color/colorPrimary"
+            android:layout_centerHorizontal="true"
+            />
+
+
+    </RelativeLayout>
+
+</FrameLayout>
+</com.yalantis.taurus.PullToRefreshView>

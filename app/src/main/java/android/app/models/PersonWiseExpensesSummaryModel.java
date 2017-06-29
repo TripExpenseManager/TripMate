@@ -9,6 +9,16 @@ public class PersonWiseExpensesSummaryModel {
     private String name,mobile,email;
     private  Double depositAmountGiven,depositAmountSpent,depositAmountRemaining,personalAmountGiven,personalAmountSpent,personalAmountRemaining,totalAmountGiven,totalAmountSpent,totalAmountRemaining;
     private int admin;
+    boolean canRemove;
+
+
+    public boolean getCanRemove() {
+        return canRemove;
+    }
+
+    public void setCanRemove(boolean canRemove) {
+        this.canRemove = canRemove;
+    }
 
     public String getName() {
         return name;

@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,6 +49,8 @@ public class TripInfo_AddTrip extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
+
 
         Intent intent = getIntent();
         trip = new TripModel();
@@ -63,6 +64,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(trip.getTrip_name());
+            getSupportActionBar().setSubtitle(trip.getTrip_date());
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -104,6 +106,8 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                         .setPositiveButton("OK",null)
                         .setNegativeButton("CANCEL", null)
                         .create();
+
+                alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationRightToLeft);
                 alertDialog.show();
 
 
@@ -112,7 +116,6 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                     @Override
                     public void onClick(View v)
                     {    if (tilPersonName.getEditText().getText().toString().equals("")) {
-                        Log.d("Person Added?", (tilPersonName.getEditText().getText().toString().length() > 0) + "");
                         tilPersonName.setError("Enter Name");
 
                     }
@@ -151,6 +154,10 @@ public class TripInfo_AddTrip extends AppCompatActivity {
         });
     }
 
+
+
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -182,12 +189,12 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                         Toast.makeText(this, "Trip created successfully", Toast.LENGTH_SHORT).show();
                         finish();
                     }else{
-                        Snackbar.make(findViewById(android.R.id.content), "Please select a person as admin", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(fabAddPerson, "Please select a person as admin", Snackbar.LENGTH_LONG).show();
                     }
 
                     return true;
                 }else{
-                    Snackbar.make(findViewById(android.R.id.content), "Please add atleast one person.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(fabAddPerson, "Please icon_add atleast one person.", Snackbar.LENGTH_LONG).show();
                     return true;
                 }
 
@@ -201,10 +208,13 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra("PersonsList",tripPersonModels);
         setResult(200,intent);
         finish();
+
+        overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
 
         super.onBackPressed();
 
@@ -212,7 +222,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_trip_info,menu);
+        getMenuInflater().inflate(R.menu.menu_trip_info_activity,menu);
         return  true;
     }
 
@@ -239,7 +249,8 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     tripPersonModels.get(position).setAdmin(1);
-                    Toast.makeText(mContext,tripPersonModels.get(position).getName() + " is set as admin for the trip. Deposit amount will not account for this person.", Toast.LENGTH_SHORT).show();
+
+                    Snackbar.make(fabAddPerson,tripPersonModels.get(position).getName() + " is set as admin for the trip. He should look after all the money related matters.", Snackbar.LENGTH_LONG).show();
 
                     for(int j=0;j<tripPersonModels.size();j++){
                         if(j!=position){

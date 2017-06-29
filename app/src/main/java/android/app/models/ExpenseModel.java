@@ -1,14 +1,25 @@
 package android.app.models;
 
+import java.io.Serializable;
+
 /**
  * Created by vinee_000 on 19-06-2017.
  */
 
-public class ExpenseModel {
+public class ExpenseModel implements Serializable{
     String tripId,itemId,itemName,expBy,shareBy,category,date;
     Double amount;
-    int amountType,shareByType;
+    int amountType;
     long dateValue;
+
+
+
+    //amount type = 1 refers to deposit money spent
+    //amount type = 2 refers to personal money spent
+
+    //below types were removed as adding person in middle of the trip is becoming messy
+    //shareByType = 1 refers to shared by all
+    //shareByType = 2 refers to shared by some people
 
     public String getTripId() {
         return tripId;
@@ -42,20 +53,12 @@ public class ExpenseModel {
         this.expBy = expBy;
     }
 
-    public int getShareByType() {
-        return shareByType;
-    }
-
     public String getShareBy() {
         return shareBy;
     }
 
     public void setShareBy(String shareBy) {
         this.shareBy = shareBy;
-    }
-
-    public void setShareByType(int shareByType) {
-        this.shareByType = shareByType;
     }
 
     public String getCategory() {

@@ -1,8 +1,6 @@
 package com.tripmate;
 
-import android.app.models.ExpenseModel;
 import android.app.models.GraphItemModel;
-import android.app.models.PersonModel;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +19,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static com.tripmate.R.id.pieChart;
 
 /**
  * Created by vinee_000 on 20-06-2017.
@@ -38,10 +38,6 @@ import static com.tripmate.R.id.pieChart;
 
 public class ChartsFragment extends Fragment{
 
-    ArrayList<PersonModel> personsList = new ArrayList<>();
-    ArrayList<ExpenseModel> expenseModelArrayList = new ArrayList<>();
-    ArrayList<String> categoryList = new ArrayList<>();
-    ArrayList<String> dateList = new ArrayList<>();
 
     // Graph Items for 3 Spinner Items
     ArrayList<GraphItemModel> personGraphItems = new ArrayList<>();
@@ -59,29 +55,29 @@ public class ChartsFragment extends Fragment{
     Double tripTotalAmount;
     String trip_id;
 
-
-
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Intent intent = getActivity().getIntent();
-        trip_id = intent.getStringExtra("trip_id");
-
-        personsList = MainActivity.AppBase.getPersons(trip_id);
-        expenseModelArrayList = MainActivity.AppBase.getAllExpenses(trip_id);
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View customview = inflater.inflate(R.layout.fragment_charts, container, false);
 
+        Intent intent = getActivity().getIntent();
+        trip_id = intent.getStringExtra("trip_id");
+
         // Setting up Spinner
         spCategory = (Spinner) customview.findViewById(R.id.spCategory);
+        spinnerItems.clear();
         spinnerItems.add("Person"); spinnerItems.add("Category"); spinnerItems.add("Date");
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_dropdown_item_1line,spinnerItems);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(),R.layout.spinner_item,spinnerItems);
         spCategory.setAdapter(spinnerAdapter);
+
+
+        //getting data of for all the items in spinner
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        personGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphPersons(trip_id);
+        categoryGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphCategory(trip_id);
+        dateGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphDate(trip_id);
+        tripTotalAmount = dataBaseHelper.getTotalExpensesAmount(trip_id);
+
 
         spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -108,10 +104,7 @@ public class ChartsFragment extends Fragment{
 
             }
         });
-        // Populate all the data from Database
-        populateData();
 
-        // Setting Colors
         colors = new ArrayList<>();
 
         for (int c : ColorTemplate.VORDIPLOM_COLORS)
@@ -128,34 +121,57 @@ public class ChartsFragment extends Fragment{
         // Charts
         pieChart = (PieChart) customview.findViewById(R.id.pieChart);
 
-
-        //Setting Legend;
+        //Setting Legend(actually removing the legend)
         pieChart.getLegend().setEnabled(false);
         pieChart.getDescription().setEnabled(false);
         pieChart.setEntryLabelColor(Color.BLACK);
         pieChart.setRotationEnabled(false);
-        pieChart.setCenterText("Total Expenses \n " + tripTotalAmount);
-        pieChart.animateY(1400);
+        pieChart.setCenterText("Total Expenses \n " + RoundOff(tripTotalAmount));
+        pieChart.animateY(1000);
 
         rvGraphItems = (RecyclerView) customview.findViewById(R.id.rvGraphItems);
 
-
-
         return customview;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(trip_id!=null){
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+            personGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphPersons(trip_id);
+            categoryGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphCategory(trip_id);
+            dateGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphDate(trip_id);
+            tripTotalAmount = dataBaseHelper.getTotalExpensesAmount(trip_id);
+        }
+
     }
 
     public void populateGraph(ArrayList<GraphItemModel> graphItems , String Label){
         ArrayList<PieEntry> yValues = new ArrayList<>();
         for(GraphItemModel graphItem : graphItems) {
-            yValues.add(new PieEntry(graphItem.getAmount().floatValue(),graphItem.getName()));
+
+            if(graphItem.getAmount().floatValue() != 0f){
+                yValues.add(new PieEntry(graphItem.getAmount().floatValue(),graphItem.getName()));
+            }
         }
 
         PieDataSet pieDataSet = new PieDataSet(yValues,Label);
         pieDataSet.setColors(colors);
         pieDataSet.setLabel("Expenses");
+        pieDataSet.setSliceSpace(2f);
+
+        IValueFormatter formatter = new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                return value+"";
+            }
+        };
 
         PieData pieData = new PieData(pieDataSet);
         pieData.setValueTextSize(11f);
+        pieData.setValueFormatter(formatter);
 
         pieChart.setData(pieData);
         pieChart.animateY(1400);
@@ -170,6 +186,9 @@ public class ChartsFragment extends Fragment{
 
     }
 
+    public Double RoundOff(Double d){
+        return Math.round(d * 100.0) / 100.0;
+    }
 
     // Adapter for Graph Items
     class GraphItemAdapter extends RecyclerView.Adapter<GraphItemAdapter.GraphItemHolder>{
@@ -216,9 +235,7 @@ public class ChartsFragment extends Fragment{
             holder.tvRanking.setText(position+1+"");
             holder.tvName.setText(graphItem.getName());
             holder.tvAmount.setText(graphItem.getAmount()+"");
-            Double percent = ((graphItem.getAmount()/tripTotalAmount)*100);
-            long percentRound = Math.round(percent*100);
-            holder.tvPercent.setText((double)percentRound/100+"%");
+            holder.tvPercent.setText(graphItem.getPercentage()+" %");
 
         }
 
@@ -230,80 +247,5 @@ public class ChartsFragment extends Fragment{
 
     }
 
-    public void populateData(){
-        tripTotalAmount = 3500.00;
-
-        // Graph Items Persons
-        for(PersonModel personModel : personsList){
-            GraphItemModel graphItemPerson = new GraphItemModel();
-            graphItemPerson.setName(personModel.getName());
-            graphItemPerson.setAmount(getAmountOfPerson(personModel.getName()));
-            personGraphItems.add(graphItemPerson);
-        }
-
-        personGraphItems.add(new GraphItemModel("Vineeth",1500.00));
-        personGraphItems.add(new GraphItemModel("Krishna",2000.00));
-        personGraphItems.add(new GraphItemModel("Sai",500.00));
-
-        // Graph Items Category
-        for(String category : categoryList){
-            GraphItemModel graphItemCategory = new GraphItemModel();
-            graphItemCategory.setName(category);
-            graphItemCategory.setAmount(getAmountOfPerson(category));
-            categoryGraphItems.add(graphItemCategory);
-        }
-
-
-        categoryGraphItems.add(new GraphItemModel("Food",1500.00));
-        categoryGraphItems.add(new GraphItemModel("Tickets",2000.00));
-        categoryGraphItems.add(new GraphItemModel("Hotel",500.00));
-
-        // Graph Items Date
-        for(String date : dateList){
-            GraphItemModel graphItemDate = new GraphItemModel();
-            graphItemDate.setName(date);
-            graphItemDate.setAmount(getAmountOfPerson(date));
-            dateGraphItems.add(graphItemDate);
-        }
-
-        dateGraphItems.add(new GraphItemModel("17-09-17",1500.00));
-        dateGraphItems.add(new GraphItemModel("18-09-17",2000.00));
-        dateGraphItems.add(new GraphItemModel("19-09-17",500.00));
-
-
-
-    }
-    public Double getAmountOfPerson(String personName){
-        Double amount = 0.0;
-
-        for(ExpenseModel e : expenseModelArrayList){
-            if(e.getExpBy().equalsIgnoreCase(personName))
-                amount+=e.getAmount();
-        }
-
-        return  amount;
-    }
-
-    public Double getAmountOfCategory(String category){
-        Double amount = 0.0;
-
-        for(ExpenseModel e : expenseModelArrayList){
-            if(e.getCategory().equalsIgnoreCase(category))
-                amount+=e.getAmount();
-        }
-
-        return  amount;
-    }
-
-    public Double getAmountOfDate(String date){
-        Double amount = 0.0;
-
-        for(ExpenseModel e : expenseModelArrayList){
-            if(e.getDate().equalsIgnoreCase(date))
-                amount+=e.getAmount();
-        }
-
-        return  amount;
-    }
 
 }

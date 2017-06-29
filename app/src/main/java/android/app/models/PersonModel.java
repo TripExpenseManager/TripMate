@@ -8,19 +8,16 @@ import android.os.Parcelable;
  */
 
 public class PersonModel implements Parcelable {
-    private String name,mobile,email;
+    private String name,mobile,email,trip_id;
     private  Double deposit;
     private int admin;
 
-    public PersonModel() {
+    public void setTrip_id(String trip_id) {
+        this.trip_id = trip_id;
     }
 
-    public PersonModel(String name, String mobile, String email, Double deposit, int admin) {
-        this.name = name;
-        this.mobile = mobile;
-        this.email = email;
-        this.deposit = deposit;
-        this.admin = admin;
+    public String getTrip_id() {
+        return trip_id;
     }
 
     public String getName() {

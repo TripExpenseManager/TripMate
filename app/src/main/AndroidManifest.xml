@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.tripmate">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
+
 
     <application
         android:allowBackup="true"
@@ -21,6 +27,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="com.google.android.voicesearch.SELF_NOTE" />
+            </intent-filter>
+
         </activity>
         <activity
             android:name=".AddTrip"
@@ -32,13 +44,22 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".TripDesk"
-            android:label="@string/title_activity_trip_desk"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/title_activity_trip_desk"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
+                <data android:scheme="com.tripmate" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".AddExpense"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".EditExpense"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

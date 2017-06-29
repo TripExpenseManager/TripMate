@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.models.AddExpenseByPersonModel;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -71,7 +73,6 @@ public class AddExpense extends AppCompatActivity {
     ImageView addExpImageView;
 
     String descriptionSelected,categorySelected,dateSelected,expShareByPersonsSelected;
-    int amount_share_by_type;
 
     DataBaseHelper dataBaseHelper = new DataBaseHelper(AddExpense.this);
 
@@ -122,6 +123,17 @@ public class AddExpense extends AppCompatActivity {
         expense_date = mDay + "-" + (mMonth + 1) + "-" + mYear;
         tvDate.setText(expense_date);
 
+        SimpleDateFormat f1 = new SimpleDateFormat("dd-MM-yyyy");
+        Date d1 = null;
+        try {
+             d1 = f1.parse(expense_date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        final long time_to_add = date_value - d1.getTime();
+
         // Date Picker
         dateSetListener = new DatePickerDialog.OnDateSetListener(){
 
@@ -132,27 +144,29 @@ public class AddExpense extends AppCompatActivity {
                 mMonth = monthOfYear;
                 mDay = dayOfMonth;
 
-
-
                 expense_date = mDay + "-" + (mMonth + 1) + "-" + mYear;
                 tvDate.setText(expense_date);
 
                 SimpleDateFormat f = new SimpleDateFormat("dd-MM-yyyy");
                 try {
                     Date d = f.parse(expense_date);
-                    date_value = d.getTime();
+
+                    date_value = d.getTime() + time_to_add;
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
-
             }
         };
 
         dateRL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddExpense.this,dateSetListener,mYear,mMonth,mDay);
+                datePickerDialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
                 datePickerDialog.show();
             }
         });
@@ -181,6 +195,18 @@ public class AddExpense extends AppCompatActivity {
 
         personsSpinner.setItems(persons);
 
+        personsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         expByDepCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -195,7 +221,6 @@ public class AddExpense extends AppCompatActivity {
             }
         });
 
-
         AddExpenseByPersonModel model = new AddExpenseByPersonModel();
         expenseByPersonGlobalList.add(model);
 
@@ -205,13 +230,12 @@ public class AddExpense extends AppCompatActivity {
         addExpenseByPersonAdapter = new AddExpenseByPersonAdapter(AddExpense.this,expenseByPersonGlobalList);
         expenseByRecyclerView.setAdapter(addExpenseByPersonAdapter);
 
-
         addExpImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if(expenseByPersonGlobalList.size() == persons.length){
-                    Toast.makeText(AddExpense.this, "You cannot add more than "+ persons.length+ " expenses, as the trip contains only "+persons.length+" members.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddExpense.this, "You cannot icon_add more than "+ persons.length+ " expenses, as the trip contains only "+persons.length+" members.", Toast.LENGTH_SHORT).show();
                 }else{
                     AddExpenseByPersonModel model = new AddExpenseByPersonModel();
                     expenseByPersonGlobalList.add(model);
@@ -221,15 +245,13 @@ public class AddExpense extends AppCompatActivity {
             }
         });
 
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_expenses_menu,menu);
-        return  true;
+        getMenuInflater().inflate(R.menu.menu_add_expenses_activity,menu);
+        return  super.onCreateOptionsMenu(menu);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -251,22 +273,20 @@ public class AddExpense extends AppCompatActivity {
             if(descriptionSelected.equalsIgnoreCase("")){
                 descTv.setError("Please enter description.");
             }else{
+
+                descriptionSelected = descriptionSelected.trim().substring(0, 1).toUpperCase() + descriptionSelected.trim().substring(1);
+
                 if(expByAllCB.isChecked()){
-                    amount_share_by_type = 1;
-                    expShareByPersonsSelected = "all";
+
+                    expShareByPersonsSelected = tempPersons;
                     doNext();
                 }else{
+
                     expShareByPersonsSelected = personsSpinner.getSelectedItemsAsString();
                     if(expShareByPersonsSelected.equalsIgnoreCase("")){
-                        amount_share_by_type = 2;
+
                         Toast.makeText(this, "Please select persons sharing the expense", Toast.LENGTH_SHORT).show();
-                    }
-                    else if(expShareByPersonsSelected.equalsIgnoreCase(tempPersons)){
-                        amount_share_by_type = 1;
-                        expShareByPersonsSelected = "all";
-                        doNext();
                     }else{
-                        amount_share_by_type = 2;
                         doNext();
                     }
                 }
@@ -282,25 +302,44 @@ public class AddExpense extends AppCompatActivity {
         int amount_type;
 
         if(expByDepCB.isChecked()){
+
+            //amount type = 1 refers to deposit money spent
+            //amount type = 2 refers to personal money spent
+
             amount_type = 1;
             if(fromDepositExpenseET.getText().toString().equalsIgnoreCase("")){
                 Toast.makeText(this, "Please select expense amount.", Toast.LENGTH_SHORT).show();
             }else{
-                //add expense
+
+
+                Double deposit_amount_remaining = dataBaseHelper.getDepositMoneyRemaining(trip_id);
                 Double fromDepositExpense = Double.parseDouble(fromDepositExpenseET.getText().toString());
 
-                if(dataBaseHelper.addExpense(trip_id,descriptionSelected,categorySelected,dateSelected,amount_share_by_type,expShareByPersonsSelected,amount_type,null,fromDepositExpense,date_value)){
-                    Toast.makeText(this, "Expense added successfully", Toast.LENGTH_SHORT).show();
-                    finish();
+                if(deposit_amount_remaining >= fromDepositExpense){
+                    //icon_add expense
+                    if(dataBaseHelper.addExpense(trip_id,descriptionSelected,categorySelected,dateSelected,expShareByPersonsSelected,amount_type,null,fromDepositExpense,date_value)){
+                        Toast.makeText(this, "Expense added successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }else{
+                        Snackbar.make(findViewById(android.R.id.content), "Unexpected error occurred", Snackbar.LENGTH_LONG).show();
+                    }
+
                 }else{
-                    Toast.makeText(this, "Some error occurred", Toast.LENGTH_SHORT).show();
+
+                    Snackbar.make(findViewById(android.R.id.content), "You do not have sufficient deposit money. Deposit money remaining = "+deposit_amount_remaining, Snackbar.LENGTH_LONG).show();
+
                 }
+
 
             }
         }else{
+
+            //amount type = 1 refers to deposit money spent
+            //amount type = 2 refers to personal money spent
+
             amount_type = 2;
             if(expenseByPersonGlobalList.size()==0){
-                Toast.makeText(this, "Please select expense by persons.", Toast.LENGTH_SHORT).show();
+                Snackbar.make(findViewById(android.R.id.content), "Please select expense by person", Snackbar.LENGTH_LONG).show();
             }else{
                 int res =0;
                 for(int i=0;i<expenseByPersonGlobalList.size();i++){
@@ -310,15 +349,15 @@ public class AddExpense extends AppCompatActivity {
                     }
                 }
                 if(res == 1){
-                    Toast.makeText(this, "Please select expense amount.", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(android.R.id.content), "Please select expense amount", Snackbar.LENGTH_LONG).show();
                 }else{
-                    //add expense
+                    //icon_add expense
 
-                    if(dataBaseHelper.addExpense(trip_id,descriptionSelected,categorySelected,dateSelected,amount_share_by_type,expShareByPersonsSelected,amount_type,expenseByPersonGlobalList,null,date_value)){
+                    if(dataBaseHelper.addExpense(trip_id,descriptionSelected,categorySelected,dateSelected,expShareByPersonsSelected,amount_type,expenseByPersonGlobalList,null,date_value)){
                         Toast.makeText(this, "Expense added successfully", Toast.LENGTH_SHORT).show();
                         finish();
                     }else{
-                        Toast.makeText(this, "Some error occurred", Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(android.R.id.content), "Some error occurred", Snackbar.LENGTH_LONG).show();
                     }
 
 
@@ -431,13 +470,5 @@ public class AddExpense extends AppCompatActivity {
 
 
     }
-
-
-
-
-
-
-
-
 
 }

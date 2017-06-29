@@ -7,6 +7,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:transitionName="@string/activity_image_trans2"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -40,6 +41,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Trip Name"
+                    android:singleLine="true"
                     android:maxLines="1" />
             </android.support.design.widget.TextInputLayout>
 
@@ -53,6 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Places To Visit"
+                    android:singleLine="true"
                     android:maxLines="1" />
 
                 <LinearLayout
@@ -67,7 +70,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="15dp"
-                        android:src="@drawable/info"
+                        android:src="@drawable/icon_info"
                         android:tint="@color/black" />
 
                     <TextView
@@ -94,6 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Description"
+                    android:singleLine="true"
                     android:maxLines="1" />
             </android.support.design.widget.TextInputLayout>
 

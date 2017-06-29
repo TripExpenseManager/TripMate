@@ -3,16 +3,21 @@ package com.tripmate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import java.util.ArrayList;
@@ -20,31 +25,14 @@ import java.util.List;
 
 import info.hoang8f.android.segmented.SegmentedGroup;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
+
 public class Statistics extends Fragment {
     ViewPager vpStatistics;
     String trip_id;
     SegmentedGroup segmentedGroup;
-
-
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Intent intent = getActivity().getIntent();
-        trip_id = intent.getStringExtra("trip_id");
-
-    }
-
-    public Statistics() {
-        // Required empty public constructor
-    }
-
 
 
     @Override
@@ -52,11 +40,19 @@ public class Statistics extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View customview = inflater.inflate(R.layout.fragment_statistics, container, false);
+
+        Intent intent = getActivity().getIntent();
+        trip_id = intent.getStringExtra("trip_id");
+
+        setHasOptionsMenu(true);
+
         vpStatistics = (ViewPager) customview.findViewById(R.id.vpStatistics);
-        setUpViewPager();
         segmentedGroup = (SegmentedGroup) customview.findViewById(R.id.segmentedGroup);
         segmentedGroup.check(R.id.rbDashBoard);
-        vpStatistics.setCurrentItem(0);
+
+        //setting the viewpager
+        setUpViewPager();
+
 
         segmentedGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -83,11 +79,10 @@ public class Statistics extends Fragment {
             public void onPageSelected(int position) {
                 if(position==0){
                     segmentedGroup.check(R.id.rbDashBoard);
-                }else{
-                    if(position==1){
-                        segmentedGroup.check(R.id.rbStatistics);
-                    }
+                }else if(position==1){
+                    segmentedGroup.check(R.id.rbStatistics);
                 }
+
 
             }
 
@@ -103,11 +98,68 @@ public class Statistics extends Fragment {
         return customview;
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_statistics_fragment,menu);
+
+        final ImageView reloadButton = (ImageView) menu.findItem(R.id.action_refresh).getActionView();
+
+        final Animation rotation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
+
+        if (reloadButton != null) {
+            reloadButton.setImageResource(R.drawable.icon_refresh);
+            reloadButton.setPadding(10,10,10,10);
+
+            // Set onClick listener for button press action
+            reloadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.startAnimation(rotation);
+
+                    setUpViewPager();
+
+                    vpStatistics.setVisibility(View.GONE);
+
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Do something after 100ms
+                            vpStatistics.setVisibility(View.VISIBLE);
+                        }
+                    },50);
+
+                }
+            });
+        }
+
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
     public  void setUpViewPager(){
         StatsPagerAdapter statsPagerAdapter = new StatsPagerAdapter(getChildFragmentManager());
         statsPagerAdapter.addFragment(new DashBoardFragment(),"DashBoard");
         statsPagerAdapter.addFragment(new ChartsFragment(),"Charts");
         vpStatistics.setAdapter(statsPagerAdapter);
+
+        if(segmentedGroup.getCheckedRadioButtonId() == R.id.rbDashBoard ){
+            vpStatistics.setCurrentItem(0);
+        }else{
+            vpStatistics.setCurrentItem(2);
+        }
 
     }
 

@@ -16,6 +16,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_marginTop="15dp"
+            android:transitionName="@string/activity_image_trans1"
             android:layout_centerHorizontal="true"
             android:background="@drawable/profile_circular_border_imageview"
             android:elevation="5dp"
@@ -26,7 +27,7 @@
             android:id="@+id/profile_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#ebca0707"
+            android:background="@color/colorPrimary"
             android:elevation="4dp"
             android:paddingBottom="24dp">
 
@@ -111,6 +112,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Deposit Amount Received"
+                            android:layout_toLeftOf="@+id/group_deposit_amount_received"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -136,6 +138,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Deposit Amount Spent"
+                            android:layout_toLeftOf="@+id/group_deposit_amount_spent"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -161,6 +164,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Deposit Amount Remaining"
+                            android:layout_toLeftOf="@+id/group_deposit_amount_remaining"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -216,6 +220,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Deposit Amount Given"
+                            android:layout_toLeftOf="@+id/deposit_amount_given"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -241,6 +246,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Deposit Amount Spent"
+                            android:layout_toLeftOf="@+id/deposit_amount_spent"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -266,6 +272,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Deposit Amount Remaining"
+                            android:layout_toLeftOf="@+id/deposit_amount_remaining"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -291,6 +298,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Personal Amount Given"
+                            android:layout_toLeftOf="@+id/personal_amount_given"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -317,6 +325,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Personal Amount Spent"
+                            android:layout_toLeftOf="@+id/personal_amount_spent"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -343,6 +352,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Total Amount Given"
+                            android:layout_toLeftOf="@+id/total_amount_given"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -369,6 +379,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Total Amount Spent"
+                            android:layout_toLeftOf="@+id/total_amount_spent"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 
@@ -395,6 +406,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14dp"
                             android:text="Total Amount Due/Refund"
+                            android:layout_toLeftOf="@+id/total_amount_remaining"
                             android:textColor="@color/black"
                             android:layout_alignParentLeft="true"/>
 

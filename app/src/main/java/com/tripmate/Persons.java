@@ -3,6 +3,7 @@ package com.tripmate;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.models.PersonModel;
 import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -21,19 +21,23 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import android.app.models.PersonModel;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -51,32 +55,24 @@ public class Persons extends Fragment {
     RecyclerView persons_recyclerview;
     String trip_id;
 
-
-
     PersonsAdapter mAdapter = null;
-
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Intent intent = getActivity().getIntent();
-        trip_id = intent.getStringExtra("trip_id");
-
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-
-        personsList = dataBaseHelper.getPersonWiseExpensesSummary(trip_id);
-
-        mAdapter = new PersonsAdapter(personsList);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_persons, container, false);
+
+
+        setHasOptionsMenu(true);
+
+        Intent intent = getActivity().getIntent();
+        trip_id = intent.getStringExtra("trip_id");
+
         persons_recyclerview = (RecyclerView) view.findViewById(R.id.persons_recyclerview);
 
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
+        mAdapter = new PersonsAdapter(personsList);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         persons_recyclerview.setLayoutManager(mLayoutManager);
@@ -103,9 +99,6 @@ public class Persons extends Fragment {
                 }
             }
         });
-
-
-
 
         return view;
     }
@@ -170,8 +163,6 @@ public class Persons extends Fragment {
 
             holder.expend_tv.setText(model.getTotalAmountGiven()+"");
 
-
-
             String firstLetter = String.valueOf(model.getName().charAt(0));
 
             ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
@@ -232,9 +223,9 @@ public class Persons extends Fragment {
                         user_profile_name.setText(model.getName()+" (Admin)");
                         group_details_cardview.setVisibility(View.VISIBLE);
 
-                        group_deposit_amount_received.setText(total_deposit_received+"");
-                        group_deposit_amount_spent.setText(total_deposit_spent+"");
-                        group_deposit_amount_remaining.setText(total_deposit_remaining+"");
+                        group_deposit_amount_received.setText(RoundOff(total_deposit_received)+"");
+                        group_deposit_amount_spent.setText(RoundOff(total_deposit_spent)+"");
+                        group_deposit_amount_remaining.setText(RoundOff(total_deposit_remaining)+"");
 
 
                     }else{
@@ -248,6 +239,7 @@ public class Persons extends Fragment {
                         user_mobile_no.setVisibility(View.GONE);
                     }
 
+                    //calling the user on clicking the mobile number
                     user_mobile_no.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -313,17 +305,9 @@ public class Persons extends Fragment {
                         total_amount_remaining.setText(""+model.getTotalAmountRemaining());
                     }
 
-
-
-
-
-
-
-
-
-
                     alertDialogBuilder.setCancelable(true);
                     AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
                     alertDialog.show();
                 }
             };
@@ -331,6 +315,7 @@ public class Persons extends Fragment {
             holder.clickLL.setOnClickListener(listener);
             holder.imageView.setOnClickListener(listener);
 
+            //popup menu
             holder.textViewOptions.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -338,12 +323,14 @@ public class Persons extends Fragment {
                     //creating a popup menu
                     PopupMenu popup = new PopupMenu(getActivity(), holder.textViewOptions);
                     //inflating menu from xml resource
-                    popup.inflate(R.menu.persons_menu);
+                    popup.inflate(R.menu.menu_persons_item);
 
                     MenuItem make_admin_item  = popup.getMenu().getItem(0);
                     MenuItem make_call = popup.getMenu().getItem(1);
+                    MenuItem delete = popup.getMenu().getItem(3);
 
 
+                    //setting the visibilities of popup menu items
                     if(model.getAdmin()==1){
                         make_admin_item.setVisible(false);
                     }
@@ -357,6 +344,11 @@ public class Persons extends Fragment {
                         make_call.setVisible(true);
                     }
 
+                    if(model.getCanRemove()){
+                        delete.setVisible(true);
+                    }else{
+                        delete.setVisible(false);
+                    }
 
 
                     //adding click listener
@@ -383,7 +375,9 @@ public class Persons extends Fragment {
                                     });
                                     builder.setMessage("You want to make "+model.getName()+" as Admin?");
                                     builder.setCancelable(false);
-                                    builder.show();
+                                    AlertDialog dialog = builder.create();
+                                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                                    dialog.show();
                                     break;
                                 case R.id.call:
 
@@ -398,11 +392,50 @@ public class Persons extends Fragment {
                                 case R.id.edit:
                                     editPerson(model);
                                     break;
+                                case R.id.delete:
+
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+
+                                    TextView customTitleTextview = new TextView(getActivity());
+                                    customTitleTextview.setTextSize(20);
+                                    customTitleTextview.setText("Are you sure?");
+                                    customTitleTextview.setTextColor(getResources().getColor(R.color.red));
+                                    customTitleTextview.setPadding(10,40,10,10);
+                                    customTitleTextview.setGravity(Gravity.CENTER);
+
+                                    builder1.setCustomTitle(customTitleTextview);
+
+                                    builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+                                            if(dataBaseHelper.removePerson(model,trip_id)){
+                                                Snackbar.make(getActivity().findViewById(R.id.fab),"Deleted "+model.getName()+" successfully", Snackbar.LENGTH_LONG).show();
+                                                onResume();
+                                            }else{
+                                                Snackbar.make(getActivity().findViewById(R.id.fab),"Unexpected error occurred!", Snackbar.LENGTH_LONG).show();
+                                            }
+
+                                        }
+                                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                        }
+                                    });
+                                    builder1.setMessage("You want to delete "+model.getName()+" from Trip?");
+                                    builder1.setCancelable(false);
+                                    AlertDialog dialog1 = builder1.create();
+                                    dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                                    dialog1.show();
+
+                                    break;
                             }
                             return false;
                         }
                     });
-
                     popup.show();
 
                 }
@@ -428,8 +461,7 @@ public class Persons extends Fragment {
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         dataBaseHelper.addAsAdmin(trip_id,model.getName(),pastAdmin);
-
-        personsList = dataBaseHelper.getPersonWiseExpensesSummary(trip_id);
+        personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
 
         mAdapter = new PersonsAdapter(personsList);
 
@@ -438,13 +470,9 @@ public class Persons extends Fragment {
 
         persons_recyclerview.setAdapter(adapter);
 
-        Snackbar.make(getActivity().findViewById(android.R.id.content),model.getName() +" is now Admin", Snackbar.LENGTH_LONG).show();
-
-
+        Snackbar.make(getActivity().findViewById(R.id.fab),model.getName() +" is now Admin", Snackbar.LENGTH_LONG).show();
 
     }
-
-
 
     void editPerson(final PersonWiseExpensesSummaryModel model){
 
@@ -458,6 +486,7 @@ public class Persons extends Fragment {
                 .setPositiveButton("OK",null)
                 .setNegativeButton("CANCEL", null)
                 .create();
+        alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationRightToLeft);
         alertDialog.show();
 
 
@@ -492,23 +521,57 @@ public class Persons extends Fragment {
 
                 dataBaseHelper.editPerson(trip_id,personModel);
 
-                personsList = dataBaseHelper.getPersonWiseExpensesSummary(trip_id);
+                personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
 
                 mAdapter = new PersonsAdapter(personsList);
                 ScaleInAnimationAdapter adapter = new ScaleInAnimationAdapter(mAdapter);
-                adapter.setDuration(200);
+                adapter.setDuration(100);
                 persons_recyclerview.setAdapter(adapter);
 
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "Person details edited successfully", Snackbar.LENGTH_LONG).show();
-
+                Snackbar.make(getActivity().findViewById(R.id.fab), "Person details edited successfully", Snackbar.LENGTH_LONG).show();
 
                 alertDialog.dismiss();
             }
         });
     }
 
+    public Double RoundOff(Double d){
+        return Math.round(d * 100.0) / 100.0;
+    }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_persons_fragment,menu);
 
+        final ImageView reloadButton = (ImageView) menu.findItem(R.id.action_refresh).getActionView();
+
+        final Animation rotation = AnimationUtils.loadAnimation(getActivity(), R.anim.rotation);
+
+        if (reloadButton != null) {
+            reloadButton.setImageResource(R.drawable.icon_refresh);
+            reloadButton.setPadding(10,10,10,10);
+
+            // Set onClick listener for button press action
+            reloadButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    view.startAnimation(rotation);
+
+                    DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+                    personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
+                    mAdapter = new PersonsAdapter(personsList);
+                    ScaleInAnimationAdapter adapter = new ScaleInAnimationAdapter(mAdapter);
+                    adapter.setDuration(200);
+
+                    persons_recyclerview.setAdapter(adapter);
+
+                }
+            });
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,String permissions[], int[] grantResults) {
@@ -539,14 +602,13 @@ public class Persons extends Fragment {
     public void onResume() {
         super.onResume();
 
+        //refreshing the contents onResume
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-        personsList = dataBaseHelper.getPersonWiseExpensesSummary(trip_id);
+        personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
 
         mAdapter = new PersonsAdapter(personsList);
-        ScaleInAnimationAdapter adapter = new ScaleInAnimationAdapter(mAdapter);
-        adapter.setDuration(200);
-
-        persons_recyclerview.setAdapter(adapter);
+        persons_recyclerview.setAdapter(mAdapter);
 
     }
+
 }
