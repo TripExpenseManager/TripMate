@@ -1,6 +1,9 @@
 package com.tripmate;
 
 import android.app.models.AddExpenseByPersonModel;
+import android.app.models.GraphItemModel;
+import android.app.models.NotesModel;
+import android.app.models.ParentExpenseItemModel;
 import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.ContentValues;
 import android.content.Context;
@@ -11,14 +14,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.app.models.ExpenseModel;
 import android.app.models.PersonModel;
 import android.app.models.TripModel;
+import android.util.Log;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -27,7 +36,7 @@ import java.util.UUID;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "TripExpenseManager";
+    public static final String DATABASE_NAME = "TripExpenseManager";
     private static final int DATABASE_VERSION = 1;
 
     private static final String TRIPS_TABLE_NAME = "trips";
@@ -47,7 +56,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String ITEMS_COLUMN_ITEM_EXP_BY = "key_item_exp_by";
     private static final String ITEMS_COLUMN_ITEM_CAT = "key_item_cat";
     private static final String ITEMS_COLUMN_ITEM_DATE = "key_item_date";
-    private static final String ITEMS_COLUMN_ITEM_SHARE_BY_TYPE = "key_item_share_by_type";
+   // private static final String ITEMS_COLUMN_ITEM_SHARE_BY_TYPE = "key_item_share_by_type";
     private static final String ITEMS_COLUMN_ITEM_SHARE_BY = "key_item_share_by";
     private static final String ITEMS_COLUMN_ITEM_DATE_VALUE = "key_item_date_value";
     private static final String ITEMS_COLUMN_ITEM_ID = "key_item_id";
@@ -69,6 +78,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String NOTES_COLUMN_NOTE_CONTENT_TYPE = "key_note_content_type";
     private static final String NOTES_COLUMN_NOTE_CONTENT = "key_note_content";
     private static final String NOTES_COLUMN_NOTE_CONTENT_STATUS = "key_note_content_status";
+    private static final String NOTES_COLUMN_NOTE_DATE = "key_note_date";
 
     private static final String CATEGORIES_TABLE_NAME = "categories";
     private static final String CATEGORIES_COLUMN_CAT_NAME = "key_cat_name";
@@ -84,9 +94,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String CREATE_TRIPS_TABLE = "CREATE TABLE " + TRIPS_TABLE_NAME + " ( "+ TRIPS_COLUMN_ID + " TEXT PRIMARY KEY, " + TRIPS_COLUMN_TRIP_NAME + " TEXT, "+ TRIPS_COLUMN_TRIP_DESC + " TEXT, "+ TRIPS_COLUMN_TRIP_DATE+" TEXT, "+TRIPS_COLUMN_TRIP_PLACES+" TEXT, "+TRIPS_COLUMN_TRIP_TOTAL_AMOUNT+" REAL )";
-        String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ITEMS_COLUMN_AMOUNT_TYPE+" INTEGER, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY_TYPE+" INTEGER, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
+        String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ITEMS_COLUMN_AMOUNT_TYPE+" INTEGER, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
         String CREATE_PERSONS_TABLE = "CREATE TABLE " + PERSONS_TABLE_NAME + "("+ PERSONS_COLUMN_TRIP_ID + " TEXT," + PERSONS_COLUMN_PERSON_NAME + " TEXT,"+ PERSONS_COLUMN_PERSON_MOBILE + " TEXT, "+PERSONS_COLUMN_PERSON_EMAIL+" TEXT,"+ PERSONS_COLUMN_PERSON_DEPOSIT+" REAL, "+PERSONS_COLUMN_PERSON_ADMIN+" INTEGER )";
-        String CREATE_NOTES_TABLE = "CREATE TABLE " + NOTES_TABLE_NAME + "("+ NOTES_COLUMN_NOTE_ID + " TEXT PRIMARY KEY," + NOTES_COLUMN_TRIP_ID + " TEXT,"+ NOTES_COLUMN_NOTE_TITLE + " TEXT, " +NOTES_COLUMN_NOTE_CONTENT_TYPE+" INTEGER, "+NOTES_COLUMN_NOTE_CONTENT+" TEXT, "+ NOTES_COLUMN_NOTE_CONTENT_STATUS + " TEXT )";
+        String CREATE_NOTES_TABLE = "CREATE TABLE " + NOTES_TABLE_NAME + "("+ NOTES_COLUMN_NOTE_ID + " TEXT PRIMARY KEY," + NOTES_COLUMN_TRIP_ID + " TEXT,"+ NOTES_COLUMN_NOTE_TITLE + " TEXT, " +NOTES_COLUMN_NOTE_CONTENT_TYPE+" INTEGER, "+NOTES_COLUMN_NOTE_CONTENT+" TEXT, "+ NOTES_COLUMN_NOTE_CONTENT_STATUS + " TEXT, "+NOTES_COLUMN_NOTE_DATE+" TEXT)";
         String CREATE_CATEGORIES_TABLE = "CREATE TABLE "+CATEGORIES_TABLE_NAME+" ( "+CATEGORIES_COLUMN_CAT_NAME+" TEXT)";
 
         db.execSQL(CREATE_TRIPS_TABLE);
@@ -162,9 +172,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
-
-
-
     public void addPersons(String trip_id , ArrayList<PersonModel> personsList){
         SQLiteDatabase db = getWritableDatabase();
         for (PersonModel personModel : personsList) {
@@ -203,8 +210,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
-
-    public boolean addExpense(String trip_id,String description,String category,String date,int amount_share_by_type,String expShareByPersonsSelected,int amount_type,ArrayList<AddExpenseByPersonModel> expenseByPersonList,Double fromDepositExpense,Long date_value){
+    public boolean addExpense(String trip_id,String description,String category,String date,String expShareByPersonsSelected,int amount_type,ArrayList<AddExpenseByPersonModel> expenseByPersonList,Double fromDepositExpense,Long date_value){
         SQLiteDatabase db = getWritableDatabase();
 
         if(amount_type == 1){
@@ -213,10 +219,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             values.put(ITEMS_COLUMN_TRIP_ID,trip_id);
             values.put(ITEMS_COLUMN_ITEM_NAME,description);
             values.put(ITEMS_COLUMN_AMOUNT_TYPE,amount_type);
-            values.put(ITEMS_COLUMN_ITEM_AMOUNT,fromDepositExpense);
+            values.put(ITEMS_COLUMN_ITEM_AMOUNT,RoundOff(fromDepositExpense));
             values.put(ITEMS_COLUMN_ITEM_CAT,category);
             values.put(ITEMS_COLUMN_ITEM_EXP_BY,"Deposit Money");
-            values.put(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE,amount_share_by_type);
+           // values.put(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE,amount_share_by_type);
             values.put(ITEMS_COLUMN_ITEM_SHARE_BY,expShareByPersonsSelected);
             values.put(ITEMS_COLUMN_ITEM_DATE,date);
             values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
@@ -227,19 +233,21 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
         else if(amount_type == 2){
 
+
+
             for(int i=0;i<expenseByPersonList.size();i++){
                 ContentValues values = new ContentValues();
                 values.put(ITEMS_COLUMN_TRIP_ID,trip_id);
                 values.put(ITEMS_COLUMN_ITEM_NAME,description);
                 values.put(ITEMS_COLUMN_AMOUNT_TYPE,amount_type);
                 values.put(ITEMS_COLUMN_ITEM_CAT,category);
-                values.put(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE,amount_share_by_type);
+                //values.put(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE,amount_share_by_type);
                 values.put(ITEMS_COLUMN_ITEM_SHARE_BY,expShareByPersonsSelected);
                 values.put(ITEMS_COLUMN_ITEM_DATE,date);
                 values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
                 values.put(ITEMS_COLUMN_ITEM_ID,"ITEM"+ UUID.randomUUID().toString());
 
-                values.put(ITEMS_COLUMN_ITEM_AMOUNT,expenseByPersonList.get(i).getAmount());
+                values.put(ITEMS_COLUMN_ITEM_AMOUNT,RoundOff(expenseByPersonList.get(i).getAmount()));
                 values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseByPersonList.get(i).getName());
 
                 db.insert(ITEMS_TABLE_NAME,null,values);
@@ -249,7 +257,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         return true;
     }
-
 
     public ArrayList<TripModel> getTripsData() {
         ArrayList<TripModel> trip_array_list = new ArrayList<>();
@@ -276,6 +283,25 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     }
 
 
+    public String[] getTripNamesAsStringArray() {
+
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor =  db.rawQuery( "select * from "+TRIPS_TABLE_NAME, null );
+
+        String[] trip_name_array = new String[cursor.getCount()];
+        int i=0;
+
+        if (cursor.moveToFirst()) {
+            do {
+                trip_name_array[i] = cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_NAME));
+                i++;
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return trip_name_array;
+    }
+
 
     public ArrayList<ExpenseModel> getAllExpenses(String trip_id){
         ArrayList<ExpenseModel> expenseModelArrayList = new ArrayList<>();
@@ -293,7 +319,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 expenseModel.setExpBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_EXP_BY)));
                 expenseModel.setCategory(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_CAT)));
                 expenseModel.setDate(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE)));
-                expenseModel.setShareByType(cursor.getInt(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE)));
+                //expenseModel.setShareByType(cursor.getInt(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE)));
                 expenseModel.setShareBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY)));
                 expenseModel.setItemId(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_ID)));
                 expenseModel.setDateValue(cursor.getLong(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE_VALUE)));
@@ -309,63 +335,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-
-    public Double getAmountOfPerson(String trip_id,String personName){
-        Double amount = 0.0;
-        ArrayList<ExpenseModel> expenseModelArrayList = getAllExpenses(trip_id);
-
-        for(ExpenseModel e : expenseModelArrayList){
-            if(e.getExpBy().equalsIgnoreCase(personName))
-                amount+=e.getAmount();
-        }
-
-        return  amount;
-    }
-
-    public Double getAmountOfCategory(String trip_id,String category){
-        Double amount = 0.0;
-        ArrayList<ExpenseModel> expenseModelArrayList = getAllExpenses(trip_id);
-
-        for(ExpenseModel e : expenseModelArrayList){
-            if(e.getCategory().equalsIgnoreCase(category))
-                amount+=e.getAmount();
-        }
-
-        return  amount;
-    }
-
-    public Double getAmountOfDate(String trip_id,String date){
-        Double amount = 0.0;
-        ArrayList<ExpenseModel> expenseModelArrayList = getAllExpenses(trip_id);
-
-        for(ExpenseModel e : expenseModelArrayList){
-            if(e.getDate().equalsIgnoreCase(date))
-                amount+=e.getAmount();
-        }
-
-        return  amount;
-    }
-
-    public Double getAmountShared(String trip_id,String personName){
-        Double amount = 0.0;
-        int noOfPersons = getPersons(trip_id).size();
-        ArrayList<ExpenseModel> expenseModelArrayList = getAllExpenses(trip_id);
-
-        for(ExpenseModel e : expenseModelArrayList){
-            if(e.getShareBy().equalsIgnoreCase("all")){
-                amount+=e.getAmount()/noOfPersons;
-            }else if(e.getShareBy().toLowerCase().contains(personName.toLowerCase())){
-                int noOfSharedPersons = Arrays.asList(e.getShareBy().split(",")).size();
-                amount+=e.getAmount()/noOfSharedPersons;
-            }
-        }
-
-        return  amount;
-    }
-
-
-
-
     public ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummary(String trip_id){
         SQLiteDatabase db = getReadableDatabase();
 
@@ -375,8 +344,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         HashMap<String,Double> personalAmountShareByPerson = new HashMap<>();
         HashMap<String,Double> personalAmountGiven = new HashMap<>();
 
-        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{trip_id},
-                null,null,null);
+        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,PERSONS_COLUMN_TRIP_ID+"=?",new String[]{trip_id},null,null,null);
+
+        String personsListAsString[] = new String[cursor.getCount()];
+        int p=0;
+
         if(cursor!=null && cursor.moveToFirst()){
             do{
                 PersonWiseExpensesSummaryModel model = new PersonWiseExpensesSummaryModel();
@@ -389,13 +361,19 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 depositAmountShareByPerson.put(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)),0.0);
                 personalAmountShareByPerson.put(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)),0.0);
                 personalAmountGiven.put(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)),0.0);
-
+                personsListAsString[p] = cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME));
+                p++;
 
                 result.add(model);
 
             }while(cursor.moveToNext());
         }
         cursor.close();
+
+        String tempPersons = personsListAsString[0];
+        for(int i=1;i<personsListAsString.length;i++){
+            tempPersons = tempPersons + ", "+personsListAsString[i];
+        }
 
         int no_of_persons = result.size();
 
@@ -409,7 +387,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
             if(expenseModel.getAmountType() == 1){
 
-                if(expenseModel.getShareByType() == 1){
+                if(expenseModel.getShareBy().equalsIgnoreCase(tempPersons)){
                     totalDepositShare += (expenseModel.getAmount()/no_of_persons);
                 }else{
 
@@ -429,7 +407,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 Double itemToBeAddedPersonal = personalAmountGiven.get(expenseModel.getExpBy()) + expenseModel.getAmount();
                 personalAmountGiven.put(expenseModel.getExpBy(),itemToBeAddedPersonal);
 
-                if(expenseModel.getShareByType() == 1){
+                if(expenseModel.getShareBy().equalsIgnoreCase(tempPersons)){
                     totalPersonalShare += (expenseModel.getAmount()/no_of_persons);
                 }else{
 
@@ -477,6 +455,52 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         }
 
+        return  result;
+    }
+
+    public ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummaryForDashboard(String trip_id){
+
+        ArrayList<PersonWiseExpensesSummaryModel> result = getPersonWiseExpensesSummary(trip_id);
+
+        Collections.sort(result, new Comparator<PersonWiseExpensesSummaryModel>() {
+            @Override
+            public int compare(PersonWiseExpensesSummaryModel o1, PersonWiseExpensesSummaryModel o2) {
+                return o2.getTotalAmountRemaining().compareTo(o1.getTotalAmountRemaining());
+
+            }
+        });
+
+        return  result;
+    }
+
+    public ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummaryForPersonsFragment(String trip_id){
+
+        ArrayList<PersonWiseExpensesSummaryModel> result = getPersonWiseExpensesSummary(trip_id);
+
+
+        //checking whether the person can be removed or not
+        //if the person's money were found spent anywhere in the trip, he cannot be removed(To remove him users has to edit the expenses so that this person's money will not be accounted for spending anywhere in the trip
+        //admin cannot be removed from the trip(To delete admin, users first should remove him as admin and then delete)
+
+        for(int i=0;i<result.size();i++){
+
+            PersonWiseExpensesSummaryModel model = result.get(i);
+
+            if(model.getAdmin() == 1 || model.getDepositAmountSpent() != 0.0 || model.getPersonalAmountGiven() != 0.0 || model.getPersonalAmountSpent() != 0.0){
+                model.setCanRemove(false);
+            }
+            else if(getDepositMoneyRemaining(trip_id) < model.getDepositAmountGiven()){
+                model.setCanRemove(false);
+            }
+            else{
+                model.setCanRemove(true);
+            }
+
+            result.remove(i);
+            result.add(i,model);
+        }
+
+
         Collections.sort(result, new Comparator<PersonWiseExpensesSummaryModel>() {
             @Override
             public int compare(PersonWiseExpensesSummaryModel o1, PersonWiseExpensesSummaryModel o2) {
@@ -488,8 +512,140 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  result;
     }
 
+    public ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphPersons(String trip_id){
 
-    void editPerson(String trip_id,PersonModel model){
+        ArrayList<PersonWiseExpensesSummaryModel> list = getPersonWiseExpensesSummary(trip_id);
+        ArrayList<GraphItemModel> result = new ArrayList<>();
+
+        Double totalexpense = 0.0;
+        for(int i=0;i<list.size();i++){
+            totalexpense += list.get(i).getTotalAmountSpent();
+        }
+
+        for(int i=0;i<list.size();i++){
+            GraphItemModel model = new GraphItemModel();
+
+            model.setName(list.get(i).getName());
+            model.setAmount(list.get(i).getTotalAmountSpent());
+            if(totalexpense!=0.0){
+                Double percent = RoundOff((model.getAmount()/totalexpense)*100);
+                model.setPercentage(percent);
+            }else{
+                model.setPercentage(0.0);
+            }
+
+            result.add(model);
+        }
+
+        Collections.sort(result, new Comparator<GraphItemModel>() {
+            @Override
+            public int compare(GraphItemModel o1, GraphItemModel o2) {
+                return o2.getPercentage().compareTo(o1.getPercentage());
+
+            }
+        });
+
+        return  result;
+    }
+
+    public ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphCategory(String trip_id){
+
+        ArrayList<GraphItemModel> result = new ArrayList<>();
+        ArrayList<ExpenseModel> list = getAllExpenses(trip_id);
+
+        HashMap<String,Double> categoryWiseExpenses = new HashMap<>();
+        Double total_expenses= 0.0;
+        for(int i=0;i<list.size();i++){
+            ExpenseModel model = list.get(i);
+            total_expenses += model.getAmount();
+            if(categoryWiseExpenses.containsKey(model.getCategory())){
+                Double toBeInserted = categoryWiseExpenses.get(model.getCategory()) + model.getAmount();
+                categoryWiseExpenses.put(model.getCategory(),toBeInserted);
+            }else{
+                categoryWiseExpenses.put(model.getCategory(),model.getAmount());
+            }
+        }
+
+        Set<String> finalCategories = categoryWiseExpenses.keySet();;
+        Iterator it = finalCategories.iterator();
+
+        for(int i=0;i<categoryWiseExpenses.size();i++){
+            GraphItemModel model = new GraphItemModel();
+            String catname = (String) it.next();
+            model.setName(catname);
+            model.setAmount(categoryWiseExpenses.get(catname));
+            Double percent = RoundOff((categoryWiseExpenses.get(catname)/total_expenses)*100);
+            model.setPercentage(percent);
+            result.add(model);
+        }
+
+        Collections.sort(result, new Comparator<GraphItemModel>() {
+            @Override
+            public int compare(GraphItemModel o1, GraphItemModel o2) {
+                return o2.getPercentage().compareTo(o1.getPercentage());
+
+            }
+        });
+
+        return  result;
+    }
+
+    public ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphDate(String trip_id){
+
+        ArrayList<GraphItemModel> result = new ArrayList<>();
+        ArrayList<ExpenseModel> list = getAllExpenses(trip_id);
+
+        HashMap<String,Double> dateWiseExpenses = new HashMap<>();
+        Double total_expenses= 0.0;
+        for(int i=0;i<list.size();i++){
+            ExpenseModel model = list.get(i);
+            total_expenses += model.getAmount();
+            if(dateWiseExpenses.containsKey(model.getDate())){
+                Double toBeInserted = dateWiseExpenses.get(model.getDate()) + model.getAmount();
+                dateWiseExpenses.put(model.getDate(),toBeInserted);
+            }else{
+                dateWiseExpenses.put(model.getDate(),model.getAmount());
+            }
+        }
+
+        Set<String> finalDates = dateWiseExpenses.keySet();;
+        Iterator it = finalDates.iterator();
+
+        for(int i=0;i<dateWiseExpenses.size();i++){
+            GraphItemModel model = new GraphItemModel();
+            String dateStr = (String) it.next();
+            model.setName(dateStr);
+            model.setAmount(dateWiseExpenses.get(dateStr));
+            Double percent = RoundOff((dateWiseExpenses.get(dateStr)/total_expenses)*100);
+            model.setPercentage(percent);
+            result.add(model);
+        }
+
+        Collections.sort(result, new Comparator<GraphItemModel>() {
+            @Override
+            public int compare(GraphItemModel o1, GraphItemModel o2) {
+                return o2.getPercentage().compareTo(o1.getPercentage());
+
+            }
+        });
+
+        return  result;
+    }
+
+    public Double getTotalExpensesAmount(String trip_id){
+
+        ArrayList<ExpenseModel> list = getAllExpenses(trip_id);
+
+        Double total_expenses= 0.0;
+        for(int i=0;i<list.size();i++){
+            ExpenseModel model = list.get(i);
+            total_expenses += model.getAmount();
+        }
+
+        return  total_expenses;
+    }
+
+    public void editPerson(String trip_id,PersonModel model){
         SQLiteDatabase db = getReadableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -500,7 +656,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.update(PERSONS_TABLE_NAME, cv,PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+model.getName()+"\"", null);
     }
 
-    void addAsAdmin(String trip_id,String name,String pastAdmin){
+    public void addAsAdmin(String trip_id,String name,String pastAdmin){
         SQLiteDatabase db = getReadableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -514,11 +670,512 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-
     public Double RoundOff(Double d){
         return Math.round(d * 100.0) / 100.0;
     }
 
+    public ArrayList<NotesModel> getNotes(String trip_id){
+
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<NotesModel> notesList = new ArrayList<>();
+
+        Cursor cursor = db.query(NOTES_TABLE_NAME,null,NOTES_COLUMN_TRIP_ID+"=?",new String[]{trip_id},
+                null,null,null);
+        if(cursor!=null && cursor.moveToFirst()){
+            do{
+                NotesModel notesModel = new NotesModel();
+                notesModel.setNote_Body(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT)));
+                notesModel.setNote_ContentStatus(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_STATUS)));
+                notesModel.setNote_ContentType(cursor.getInt(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_TYPE)));
+                notesModel.setNote_Date(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_DATE)));
+                notesModel.setNote_Id(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_ID)));
+                notesModel.setNote_Title(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_TITLE)));
+                notesModel.setNote_TripId(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_TRIP_ID)));
+
+                notesList.add(notesModel);
+
+            }while(cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        return  notesList;
+
+    }
+
+    public ArrayList<ParentExpenseItemModel> getAllExpensesToDisplay(String trip_id){
+        ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
+
+        ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
+
+        HashMap<String, ParentExpenseItemModel> hashMapExpense = new HashMap<>();
+        hashMapExpense.put("Deposit Money",new ParentExpenseItemModel());
+        hashMapExpense.put("Personal Money",new ParentExpenseItemModel());
+
+        Double total_amount = 0.0;
+
+        for(int i=0;i<allExpList.size();i++){
+            ExpenseModel model = allExpList.get(i);
+            total_amount += RoundOff(model.getAmount());
+            if(model.getAmountType() == 1){
+                ParentExpenseItemModel tempModel = hashMapExpense.get("Deposit Money");
+                Double tempAmountToAdd = tempModel.getAmount()+ model.getAmount();
+                tempModel.setAmount(RoundOff(tempAmountToAdd));
+
+                ArrayList<ExpenseModel> tempExpOnlyList = tempModel.getChildList();
+                tempExpOnlyList.add(model);
+                tempModel.setExpenseList(tempExpOnlyList);
+
+                hashMapExpense.put("Deposit Money",tempModel);
+
+            }else{
+                ParentExpenseItemModel tempModel = hashMapExpense.get("Personal Money");
+                Double tempAmountToAdd = tempModel.getAmount()+ model.getAmount();
+                tempModel.setAmount(RoundOff(tempAmountToAdd));
+
+                ArrayList<ExpenseModel> tempExpOnlyList = tempModel.getChildList();
+                tempExpOnlyList.add(model);
+                tempModel.setExpenseList(tempExpOnlyList);
+
+                hashMapExpense.put("Personal Money",tempModel);
+            }
+        }
+
+        Set<String> keys = hashMapExpense.keySet();
+        Iterator<String> itr = keys.iterator();
+        while(itr.hasNext()){
+            String tempName = itr.next();
+
+            ParentExpenseItemModel finalModel = hashMapExpense.get(tempName);
+            finalModel.setName(tempName);
+            if(total_amount!=0){
+                Double percentage = RoundOff((finalModel.getAmount()/total_amount)*100);
+                finalModel.setPercentage(percentage);
+            }else{
+                finalModel.setPercentage(0.0);
+            }
+
+            if(finalModel.getExpenseList().size() != 0){
+
+                ArrayList<ExpenseModel> forSortingModel = finalModel.getExpenseList();
+
+                Collections.sort(forSortingModel, new Comparator<ExpenseModel>() {
+                    @Override
+                    public int compare(ExpenseModel o1, ExpenseModel o2) {
+                        if(o2.getDateValue()>o1.getDateValue()){
+                            return 1;
+                        }else if(o2.getDateValue()<o1.getDateValue()){
+                            return -1;
+                        }else{
+                            return 0;
+                        }
+                    }
+                });
+
+                finalModel.setExpenseList(forSortingModel);
+
+                result.add(finalModel);
+            }
+
+        }
+
+
+        Collections.sort(result, new Comparator<ParentExpenseItemModel>() {
+            @Override
+            public int compare(ParentExpenseItemModel o1, ParentExpenseItemModel o2) {
+                return o2.getPercentage().compareTo(o1.getPercentage());
+            }
+        });
+
+        return result;
+    }
+
+    public ArrayList<ParentExpenseItemModel> getExpensesPersonWiseToDisplay(String trip_id){
+        ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
+
+        ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
+
+        HashMap<String, ParentExpenseItemModel> hashMapExpense = new HashMap<>();
+
+        Double total_amount = 0.0;
+
+        for(int i=0;i<allExpList.size();i++){
+            ExpenseModel model = allExpList.get(i);
+            if(model.getAmountType() != 1){
+                total_amount += RoundOff(model.getAmount());
+
+                if(hashMapExpense.containsKey(model.getExpBy())){
+
+                    ParentExpenseItemModel tempModel = hashMapExpense.get(model.getExpBy());
+                    tempModel.setAmount(RoundOff(tempModel.getAmount()+model.getAmount()));
+
+                    ArrayList<ExpenseModel> tempExpOnlyList = tempModel.getExpenseList();
+                    tempExpOnlyList.add(model);
+                    tempModel.setExpenseList(tempExpOnlyList);
+
+                    hashMapExpense.put(model.getExpBy(),tempModel);
+
+                }else{
+
+                    ParentExpenseItemModel tempModel = new ParentExpenseItemModel();
+                    tempModel.setAmount(RoundOff(model.getAmount()));
+
+                    ArrayList<ExpenseModel> tempExpOnlyList = new ArrayList<>();
+                    tempExpOnlyList.add(model);
+                    tempModel.setExpenseList(tempExpOnlyList);
+
+                    hashMapExpense.put(model.getExpBy(),tempModel);
+                }
+            }
+        }
+
+        Set<String> keys = hashMapExpense.keySet();
+        Iterator<String> itr = keys.iterator();
+        while(itr.hasNext()){
+            String tempName = itr.next();
+
+            ParentExpenseItemModel finalModel = hashMapExpense.get(tempName);
+            finalModel.setName(tempName);
+            if(total_amount!=0){
+                Double percentage = RoundOff((finalModel.getAmount()/total_amount)*100);
+                finalModel.setPercentage(percentage);
+            }else{
+                finalModel.setPercentage(0.0);
+            }
+
+            if(finalModel.getExpenseList().size() != 0){
+
+                ArrayList<ExpenseModel> forSortingModel = finalModel.getExpenseList();
+
+                Collections.sort(forSortingModel, new Comparator<ExpenseModel>() {
+                    @Override
+                    public int compare(ExpenseModel o1, ExpenseModel o2) {
+                        if(o2.getDateValue()>o1.getDateValue()){
+                            return 1;
+                        }else if(o2.getDateValue()<o1.getDateValue()){
+                            return -1;
+                        }else{
+                            return 0;
+                        }
+                    }
+                });
+
+                finalModel.setExpenseList(forSortingModel);
+
+                result.add(finalModel);
+            }
+
+        }
+
+
+        Collections.sort(result, new Comparator<ParentExpenseItemModel>() {
+            @Override
+            public int compare(ParentExpenseItemModel o1, ParentExpenseItemModel o2) {
+                return o2.getPercentage().compareTo(o1.getPercentage());
+            }
+        });
+
+        return result;
+    }
+
+    public ArrayList<ParentExpenseItemModel> getExpensesDateWiseToDisplay(String trip_id){
+        ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
+
+        ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
+
+        HashMap<String, ParentExpenseItemModel> hashMapExpense = new HashMap<>();
+
+        Double total_amount = 0.0;
+
+        for(int i=0;i<allExpList.size();i++){
+            ExpenseModel model = allExpList.get(i);
+
+            total_amount += RoundOff(model.getAmount());
+
+            if(hashMapExpense.containsKey(model.getDate())){
+
+                ParentExpenseItemModel tempModel = hashMapExpense.get(model.getDate());
+                tempModel.setAmount(RoundOff(tempModel.getAmount()+model.getAmount()));
+
+                ArrayList<ExpenseModel> tempExpOnlyList = tempModel.getExpenseList();
+                tempExpOnlyList.add(model);
+                tempModel.setExpenseList(tempExpOnlyList);
+
+                hashMapExpense.put(model.getDate(),tempModel);
+
+            }else{
+
+                ParentExpenseItemModel tempModel = new ParentExpenseItemModel();
+                tempModel.setAmount(RoundOff(model.getAmount()));
+
+                ArrayList<ExpenseModel> tempExpOnlyList = new ArrayList<>();
+                tempExpOnlyList.add(model);
+                tempModel.setExpenseList(tempExpOnlyList);
+
+                hashMapExpense.put(model.getDate(),tempModel);
+            }
+        }
+
+        Set<String> keys = hashMapExpense.keySet();
+        Iterator<String> itr = keys.iterator();
+        while(itr.hasNext()){
+            String tempName = itr.next();
+
+            ParentExpenseItemModel finalModel = hashMapExpense.get(tempName);
+            finalModel.setName(tempName);
+            if(total_amount!=0){
+                Double percentage = RoundOff((finalModel.getAmount()/total_amount)*100);
+                finalModel.setPercentage(percentage);
+            }else{
+                finalModel.setPercentage(0.0);
+            }
+
+            if(finalModel.getExpenseList().size() != 0){
+
+                ArrayList<ExpenseModel> forSortingModel = finalModel.getExpenseList();
+
+                Collections.sort(forSortingModel, new Comparator<ExpenseModel>() {
+                    @Override
+                    public int compare(ExpenseModel o1, ExpenseModel o2) {
+                        if(o2.getDateValue()>o1.getDateValue()){
+                            return 1;
+                        }else if(o2.getDateValue()<o1.getDateValue()){
+                            return -1;
+                        }else{
+                            return 0;
+                        }
+                    }
+                });
+
+                finalModel.setExpenseList(forSortingModel);
+                result.add(finalModel);
+            }
+
+        }
+
+        Collections.sort(result, new Comparator<ParentExpenseItemModel>() {
+            @Override
+            public int compare(ParentExpenseItemModel o1, ParentExpenseItemModel o2) {
+
+                SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                Date date1 = null,date2 = null;
+                try {
+                    date1 = format.parse(o1.getName());
+                    date2 = format.parse(o2.getName());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                return date1.compareTo(date2);
+            }
+        });
+
+        return result;
+    }
+
+    public ArrayList<ParentExpenseItemModel> getExpensesCategoryWiseToDisplay(String trip_id){
+        ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
+
+        ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
+
+        HashMap<String, ParentExpenseItemModel> hashMapExpense = new HashMap<>();
+
+        Double total_amount = 0.0;
+
+        for(int i=0;i<allExpList.size();i++){
+            ExpenseModel model = allExpList.get(i);
+
+            total_amount += RoundOff(model.getAmount());
+
+            if(hashMapExpense.containsKey(model.getCategory())){
+
+                ParentExpenseItemModel tempModel = hashMapExpense.get(model.getCategory());
+                tempModel.setAmount(RoundOff(tempModel.getAmount()+model.getAmount()));
+
+                ArrayList<ExpenseModel> tempExpOnlyList = tempModel.getExpenseList();
+                tempExpOnlyList.add(model);
+                tempModel.setExpenseList(tempExpOnlyList);
+
+                hashMapExpense.put(model.getCategory(),tempModel);
+
+            }else{
+
+                ParentExpenseItemModel tempModel = new ParentExpenseItemModel();
+                tempModel.setAmount(RoundOff(model.getAmount()));
+
+                ArrayList<ExpenseModel> tempExpOnlyList = new ArrayList<>();
+                tempExpOnlyList.add(model);
+                tempModel.setExpenseList(tempExpOnlyList);
+
+                hashMapExpense.put(model.getCategory(),tempModel);
+            }
+        }
+
+        Set<String> keys = hashMapExpense.keySet();
+        Iterator<String> itr = keys.iterator();
+        while(itr.hasNext()){
+            String tempName = itr.next();
+
+            ParentExpenseItemModel finalModel = hashMapExpense.get(tempName);
+            finalModel.setName(tempName);
+            if(total_amount!=0){
+                Double percentage = RoundOff((finalModel.getAmount()/total_amount)*100);
+                finalModel.setPercentage(percentage);
+            }else{
+                finalModel.setPercentage(0.0);
+            }
+
+            if(finalModel.getExpenseList().size() != 0){
+
+                ArrayList<ExpenseModel> forSortingModel = finalModel.getExpenseList();
+
+               Collections.sort(forSortingModel, new Comparator<ExpenseModel>() {
+                   @Override
+                   public int compare(ExpenseModel o1, ExpenseModel o2) {
+                       if(o2.getDateValue()>o1.getDateValue()){
+                           return 1;
+                       }else if(o2.getDateValue()<o1.getDateValue()){
+                           return -1;
+                       }else{
+                           return 0;
+                       }
+                   }
+               });
+
+                finalModel.setExpenseList(forSortingModel);
+
+
+                result.add(finalModel);
+            }
+
+        }
+
+
+        Collections.sort(result, new Comparator<ParentExpenseItemModel>() {
+            @Override
+            public int compare(ParentExpenseItemModel o1, ParentExpenseItemModel o2) {
+                return o2.getPercentage().compareTo(o1.getPercentage());
+            }
+        });
+
+
+
+        return result;
+    }
+
+    public boolean deleteExpenseItem(ExpenseModel item){
+        SQLiteDatabase db = getWritableDatabase();
+
+        return db.delete(ITEMS_TABLE_NAME, ITEMS_COLUMN_TRIP_ID + " = \"" + item.getTripId()+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+ item.getItemId()+"\"" , null) > 0;
+    }
+
+    public boolean isTripExists(String trip_id){
+
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(TRIPS_TABLE_NAME,null,TRIPS_COLUMN_ID+"=?",new String[]{trip_id},
+                null,null,null);
+
+        if(cursor.getCount() == 0){
+            return false;
+        }else{
+            return  true;
+        }
+
+    }
+
+    public boolean addPersonInMiddel(PersonModel model){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PERSONS_COLUMN_TRIP_ID,model.getTrip_id());
+        values.put(PERSONS_COLUMN_PERSON_NAME, model.getName());
+        values.put(PERSONS_COLUMN_PERSON_MOBILE, model.getMobile());
+        values.put(PERSONS_COLUMN_PERSON_EMAIL, model.getEmail());
+        values.put(PERSONS_COLUMN_PERSON_DEPOSIT, model.getDeposit());
+        values.put(PERSONS_COLUMN_PERSON_ADMIN, model.getAdmin());
+        db.insert(PERSONS_TABLE_NAME,null,values);
+
+        return true;
+    }
+
+    public  Double getDepositMoneyRemaining(String trip_id){
+
+        Double result = 0.0,total_deposit_money = 0.0;
+
+        ArrayList<ExpenseModel> expenseList = getAllExpenses(trip_id);
+        for(int i=0;i<expenseList.size();i++){
+            ExpenseModel model = expenseList.get(i);
+            if(model.getAmountType() == 1){
+                result += model.getAmount();
+            }
+        }
+
+        ArrayList<PersonModel> personsList = getPersons(trip_id);
+        for(int i=0;i<personsList.size();i++){
+            total_deposit_money += personsList.get(i).getDeposit();
+        }
+
+        return (total_deposit_money - result);
+    }
+
+    public boolean removePerson(PersonWiseExpensesSummaryModel model,String trip_id){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        return db.delete(PERSONS_TABLE_NAME, PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+ model.getName()+"\"" , null) > 0;
+
+    }
+
+    public boolean deleteTrip(String trip_id){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete(ITEMS_TABLE_NAME,ITEMS_COLUMN_TRIP_ID + " = \"" + trip_id+"\"",null);
+        db.delete(PERSONS_TABLE_NAME,PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\"",null);
+        db.delete(NOTES_TABLE_NAME,NOTES_COLUMN_TRIP_ID + " = \"" + trip_id+"\"",null);
+
+        return db.delete(TRIPS_TABLE_NAME,TRIPS_COLUMN_ID + " = \"" + trip_id+"\"",null) > 0;
+
+    }
+
+    public boolean editExpense(String trip_id,String description,String category,String date,String expShareByPersonsSelected,int amount_type,ArrayList<AddExpenseByPersonModel> expenseByPersonList,Double fromDepositExpense,Long date_value,String item_id){
+        SQLiteDatabase db = getWritableDatabase();
+
+        if(amount_type == 1){
+
+            ContentValues values = new ContentValues();
+            values.put(ITEMS_COLUMN_ITEM_NAME,description);
+            values.put(ITEMS_COLUMN_AMOUNT_TYPE,amount_type);
+            values.put(ITEMS_COLUMN_ITEM_AMOUNT,RoundOff(fromDepositExpense));
+            values.put(ITEMS_COLUMN_ITEM_CAT,category);
+            values.put(ITEMS_COLUMN_ITEM_EXP_BY,"Deposit Money");
+            values.put(ITEMS_COLUMN_ITEM_SHARE_BY,expShareByPersonsSelected);
+            values.put(ITEMS_COLUMN_ITEM_DATE,date);
+            values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
+
+            db.update(ITEMS_TABLE_NAME,values,ITEMS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+item_id+"\"", null);
+
+        }
+        else if(amount_type == 2){
+
+            ContentValues values = new ContentValues();
+            values.put(ITEMS_COLUMN_ITEM_NAME,description);
+            values.put(ITEMS_COLUMN_AMOUNT_TYPE,amount_type);
+            values.put(ITEMS_COLUMN_ITEM_CAT,category);
+            values.put(ITEMS_COLUMN_ITEM_SHARE_BY,expShareByPersonsSelected);
+            values.put(ITEMS_COLUMN_ITEM_DATE,date);
+            values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
+
+            values.put(ITEMS_COLUMN_ITEM_AMOUNT,RoundOff(expenseByPersonList.get(0).getAmount()));
+            values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseByPersonList.get(0).getName());
+
+            db.update(ITEMS_TABLE_NAME,values,ITEMS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+item_id+"\"", null);
+
+        }
+
+        return true;
+    }
 
 
 }

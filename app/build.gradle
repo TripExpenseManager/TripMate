@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.tripmate"
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -26,6 +26,8 @@ dependencies {
     })
 
 
+
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'jp.wasabeef:recyclerview-animators:2.2.5'
@@ -36,5 +38,10 @@ dependencies {
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
     compile 'info.hoang8f:android-segmented:1.0.6'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.bignerdranch.android:expandablerecyclerview:3.0.0-RC1'
+    compile 'com.miguelcatalan:materialsearchview:1.4.0'
+    compile 'com.google.android.gms:play-services-drive:11.0.1'
+    compile 'com.github.yalantis:taurus:1.0.2'
     testCompile 'junit:junit:4.12'
 }

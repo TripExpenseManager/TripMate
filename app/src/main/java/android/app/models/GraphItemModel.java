@@ -7,13 +7,9 @@ package android.app.models;
 public class GraphItemModel {
     private String name;
     private Double amount;
+    private Double percentage;
 
     public GraphItemModel() {
-    }
-
-    public GraphItemModel(String name, Double amount) {
-        this.name = name;
-        this.amount = amount;
     }
 
     public String getName() {
@@ -32,6 +28,12 @@ public class GraphItemModel {
         this.amount = amount;
     }
 
+    public void setPercentage(Double percentage) {
+        this.percentage = percentage;
+    }
 
+    public Double getPercentage() {
+        return percentage;
+    }
 }
 

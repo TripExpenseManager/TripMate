@@ -8,6 +8,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:transitionName="@string/activity_image_trans1"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
@@ -245,7 +246,7 @@
                             <ImageView
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
-                                android:src="@drawable/add"
+                                android:src="@drawable/icon_add"
                                 android:id="@+id/addExpImageView"
                                 android:tint="@color/black"
                                 android:layout_marginRight="8dp"

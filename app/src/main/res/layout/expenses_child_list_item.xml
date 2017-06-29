@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/expChildCardView"
+    android:layout_marginBottom="0.5dp"
+    tools:ignore="UnusedAttribute">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:layout_marginRight="10dp"
+            android:paddingLeft="5dp"
+            android:paddingBottom="2dp"
+            android:id="@+id/clickLL"
+            android:layout_toLeftOf="@+id/textViewOptions"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/nameTextView"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_toStartOf="@+id/amountTextView"
+                    android:ellipsize="end"
+                    android:textSize="16dp"
+                    android:text="Saikrishna"
+                    android:singleLine="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@+id/amountTextView" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"
+                    android:id="@+id/amountTextView"
+                    android:layout_alignParentRight="true"
+                    android:text="500.00"
+                    />
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/headingTextView0"
+                    android:text="Shared by : "
+                    android:textSize="14dp"
+                    android:layout_marginTop="2dp"
+                    android:singleLine="true"
+                    android:textColor="@color/grey"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/valueTextView0"
+                    android:text="All"
+                    android:textSize="14dp"
+                    android:ellipsize="end"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/green"
+                    />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/headingTextView1"
+                    android:text="Shared by : "
+                    android:textSize="14dp"
+                    android:layout_marginTop="2dp"
+                    android:singleLine="true"
+                    android:textColor="@color/grey"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/valueTextView1"
+                    android:text="All"
+                    android:textSize="14dp"
+                    android:ellipsize="end"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/green"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_below="@+id/clickLL"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expend by : "
+                android:textSize="14dp"
+                android:id="@+id/headingTextView2"
+                android:layout_marginTop="2dp"
+                android:singleLine="true"
+                android:textColor="@color/grey"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sai"
+                android:textSize="14dp"
+                android:layout_toEndOf="@+id/headingTextView2"
+                android:layout_toRightOf="@+id/headingTextView2"
+                android:id="@+id/valueTextView2"
+                android:layout_marginTop="2dp"
+                android:layout_toStartOf="@+id/dateTextView"
+                android:ellipsize="end"
+                android:layout_marginLeft="8dp"
+                android:singleLine="true"
+                android:textColor="@color/green"
+                android:layout_toLeftOf="@+id/dateTextView" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="21-05-2017 8:15 AM"
+                android:textSize="14dp"
+                android:id="@+id/dateTextView"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="8dp"
+                android:singleLine="true"
+                android:textColor="@color/grey"
+                />
+
+        </RelativeLayout>
+
+
+
+        <TextView
+            android:id="@+id/textViewOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="&#8942;"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/black"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:layout_alignParentRight="true" />
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

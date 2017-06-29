@@ -1,13 +1,47 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/expensesRL"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.tripmate.Expenses">
+    android:layout_height="match_parent">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Expenses" />
+        android:id="@+id/expensesRecyclerView"
+        />
 
-</FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:visibility="gone"
+        android:id="@+id/no_expenses_RL"
+        >
+
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/no_expenses_image"
+            android:src="@drawable/image_no_expenses"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No expenses recorded yet!"
+            android:layout_below="@+id/no_expenses_image"
+            android:layout_marginTop="2dp"
+            android:textSize="18dp"
+            android:fontFamily="serif"
+            android:textColor="@color/colorPrimary"
+            android:layout_centerHorizontal="true"
+            />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -39,7 +39,7 @@
         android:layout_marginBottom="25dp"
         android:tint="@color/black"
         android:id="@+id/closePersonImageView"
-        android:src="@drawable/cross_mark"
+        android:src="@drawable/icon_cross_mark"
         android:layout_height="match_parent" />
 
 
