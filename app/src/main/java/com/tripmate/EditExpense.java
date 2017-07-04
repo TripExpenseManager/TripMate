@@ -349,6 +349,7 @@ public class EditExpense extends AppCompatActivity {
                 DataBaseHelper dataBaseHelper = new DataBaseHelper(EditExpense.this);
                 Double deposit_amount_remaining = dataBaseHelper.getDepositMoneyRemaining(trip_id);
                 Double fromDepositExpense = Double.parseDouble(fromDepositExpenseET.getText().toString());
+                deposit_amount_remaining += model.getAmount();
 
                 if(deposit_amount_remaining >= fromDepositExpense){
                     //add expense

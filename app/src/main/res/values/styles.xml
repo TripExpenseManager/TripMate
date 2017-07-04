@@ -44,6 +44,12 @@
     </style>
 
 
+    <style name="DialogAnimationCentre">
+        <item name="android:windowEnterAnimation">@anim/centre_in</item>
+        <item name="android:windowExitAnimation">@anim/centre_out</item>
+    </style>
+
+
     <style name="MaterialSearchViewStyle">
 
         <!-- Background for the search bar -->

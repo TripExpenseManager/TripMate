@@ -41,8 +41,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
-import com.yalantis.taurus.PullToRefreshView;
-import com.yalantis.taurus.RefreshView;
+
 
 import java.io.File;
 import java.text.ParseException;
@@ -59,8 +58,6 @@ import static android.app.Activity.RESULT_OK;
  * A simple {@link Fragment} subclass.
  */
 public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
-    PullToRefreshView mPullToRefreshView;
 
     GridView trip_grid_view;
 
@@ -100,21 +97,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                 .build();
 
         db = getDbPath();
-
-
-        mPullToRefreshView = (PullToRefreshView) view.findViewById(R.id.pull_to_refresh);
-        mPullToRefreshView.setOnRefreshListener(new PullToRefreshView.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPullToRefreshView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPullToRefreshView.setRefreshing(false);
-                    }
-                }, 500);
-            }
-        });
-
 
         no_trips_RL = (RelativeLayout) view.findViewById(R.id.no_trips_RL);
         no_trips_found_searched_RL = (RelativeLayout) view.findViewById(R.id.no_trips_found_searched_RL);
@@ -1028,7 +1010,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d("DriveDbHandler","connected");
-        // DriveDbHandler.tryCreatingDbOnDrive(mGoogleApiClient);
 
         //doDriveBackup();
 
