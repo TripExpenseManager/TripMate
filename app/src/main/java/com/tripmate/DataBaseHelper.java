@@ -492,6 +492,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             else if(getDepositMoneyRemaining(trip_id) < model.getDepositAmountGiven()){
                 model.setCanRemove(false);
             }
+            else if(model.getDepositAmountGiven() > getDepositMoneyRemaining(trip_id)){
+                model.setCanRemove(false);
+            }
             else{
                 model.setCanRemove(true);
             }
@@ -1122,9 +1125,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean removePerson(PersonWiseExpensesSummaryModel model,String trip_id){
 
         SQLiteDatabase db = getWritableDatabase();
-
         return db.delete(PERSONS_TABLE_NAME, PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+ model.getName()+"\"" , null) > 0;
-
     }
 
     public boolean deleteTrip(String trip_id){

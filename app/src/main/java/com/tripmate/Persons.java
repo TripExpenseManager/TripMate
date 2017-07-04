@@ -307,7 +307,7 @@ public class Persons extends Fragment {
 
                     alertDialogBuilder.setCancelable(true);
                     AlertDialog alertDialog = alertDialogBuilder.create();
-                    alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+                    alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentre);
                     alertDialog.show();
                 }
             };
