@@ -1,11 +1,15 @@
 package com.tripmate;
 
 
+import android.app.ProgressDialog;
 import android.app.models.HotelsTravelModel;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +19,17 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -32,6 +47,11 @@ public class TravelBookingSitesFragment extends Fragment {
     TravelAdapter mAdapter;
     ArrayList<HotelsTravelModel> travelModels = new ArrayList<>();
 
+    public static final String JSON_URL = "http://tripmateandroid.000webhostapp.com/gettravel.php";
+    SwipeRefreshLayout mWaveSwipeRefreshLayout;
+    ProgressDialog pd;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -42,46 +62,91 @@ public class TravelBookingSitesFragment extends Fragment {
 
         travelBookingRV = (RecyclerView) view.findViewById(R.id.travelBookingRV);
 
-        HotelsTravelModel model = new HotelsTravelModel();
-        model.setName("Make My Trip");
-        model.setUrl("www.makemytrip.com");
-        model.setDesc("Make my trip is a website where you can book hotels, buses, trains and ensures a hassle free trip for you");
-        model.setReferenseUrl("https://www.makemytrip.com");
+        pd = new ProgressDialog(getActivity());
+        pd.setTitle("Please wait...");
+        pd.setCancelable(true);
+        pd.setCanceledOnTouchOutside(false);
 
-        travelModels.add(model);
 
-        model = new HotelsTravelModel();
-        model.setName("IRCTC");
-        model.setUrl("www.irctc.co.in");
-        model.setDesc("IRCTC is a website where you can book trains and ensures a hassle free trip for you");
-        model.setReferenseUrl("https://www.irctc.co.in");
+        mWaveSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipetorefresh);
+        mWaveSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                sendRequest();
+            }
+        });
 
-        travelModels.add(model);
 
-        model = new HotelsTravelModel();
-        model.setName("redBus");
-        model.setUrl("www.redbus.com");
-        model.setDesc("redBus is a website where you can book buses and ensures a hassle free trip for you");
-        model.setReferenseUrl("https://www.redbus.com");
+        //getting the previously loaded data which is stored in sharedpreferences
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String jsonObject = app_preferences.getString("get_travel","null");
 
-        travelModels.add(model);
+        if(!jsonObject.equalsIgnoreCase("null")){
+            try {
+                showJSON(jsonObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else{
+            pd.show();
+            sendRequest();
+        }
 
-        model = new HotelsTravelModel();
-        model.setName("AbhiBus");
-        model.setUrl("www.abhibus.com");
-        model.setDesc("AbhiBus is a website where you can book buses and ensures a hassle free trip for you");
-        model.setReferenseUrl("https://www.abhibus.com");
 
-        travelModels.add(model);
+        return view;
+    }
 
-        model = new HotelsTravelModel();
-        model.setName("GoIbibo");
-        model.setUrl("www.goibibo.com");
-        model.setDesc("GoIbibo is a website where you can book hotels, buses, trains and ensures a hassle free trip for you");
-        model.setReferenseUrl("https://www.goibibo.com");
 
-        travelModels.add(model);
+    private void sendRequest(){
 
+        StringRequest stringRequest = new StringRequest(JSON_URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+
+                            SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            SharedPreferences.Editor editor = app_preferences.edit();
+                            editor.putString("get_travel", response);
+                            editor.commit();
+
+                            showJSON(response);
+                            pd.dismiss();
+                            mWaveSwipeRefreshLayout.setRefreshing(false);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        pd.dismiss();
+                        mWaveSwipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(getActivity(),error.getMessage(),Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue.add(stringRequest);
+    }
+
+    private void showJSON(String json) throws JSONException {
+        travelModels.clear();
+        JSONArray result = new JSONArray(json);
+        for(int i=0;i<result.length();i++){
+            JSONObject object = result.getJSONObject(i);
+
+            HotelsTravelModel model = new HotelsTravelModel();
+            model.setName(object.getString("name"));
+            model.setUrl(object.getString("url_display"));
+            model.setDesc(object.getString("description"));
+            model.setReferenseUrl(object.getString("reference_url"));
+            model.setIconUrl1(object.getString("icon_url1"));
+            model.setIconUrl2(object.getString("icon_url2"));
+
+            travelModels.add(model);
+        }
 
         mAdapter = new TravelAdapter(travelModels);
 
@@ -93,8 +158,6 @@ public class TravelBookingSitesFragment extends Fragment {
         adapter.setDuration(400);
 
         travelBookingRV.setAdapter(adapter);
-
-        return view;
     }
 
 
