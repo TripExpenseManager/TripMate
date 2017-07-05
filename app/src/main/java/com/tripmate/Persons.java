@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -100,6 +102,7 @@ public class Persons extends Fragment {
             }
         });
 
+        Log.d("Tab Number Persons",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         return view;
     }
 
@@ -608,6 +611,8 @@ public class Persons extends Fragment {
 
         mAdapter = new PersonsAdapter(personsList);
         persons_recyclerview.setAdapter(mAdapter);
+
+        Log.d("Tab Number Persons",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
 
     }
 

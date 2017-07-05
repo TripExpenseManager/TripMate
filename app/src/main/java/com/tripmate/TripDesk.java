@@ -50,9 +50,11 @@ public class TripDesk extends AppCompatActivity {
         trip_date = tripIdIntent.getStringExtra("trip_date");
 
 
-        getSupportActionBar().setTitle(trip_name);
-        getSupportActionBar().setSubtitle(trip_date);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setTitle(trip_name);
+            getSupportActionBar().setSubtitle(trip_date);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -126,14 +128,8 @@ public class TripDesk extends AppCompatActivity {
 
                 }else if(tab.getPosition() == 3){
 
-                    fab.show();
-                    fab.setVisibility(View.VISIBLE);
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //icon_add notes
-                        }
-                    });
+                    fab.hide();
+                    fab.setVisibility(View.GONE);
 
                 }
             }

@@ -12,12 +12,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -115,6 +117,7 @@ public class Expenses extends Fragment {
             }
         });
 
+        Log.d("Tab Number Expenses",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         // Inflate the layout for this fragment
         return view;
 
@@ -513,6 +516,7 @@ public class Expenses extends Fragment {
                 }
             }
         }
+        Log.d("Tab Number Expenses",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
     }
 
     @Override

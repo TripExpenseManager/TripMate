@@ -1,14 +1,19 @@
 package com.tripmate;
 
 import android.app.models.NotesModel;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
 
@@ -50,72 +57,68 @@ public class Notes extends Fragment {
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         notesModels = dataBaseHelper.getNotes(trip_id);
 
-
-        NotesModel model = new NotesModel();
-        model.setNote_Date("21-05-2016");
-        model.setNote_TripId("1");
-        model.setNote_ContentType(1);
-        model.setNote_Title("My first Note");
-        model.setNote_Id("1");
-        model.setNote_ContentStatus("1");
-        model.setNote_Body("I wanna fhsfd sxcfsadfjh zxjshf sfjdkhs sjkhfs sfksksmfd x cjkxcasd jnasd");
-        notesModels.add(model);
-
-        model = new NotesModel();
-        model.setNote_Date("21-05-2016");
-        model.setNote_TripId("1");
-        model.setNote_ContentType(1);
-        model.setNote_Title("My first Note");
-        model.setNote_Id("1");
-        model.setNote_ContentStatus("1");
-        model.setNote_Body("I wanna fhsfd sxcfsadfjh zxjshf sfjdkhs sjkhfs sfksksmfd x cjkxcasd jnasd");
-        notesModels.add(model);
-
-        model = new NotesModel();
-        model.setNote_Date("21-05-2016");
-        model.setNote_TripId("1");
-        model.setNote_ContentType(1);
-        model.setNote_Title("My first Note");
-        model.setNote_Id("1");
-        model.setNote_ContentStatus("1");
-        model.setNote_Body("I wanna fhsfd sxcfsadfjh zxjshf sfjdkhs sjkhfs sfksksmfd x cjkxcasd jnasd ug bj kh jgjh bbfv hbmn cbv fvhbmnnfvhbmkgfvhkmnvbhgujjk jmn b jh j jkjm n hh hjhn mmn h gh ju kj jngh yh jk h h kjj hg j");
-        notesModels.add(model);
-
-        model = new NotesModel();
-        model.setNote_Date("21-05-2016");
-        model.setNote_TripId("1");
-        model.setNote_ContentType(1);
-        model.setNote_Title("My first Note");
-        model.setNote_Id("1");
-        model.setNote_ContentStatus("1");
-        model.setNote_Body("I wanna fhsfd sxcfsadfjh zxjshf sfjdkhs sjkhfs sfksksmfd x cjkxcasd jnasd");
-        notesModels.add(model);
-
-
         mAdapter = new NotesAdapter(notesModels);
+        mAdapter.notifyDataSetChanged();
         rvNotes.setAdapter(mAdapter);
 
 
-        //hiding fab on scrolled up and showing it on scrolled down
-        final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
-        rvNotes.addOnScrollListener(new RecyclerView.OnScrollListener()
-        {
+
+
+        //hiding fab
+       final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
+        fab.hide();
+        fab.setVisibility(View.GONE);
+
+        final FloatingActionMenu fabMenu = (FloatingActionMenu)  customView.findViewById(R.id.fabMenu);
+        com.github.clans.fab.FloatingActionButton fabNotes = (com.github.clans.fab.FloatingActionButton) customView.findViewById(R.id.fabNotes);
+        com.github.clans.fab.FloatingActionButton fabCheckList = (com.github.clans.fab.FloatingActionButton) customView.findViewById(R.id.fabCheckList);
+
+
+        fabNotes.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
-            {
-                if (dy > 0 && fab.isShown())
-                {
-                    fab.hide();
-                }else{
-
-                    fab.show();
-
-                }
+            public void onClick(View v) {
+                fabMenu.close(true);
+                Intent intent = new Intent(getContext(),NotesEditActivity.class);
+                intent.putExtra("tripId",trip_id);
+                intent.putExtra("editOrAdd","add");
+                startActivity(intent);
             }
         });
 
+        fabCheckList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fabMenu.close(true);
+                Intent intent = new Intent(getContext(),CheckListActivity.class);
+                intent.putExtra("tripId",trip_id);
+                intent.putExtra("editOrAdd","add");
+                startActivity(intent);
+            }
+        });
+
+
+
+        Log.d("Tab Number Notes",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         return customView;
     }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        notesModels = dataBaseHelper.getNotes(trip_id);
+
+        mAdapter = new NotesAdapter(notesModels);
+        mAdapter.notifyDataSetChanged();
+        rvNotes.setAdapter(mAdapter);
+
+        Log.d("Tab Number Notes",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
+
+
+    }
+
 
     class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHolder>{
 
@@ -125,10 +128,13 @@ public class Notes extends Fragment {
             this.notesModels = notesModels;
         }
 
+        boolean isHolderLongPressed = false;
+        int longPressedPosition = 1;
+
 
         public  class NotesViewHolder extends RecyclerView.ViewHolder{
             RelativeLayout rlNotes;
-            LinearLayout rlNotesEdit;
+            LinearLayout llNotesEdit;
             TextView tvNotesTitle,tvNotesMenu,tvNotesBody,tvNotesDate,tvNotesType;
             ImageView ivDeleteNotes,ivEditNotes,ivCancelNotes;
             CardView notesCardView;
@@ -136,7 +142,7 @@ public class Notes extends Fragment {
             public NotesViewHolder(View itemView) {
                 super(itemView);
                 rlNotes = (RelativeLayout) itemView.findViewById(R.id.rlNotes);
-                rlNotesEdit = (LinearLayout) itemView.findViewById(R.id.llNotesEdit);
+                llNotesEdit = (LinearLayout) itemView.findViewById(R.id.llNotesEdit);
                 tvNotesTitle = (TextView) itemView.findViewById(R.id.tvNotesTitle);
                 tvNotesMenu = (TextView) itemView.findViewById(R.id.tvNotesMenu);
                 tvNotesBody = (TextView) itemView.findViewById(R.id.tvNotesBody);
@@ -159,8 +165,8 @@ public class Notes extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final NotesAdapter.NotesViewHolder holder, int position) {
-            holder.rlNotesEdit.setVisibility(View.INVISIBLE);
+        public void onBindViewHolder(final NotesAdapter.NotesViewHolder holder, final int position) {
+            holder.llNotesEdit.setVisibility(View.INVISIBLE);
             NotesModel notesModel = notesModels.get(position);
             holder.tvNotesTitle.setText(notesModel.getNote_Title());
             holder.tvNotesDate.setText(notesModel.getNote_Date());
@@ -203,12 +209,26 @@ public class Notes extends Fragment {
                 }
             });
 
+            holder.notesCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getContext(),NotesEditActivity.class);
+                    intent.putExtra("tripId",trip_id);
+                    intent.putExtra("editOrAdd","view");
+                    intent.putExtra("notesId",notesModels.get(position).getNote_Id());
+                    startActivity(intent);
+                }
+            });
+
             holder.notesCardView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-
+                    if(isHolderLongPressed)
+                        mAdapter.notifyItemChanged(longPressedPosition);
                     holder.rlNotes.setEnabled(false);
-                    holder.rlNotesEdit.setVisibility(View.VISIBLE);
+                    holder.llNotesEdit.setVisibility(View.VISIBLE);
+                    longPressedPosition = position;
+                    isHolderLongPressed = true;
 
                     return true;
                 }
@@ -219,11 +239,62 @@ public class Notes extends Fragment {
                 public void onClick(View v) {
 
                     holder.rlNotes.setEnabled(true);
-                    holder.rlNotesEdit.setVisibility(View.GONE);
+                    holder.llNotesEdit.setVisibility(View.GONE);
+                    isHolderLongPressed = false;
 
                 }
             });
+            holder.ivDeleteNotes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
+                    holder.rlNotes.setEnabled(true);
+                    holder.llNotesEdit.setVisibility(View.GONE);
+                    final AlertDialog.Builder deleteDialog = new AlertDialog.Builder(getContext());
+                    deleteDialog.setMessage("Are you sure to delete this " + holder.tvNotesType.getText().toString().trim().toLowerCase());
+                    deleteDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Deleting Notes or CheckList
+                            DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
+                            dataBaseHelper.deleteNotes(notesModels.get(position));
+                            mAdapter.notifyItemRemoved(position);
+                            notesModels = dataBaseHelper.getNotes(trip_id);
+                            Snackbar.make(getActivity().findViewById(R.id.fab), "Notes deleted Succesfully", Snackbar.LENGTH_LONG).show();
+                        }
+                    });
+                    deleteDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    AlertDialog dialog = deleteDialog.create();
+                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                    dialog.show();
+                    isHolderLongPressed = false;
+
+
+
+                }
+            });
+            holder.ivEditNotes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    holder.rlNotes.setEnabled(true);
+                    holder.llNotesEdit.setVisibility(View.GONE);
+                    isHolderLongPressed = false;
+                    Intent intent = new Intent(getContext(),NotesEditActivity.class);
+                    intent.putExtra("tripId",trip_id);
+                    intent.putExtra("editOrAdd","edit");
+                    intent.putExtra("notesId",notesModels.get(position).getNote_Id());
+                    startActivity(intent);
+
+                   mAdapter.notifyItemChanged(position);
+
+                }
+            });
         }
 
         @Override

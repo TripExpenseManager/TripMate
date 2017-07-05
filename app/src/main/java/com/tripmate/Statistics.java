@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.IdRes;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -94,7 +96,7 @@ public class Statistics extends Fragment {
 
 
 
-
+        Log.d("Tab Number Statistics",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         return customview;
     }
 
@@ -102,6 +104,7 @@ public class Statistics extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("Tab Number Statistics",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
     }
 
     @Override
