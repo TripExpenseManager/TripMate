@@ -362,15 +362,11 @@ public class Notes extends Fragment {
             TodoModel todoModel = new TodoModel();
             String[] todo = s.split(Pattern.quote(DELIMETER_FOR_A_TODO));
             todoModel.setName(todo[0].trim());
-            String[] todoStatus = todo[1].split(",");
-            if (todoStatus[0].trim().equalsIgnoreCase("t"))
+            if (todo[1].trim().equalsIgnoreCase("t"))
                 todoModel.setCompleted(true);
             else
                 todoModel.setCompleted(false);
-            if (todoStatus[1].trim().equalsIgnoreCase("t"))
-                todoModel.setStarred(true);
-            else
-                todoModel.setStarred(false);
+
 
             if (!todoModel.isCompleted())
                 todoModels.add(todoModel);

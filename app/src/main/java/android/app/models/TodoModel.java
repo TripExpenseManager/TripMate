@@ -6,15 +6,13 @@ package android.app.models;
 
 public class TodoModel {
     private String name;
-    private boolean isStarred;
     private boolean isCompleted;
 
     public TodoModel() {
     }
 
-    public TodoModel(String name, boolean isStarred, boolean isCompleted) {
+    public TodoModel(String name, boolean isCompleted) {
         this.name = name;
-        this.isStarred = isStarred;
         this.isCompleted = isCompleted;
     }
 
@@ -24,14 +22,6 @@ public class TodoModel {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isStarred() {
-        return isStarred;
-    }
-
-    public void setStarred(boolean starred) {
-        isStarred = starred;
     }
 
     public boolean isCompleted() {

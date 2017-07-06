@@ -82,6 +82,7 @@ public class CheckListActivity extends AppCompatActivity {
             notesContent = notesModel.getNote_Body();
             if(!notesContent.trim().equals(""))
                 seperateTodosBasedOnStatus(notesContent);
+            Log.d("note ",notesContent);
 
             }
 
@@ -123,7 +124,7 @@ public class CheckListActivity extends AppCompatActivity {
                     switch (keyCode)
                     {
                         case KeyEvent.KEYCODE_ENTER:
-                            addTo();
+                            addTodo();
                             return true;
                         default:
                             break;
@@ -135,15 +136,14 @@ public class CheckListActivity extends AppCompatActivity {
 
     }
 
-    public void addTo(){
+    public void addTodo(){
         if(etAddTodo.getText().toString().trim().equals("")){}
         else
-            unCompletedTodosArrayList.add(new TodoModel(etAddTodo.getText().toString().trim(),false,false));
+            unCompletedTodosArrayList.add(new TodoModel(etAddTodo.getText().toString().trim(),false));
+        todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size());
         etAddTodo.setText("");
 
         // Focus edit text after a todo is aaded // // TODO: 06-07-2017
-
-        // see whether it is starred or not
 
     }
 
@@ -159,6 +159,7 @@ public class CheckListActivity extends AppCompatActivity {
         allTodos.addAll(completedTodosArrayList);
 
         notesContent = encryptTodos(allTodos);
+        Log.d("Content After saving ",notesContent);
 
         if(editOrAdd.equals("add")) {
             NotesModel notesModel = new NotesModel();
@@ -227,19 +228,11 @@ public class CheckListActivity extends AppCompatActivity {
         String noteContent = "";
 
         for(TodoModel  todoModel : todoModels) {
-            // Name of todo
+            // Name of todos
             noteContent+=todoModel.getName().trim();
             noteContent+=DELIMETER_FOR_A_TODO;
-            // Status of the todo
+            // Status of the todos
             if(todoModel.isCompleted())
-                noteContent+="T";
-            else
-                noteContent+="F";
-
-            // Delimiter for Completed and Starred
-            noteContent+=",";
-
-            if(todoModel.isStarred())
                 noteContent+="T";
             else
                 noteContent+="F";
@@ -261,18 +254,12 @@ public class CheckListActivity extends AppCompatActivity {
            TodoModel todoModel = new TodoModel();
             String[] todo = s.split(Pattern.quote(DELIMETER_FOR_A_TODO));
             todoModel.setName(todo[0].trim());
-            String[] todoStatus = todo[1].split(",");
-            if(todoStatus[0].trim().equalsIgnoreCase("t"))
+            if(todo[1].trim().equalsIgnoreCase("t"))
                 todoModel.setCompleted(true);
             else
                 todoModel.setCompleted(false);
-            if(todoStatus[1].trim().equalsIgnoreCase("t"))
-                todoModel.setStarred(true);
-            else
-                todoModel.setStarred(false);
             todoModels.add(todoModel);
         }
-
         return  todoModels;
     }
 
@@ -288,12 +275,9 @@ public class CheckListActivity extends AppCompatActivity {
 
         public class TodoViewHolder extends  RecyclerView.ViewHolder{
             CheckBox cbTodo;
-            ImageView ivStarred;
             public TodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
-                ivStarred = (ImageView) itemView.findViewById(R.id.ivStarred);
-
 
             }
         }
@@ -313,6 +297,7 @@ public class CheckListActivity extends AppCompatActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked){
+                        unCompletedTodosArrayList.get(position).setCompleted(true);
                         completedTodosArrayList.add(unCompletedTodosArrayList.get(position));
                         unCompletedTodosArrayList.remove(position);
                         todosAdapter.notifyItemRemoved(position);
@@ -342,11 +327,9 @@ public class CheckListActivity extends AppCompatActivity {
 
         public class CompletedTodoViewHolder extends  RecyclerView.ViewHolder{
             CheckBox cbTodo;
-            ImageView ivStarred;
             public CompletedTodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
-                ivStarred = (ImageView) itemView.findViewById(R.id.ivStarred);
 
 
             }
@@ -368,6 +351,7 @@ public class CheckListActivity extends AppCompatActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(!(isChecked)){
+                        completedTodosArrayList.get(position).setCompleted(false);
                         unCompletedTodosArrayList.add(completedTodosArrayList.get(position));
                         completedTodosArrayList.remove(position);
                         completedTodosAdapter.notifyItemRemoved(position);
