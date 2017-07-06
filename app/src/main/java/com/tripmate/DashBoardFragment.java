@@ -103,10 +103,10 @@ public class DashBoardFragment extends Fragment {
 
             if(expensePerson.getTotalAmountRemaining()>=0){
                 holder.tvDue.setText("+" + expensePerson.getTotalAmountRemaining());
-                holder.tvDue.setTextColor(Color.GREEN);
+                holder.tvDue.setTextColor(getResources().getColor(R.color.green));
             }else{
                 holder.tvDue.setText(expensePerson.getTotalAmountRemaining()+"");
-                holder.tvDue.setTextColor(Color.RED);
+                holder.tvDue.setTextColor(getResources().getColor(R.color.red));
             }
 
         }

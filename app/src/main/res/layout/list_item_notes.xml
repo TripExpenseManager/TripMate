@@ -19,30 +19,42 @@
             android:id="@+id/rlNotes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp">
+            >
 
             <RelativeLayout
                 android:id="@+id/rlNoteTitleBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="3dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="2dp">
+                android:padding="11dp">
 
                 <TextView
                     android:id="@+id/tvNotesTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
-                    android:padding="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
                     android:ellipsize="end"
                     android:text="Note Title"
                     android:textColor="@color/colorPrimary"
-                    android:layout_marginRight="15dp"
                     android:textSize="17sp"
                     android:textStyle="bold"
-                    android:layout_toLeftOf="@+id/tvNotesMenu" />
+                    android:layout_toLeftOf="@+id/tvNotesMenu"
+                    />
+
+
+                <TextView
+                    android:id="@+id/tvNotesBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvNotesTitle"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:layout_toLeftOf="@+id/tvNotesMenu"
+                    android:layout_marginLeft="5dp"
+                    android:text="@string/sample_note"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/tvNotesMenu"
@@ -51,55 +63,59 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="5dp"
                     android:gravity="center_vertical"
-                    android:text="&#8942;"
+                    android:text="      &#8942;"
+                    android:paddingBottom="25dp"
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
             </RelativeLayout>
 
-            <TextView
-                android:id="@+id/tvNotesBody"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/dateNoteContainer"
                 android:layout_below="@+id/rlNoteTitleBar"
-                android:lineSpacingExtra="5dp"
-                android:maxLines="3"
-                android:layout_marginRight="7dp"
-                android:ellipsize="end"
-                android:layout_marginLeft="7dp"
-                android:text="@string/sample_note"
-                android:textSize="14sp" />
+                >
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.3dp"
-                android:layout_below="@+id/tvNotesBody"
-                android:layout_marginTop="10dp"
-                android:id="@+id/line1"
-                android:background="@color/grey"
-                />
 
-            <TextView
-                android:id="@+id/tvNotesType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:layout_marginLeft="7dp"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/line1"
-                android:layout_marginTop="8dp"
-                android:text="Note" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:id="@+id/line1"
+                    android:background="@color/grey"
+                    />
 
-            <TextView
-                android:id="@+id/tvNotesDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:layout_alignParentRight="true"
-                android:layout_below="@id/line1"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="7dp"
-                android:text="21/06/2017" />
+                <TextView
+                    android:id="@+id/tvNotesType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginLeft="16dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/line1"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Note" />
+
+                <TextView
+                    android:id="@+id/tvNotesDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@id/line1"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="21/06/2017" />
+
+
+
+            </RelativeLayout>
+
+
 
         </RelativeLayout>
 
@@ -109,7 +125,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#CCFFFFFF"
-            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:visibility="gone"
             android:layout_gravity="center_vertical"
             android:orientation="horizontal"
             android:weightSum="3">

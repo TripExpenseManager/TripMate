@@ -384,7 +384,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         Double totalDepositShare = 0.0,totalPersonalShare = 0.0;
 
-
         for(int i=0;i<allExpensesList.size();i++){
             ExpenseModel expenseModel = allExpensesList.get(i);
 

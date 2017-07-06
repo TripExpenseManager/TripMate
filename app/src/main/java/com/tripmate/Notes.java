@@ -25,7 +25,9 @@ import android.widget.TextView;
 
 import com.github.clans.fab.FloatingActionMenu;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 /**
@@ -62,16 +64,9 @@ public class Notes extends Fragment {
         rvNotes.setAdapter(mAdapter);
 
 
-
-
-        //hiding fab
-       final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
-        fab.hide();
-        fab.setVisibility(View.GONE);
-
-        final FloatingActionMenu fabMenu = (FloatingActionMenu)  customView.findViewById(R.id.fabMenu);
-        com.github.clans.fab.FloatingActionButton fabNotes = (com.github.clans.fab.FloatingActionButton) customView.findViewById(R.id.fabNotes);
-        com.github.clans.fab.FloatingActionButton fabCheckList = (com.github.clans.fab.FloatingActionButton) customView.findViewById(R.id.fabCheckList);
+        final FloatingActionMenu fabMenu = (FloatingActionMenu)  getActivity().findViewById(R.id.fabMenu);
+        com.github.clans.fab.FloatingActionButton fabNotes = (com.github.clans.fab.FloatingActionButton) getActivity().findViewById(R.id.fabNotes);
+        final com.github.clans.fab.FloatingActionButton fabCheckList = (com.github.clans.fab.FloatingActionButton) getActivity().findViewById(R.id.fabCheckList);
 
 
         fabNotes.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +76,7 @@ public class Notes extends Fragment {
                 Intent intent = new Intent(getContext(),NotesEditActivity.class);
                 intent.putExtra("tripId",trip_id);
                 intent.putExtra("editOrAdd","add");
+                intent.putExtra("anim","yes");
                 startActivity(intent);
             }
         });
@@ -92,20 +88,32 @@ public class Notes extends Fragment {
                 Intent intent = new Intent(getContext(),CheckListActivity.class);
                 intent.putExtra("tripId",trip_id);
                 intent.putExtra("editOrAdd","add");
+                intent.putExtra("anim","yes");
                 startActivity(intent);
             }
         });
 
 
+        rvNotes.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                if (dy > 0 && fabMenu.isShown())
+                {
+                    fabMenu.hideMenuButton(true);
+                }else if(((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition() == 3){
+                    fabMenu.showMenuButton(true);
+                }
+            }
+        });
 
-        Log.d("Tab Number Notes",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         return customView;
     }
 
 
     @Override
     public void onResume() {
-        super.onResume();
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         notesModels = dataBaseHelper.getNotes(trip_id);
@@ -114,8 +122,14 @@ public class Notes extends Fragment {
         mAdapter.notifyDataSetChanged();
         rvNotes.setAdapter(mAdapter);
 
-        Log.d("Tab Number Notes",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
+        //hiding fab
+        final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
+        fab.hide();
+        fab.setVisibility(View.GONE);
 
+        Log.i("saikrishna","fabhided");
+
+        super.onResume();
 
     }
 
@@ -133,7 +147,7 @@ public class Notes extends Fragment {
 
 
         public  class NotesViewHolder extends RecyclerView.ViewHolder{
-            RelativeLayout rlNotes;
+            RelativeLayout rlNotes,dateNoteContainer;
             LinearLayout llNotesEdit;
             TextView tvNotesTitle,tvNotesMenu,tvNotesBody,tvNotesDate,tvNotesType;
             ImageView ivDeleteNotes,ivEditNotes,ivCancelNotes;
@@ -152,6 +166,7 @@ public class Notes extends Fragment {
                 ivEditNotes = (ImageView) itemView.findViewById(R.id.ivEditNotes);
                 ivCancelNotes = (ImageView) itemView.findViewById(R.id.ivCancelNotes);
                 notesCardView = (CardView) itemView.findViewById(R.id.notesCardView);
+                dateNoteContainer = (RelativeLayout) itemView.findViewById(R.id.dateNoteContainer);
 
 
             }
@@ -166,11 +181,18 @@ public class Notes extends Fragment {
 
         @Override
         public void onBindViewHolder(final NotesAdapter.NotesViewHolder holder, final int position) {
-            holder.llNotesEdit.setVisibility(View.INVISIBLE);
+            holder.llNotesEdit.setVisibility(View.GONE);
             NotesModel notesModel = notesModels.get(position);
             holder.tvNotesTitle.setText(notesModel.getNote_Title());
-            holder.tvNotesDate.setText(notesModel.getNote_Date());
             holder.tvNotesBody.setText(notesModel.getNote_Body());
+
+            Long datevalue = Long.valueOf(notesModel.getNote_Date());
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            Date date = new Date(datevalue);
+            String dateStr = format.format(date);
+
+            holder.tvNotesDate.setText(dateStr);
+
 
             //notesContentType = 1 -> Note
             //notesContentType = 2 -> Checklist
@@ -194,10 +216,10 @@ public class Notes extends Fragment {
                         public boolean onMenuItemClick(MenuItem item) {
                             switch (item.getItemId()) {
                                 case R.id.edit:
-                                    //handle menu1 click
+                                    holder.ivEditNotes.performClick();
                                     break;
                                 case R.id.delete:
-                                    //handle menu2 click
+                                    holder.ivDeleteNotes.performClick();
                                     break;
                             }
                             return false;
@@ -209,18 +231,25 @@ public class Notes extends Fragment {
                 }
             });
 
-            holder.notesCardView.setOnClickListener(new View.OnClickListener() {
+            View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(),NotesEditActivity.class);
                     intent.putExtra("tripId",trip_id);
                     intent.putExtra("editOrAdd","view");
                     intent.putExtra("notesId",notesModels.get(position).getNote_Id());
+                    intent.putExtra("anim","yes");
                     startActivity(intent);
                 }
-            });
+            };
 
-            holder.notesCardView.setOnLongClickListener(new View.OnLongClickListener() {
+
+            holder.tvNotesTitle.setOnClickListener(listener);
+            holder.tvNotesBody.setOnClickListener(listener);
+            holder.dateNoteContainer.setOnClickListener(listener);
+
+
+            View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     if(isHolderLongPressed)
@@ -232,7 +261,12 @@ public class Notes extends Fragment {
 
                     return true;
                 }
-            });
+            };
+
+            holder.tvNotesTitle.setOnLongClickListener(onLongClickListener);
+            holder.tvNotesBody.setOnLongClickListener(onLongClickListener);
+            holder.dateNoteContainer.setOnLongClickListener(onLongClickListener);
+
 
             holder.ivCancelNotes.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -270,7 +304,7 @@ public class Notes extends Fragment {
                         }
                     });
                     AlertDialog dialog = deleteDialog.create();
-                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
                     dialog.show();
                     isHolderLongPressed = false;
 
@@ -289,6 +323,7 @@ public class Notes extends Fragment {
                     intent.putExtra("tripId",trip_id);
                     intent.putExtra("editOrAdd","edit");
                     intent.putExtra("notesId",notesModels.get(position).getNote_Id());
+                    intent.putExtra("anim","yes");
                     startActivity(intent);
 
                    mAdapter.notifyItemChanged(position);
