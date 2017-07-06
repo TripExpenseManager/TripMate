@@ -1,6 +1,7 @@
 package com.tripmate;
 
 import android.app.models.NotesModel;
+import android.app.models.TodoModel;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,9 @@ import com.github.clans.fab.FloatingActionMenu;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import java.util.Date;
 import java.util.Date;
 
 
@@ -41,6 +45,9 @@ public class Notes extends Fragment {
     String trip_id;
 
     ArrayList<NotesModel> notesModels = new ArrayList<>();
+
+    public static String DELIMETER_FOR_TODOS ="$*^";
+    public static String DELIMETER_FOR_A_TODO ="@+&";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -182,23 +189,25 @@ public class Notes extends Fragment {
         @Override
         public void onBindViewHolder(final NotesAdapter.NotesViewHolder holder, final int position) {
             holder.llNotesEdit.setVisibility(View.GONE);
-            NotesModel notesModel = notesModels.get(position);
+            final NotesModel notesModel = notesModels.get(position);
             holder.tvNotesTitle.setText(notesModel.getNote_Title());
             holder.tvNotesBody.setText(notesModel.getNote_Body());
 
-            Long datevalue = Long.valueOf(notesModel.getNote_Date());
+         /*   Long datevalue = Long.valueOf(notesModel.getNote_Date());
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             Date date = new Date(datevalue);
             String dateStr = format.format(date);
 
             holder.tvNotesDate.setText(dateStr);
-
+            */
 
             //notesContentType = 1 -> Note
             //notesContentType = 2 -> Checklist
             if(notesModel.getNote_ContentType() == 1){
                 holder.tvNotesType.setText("Note");
             }else{
+                if(!notesModel.getNote_Body().trim().equals(""))
+                    holder.tvNotesBody.setText(decryptUnCompletedTodosasLinesOfText(notesModel.getNote_Body()));
                 holder.tvNotesType.setText("Checklist");
             }
 
@@ -234,7 +243,13 @@ public class Notes extends Fragment {
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getContext(),NotesEditActivity.class);
+                    Intent intent;
+                    if(notesModel.getNote_ContentType()==1) {
+                        intent = new Intent(getContext(), NotesEditActivity.class);
+                    }
+                    else{
+                        intent = new Intent(getContext(), CheckListActivity.class);
+                    }
                     intent.putExtra("tripId",trip_id);
                     intent.putExtra("editOrAdd","view");
                     intent.putExtra("notesId",notesModels.get(position).getNote_Id());
@@ -337,4 +352,39 @@ public class Notes extends Fragment {
             return notesModels.size();
         }
     }
+
+    public String decryptUnCompletedTodosasLinesOfText(String noteContent) {
+        String[] todosModelsasStrings = noteContent.split(Pattern.quote(DELIMETER_FOR_TODOS));
+        ArrayList<TodoModel> todoModels = new ArrayList<>();
+        String notesBody = "";
+
+        for (String s : todosModelsasStrings) {
+            TodoModel todoModel = new TodoModel();
+            String[] todo = s.split(Pattern.quote(DELIMETER_FOR_A_TODO));
+            todoModel.setName(todo[0].trim());
+            String[] todoStatus = todo[1].split(",");
+            if (todoStatus[0].trim().equalsIgnoreCase("t"))
+                todoModel.setCompleted(true);
+            else
+                todoModel.setCompleted(false);
+            if (todoStatus[1].trim().equalsIgnoreCase("t"))
+                todoModel.setStarred(true);
+            else
+                todoModel.setStarred(false);
+
+            if (!todoModel.isCompleted())
+                todoModels.add(todoModel);
+        }
+
+        for(TodoModel todoModel : todoModels){
+            String specialCharacter = "#";
+            notesBody+=specialCharacter+" ";
+            notesBody+=todoModel.getName();
+            notesBody+="\n";
+
+            // include a special CHaracter for every item //// TODO: 06-07-2017
+        }
+        return notesBody;
+    }
+
 }
