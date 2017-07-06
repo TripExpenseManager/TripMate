@@ -164,6 +164,8 @@ public class MainActivity extends AppCompatActivity
             } else if (id == R.id.nav_settings) {
 
                 // restoreDriveBackup();
+                Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
+                startActivity(intent);
 
             }
 

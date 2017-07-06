@@ -7,8 +7,6 @@
     android:layout_height="wrap_content"
     android:id="@+id/stickiesCardView"
     android:foreground="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
     android:layout_marginBottom="0.5dp"
     tools:ignore="UnusedAttribute">
 

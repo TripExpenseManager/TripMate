@@ -17,12 +17,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,7 @@ public class TripDesk extends AppCompatActivity {
     String trip_id,trip_name,trip_date;
 
     FloatingActionButton fab;
+    FloatingActionMenu fabMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,10 @@ public class TripDesk extends AppCompatActivity {
 
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
+
+
+
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(3);
@@ -77,10 +85,18 @@ public class TripDesk extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+
+                Log.i("saikrishna","123");
+
                 if(tab.getPosition() == 0){
 
                     fab.show();
                     fab.setVisibility(View.VISIBLE);
+
+                    fabMenu.showMenuButton(false);
+                    fabMenu.setVisibility(View.GONE);
+
+
                     fab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -103,6 +119,11 @@ public class TripDesk extends AppCompatActivity {
 
                     fab.show();
                     fab.setVisibility(View.VISIBLE);
+
+                    fabMenu.showMenuButton(false);
+                    fabMenu.setVisibility(View.GONE);
+
+
                     fab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -126,10 +147,16 @@ public class TripDesk extends AppCompatActivity {
                     fab.hide();
                     fab.setVisibility(View.GONE);
 
+                    fabMenu.showMenuButton(false);
+                    fabMenu.setVisibility(View.GONE);
+
                 }else if(tab.getPosition() == 3){
 
                     fab.hide();
                     fab.setVisibility(View.GONE);
+
+                    fabMenu.showMenuButton(true);
+                    fabMenu.setVisibility(View.VISIBLE);
 
                 }
             }
@@ -145,6 +172,56 @@ public class TripDesk extends AppCompatActivity {
             }
         });
         
+    }
+
+    @Override
+    protected void onResume() {
+/*
+        if(viewPager.getCurrentItem() == 0){
+
+            Log.i("saikrishna","0");
+
+            fab.show();
+            fab.setVisibility(View.VISIBLE);
+
+            fabMenu.showMenuButton(false);
+            fabMenu.setVisibility(View.GONE);
+
+        }else if(viewPager.getCurrentItem() == 1){
+
+            Log.i("saikrishna","1");
+
+            fab.show();
+            fab.setVisibility(View.VISIBLE);
+
+            fabMenu.showMenuButton(false);
+            fabMenu.setVisibility(View.GONE);
+
+
+        }else if(viewPager.getCurrentItem() == 2){
+
+            Log.i("saikrishna","2");
+
+            fab.hide();
+            fab.setVisibility(View.GONE);
+
+            fabMenu.showMenuButton(false);
+            fabMenu.setVisibility(View.GONE);
+
+        }else if(viewPager.getCurrentItem() == 3){
+
+            Log.i("saikrishna","3");
+
+            fab.hide();
+            fab.setVisibility(View.GONE);
+
+            fabMenu.showMenuButton(true);
+            fabMenu.setVisibility(View.VISIBLE);
+
+        }  */
+
+        super.onResume();
+
     }
 
     @Override
@@ -339,12 +416,5 @@ public class TripDesk extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
-
-
-
-
-
-
-
 
 }

@@ -10,6 +10,7 @@
     android:layout_marginRight="5dp"
     android:layout_marginTop="2.5dp"
     android:layout_marginBottom="2.5dp"
+    android:foreground="?android:attr/selectableItemBackground"
     tools:ignore="UnusedAttribute">
 
     <RelativeLayout

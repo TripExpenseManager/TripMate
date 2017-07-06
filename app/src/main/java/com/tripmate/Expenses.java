@@ -109,7 +109,7 @@ public class Expenses extends Fragment {
                 if (dy > 0 && fab.isShown())
                 {
                     fab.hide();
-                }else{
+                }else if(((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition() == 1){
 
                     fab.show();
 
@@ -117,7 +117,6 @@ public class Expenses extends Fragment {
             }
         });
 
-        Log.d("Tab Number Expenses",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         // Inflate the layout for this fragment
         return view;
 
@@ -516,7 +515,6 @@ public class Expenses extends Fragment {
                 }
             }
         }
-        Log.d("Tab Number Expenses",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
     }
 
     @Override

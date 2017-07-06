@@ -94,15 +94,13 @@ public class Persons extends Fragment {
                 if (dy > 0 && fab.isShown())
                 {
                     fab.hide();
-                }else{
-
+                }else if(((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition() == 0){
                     fab.show();
 
                 }
             }
         });
 
-        Log.d("Tab Number Persons",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         return view;
     }
 
@@ -310,7 +308,7 @@ public class Persons extends Fragment {
 
                     alertDialogBuilder.setCancelable(true);
                     AlertDialog alertDialog = alertDialogBuilder.create();
-                    alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentre);
+                    alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
                     alertDialog.show();
                 }
             };
@@ -489,7 +487,7 @@ public class Persons extends Fragment {
                 .setPositiveButton("OK",null)
                 .setNegativeButton("CANCEL", null)
                 .create();
-        alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationRightToLeft);
+        alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
         alertDialog.show();
 
 

@@ -8,6 +8,7 @@
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -25,11 +26,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="com.google.android.voicesearch.SELF_NOTE" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".AddTrip"
@@ -54,10 +56,14 @@
             android:name=".AddExpense"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".EditExpense"
+        <activity android:name=".EditExpense"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".SettingsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"
+            ></activity>
+
         <activity
             android:name=".NotesEditActivity"
             android:configChanges="orientation|screenSize"
@@ -65,6 +71,7 @@
         <activity android:name=".CheckListActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar"/>
+
     </application>
 
 </manifest>
