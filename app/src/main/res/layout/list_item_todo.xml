@@ -25,7 +25,8 @@
             android:textColor="#000000"
             android:textColorHighlight="@color/white"
             android:textColorLink="@color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:checked="false"/>
 
         <ImageView
             android:id="@+id/ivStarred"

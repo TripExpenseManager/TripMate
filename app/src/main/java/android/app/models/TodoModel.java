@@ -7,13 +7,15 @@ package android.app.models;
 public class TodoModel {
     private String name;
     private boolean isStarred;
+    private boolean isCompleted;
 
     public TodoModel() {
     }
 
-    public TodoModel(String name, boolean isStarred) {
+    public TodoModel(String name, boolean isStarred, boolean isCompleted) {
         this.name = name;
         this.isStarred = isStarred;
+        this.isCompleted = isCompleted;
     }
 
     public String getName() {
@@ -30,5 +32,13 @@ public class TodoModel {
 
     public void setStarred(boolean starred) {
         isStarred = starred;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 }
