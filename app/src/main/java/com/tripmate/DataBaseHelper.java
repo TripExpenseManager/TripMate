@@ -211,6 +211,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
+    public ArrayList<PersonModel> getAllPersons(){
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<PersonModel> personsList = new ArrayList<>();
+
+        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,null,null,
+                null,null,null);
+        if(cursor!=null && cursor.moveToFirst()){
+            do{
+                PersonModel personModel = new PersonModel();
+                personModel.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
+                personModel.setMobile(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_MOBILE)));
+                personModel.setEmail(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_EMAIL)));
+                personModel.setDeposit(cursor.getDouble(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
+                personModel.setAdmin(cursor.getInt(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
+
+                personsList.add(personModel);
+
+            }while(cursor.moveToNext());
+            cursor.close();
+        }
+
+
+        return  personsList;
+    }
+
     public boolean addExpense(String trip_id,String description,String category,String date,String expShareByPersonsSelected,int amount_type,ArrayList<AddExpenseByPersonModel> expenseByPersonList,Double fromDepositExpense,Long date_value){
         SQLiteDatabase db = getWritableDatabase();
 
