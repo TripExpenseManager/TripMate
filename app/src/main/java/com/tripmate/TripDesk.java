@@ -22,12 +22,16 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -263,15 +267,56 @@ public class TripDesk extends AppCompatActivity {
 
             final View view = getLayoutInflater().inflate(R.layout.layout_add_person, null);
             final TextInputLayout tilPersonName, tilPersonDeposit, tilPersonMobile, tilPersonEmail;
+            final AutoCompleteTextView actvPersonName,actvPersonDeposit,actvPersonMobile,actvPersonEmail;
             tilPersonName = (TextInputLayout) view.findViewById(R.id.tilPersonName);
             tilPersonDeposit = (TextInputLayout) view.findViewById(R.id.tilPersonDeposit);
             tilPersonMobile = (TextInputLayout) view.findViewById(R.id.tilPersonMobile);
             tilPersonEmail = (TextInputLayout) view.findViewById(R.id.tilPersonEmail);
 
+
             TextView note1 = (TextView) view.findViewById(R.id.note1);
             TextView note2 = (TextView) view.findViewById(R.id.note2);
             note1.setVisibility(View.VISIBLE);
             note2.setVisibility(View.VISIBLE);
+
+            actvPersonName = (AutoCompleteTextView) view.findViewById(R.id.actvPersonName);
+            actvPersonDeposit = (AutoCompleteTextView) view.findViewById(R.id.actvPersonDeposit);
+            actvPersonMobile = (AutoCompleteTextView) view.findViewById(R.id.actvPersonMobile);
+            actvPersonEmail = (AutoCompleteTextView) view.findViewById(R.id.actvPersonEmail);
+
+            DataBaseHelper db = new DataBaseHelper(TripDesk.this);
+            ArrayList<PersonModel> allPersons = db.getAllPersons();
+
+            final ArrayList<String> allPersonsNames = new ArrayList<>();
+            final ArrayList<String> allPersonsMobiles= new ArrayList<>();
+            final ArrayList<String> allPersonsEmails = new ArrayList<>();
+
+            for(PersonModel p : allPersons){
+                allPersonsNames.add(p.getName());
+                allPersonsMobiles.add(p.getMobile());
+                allPersonsEmails.add(p.getEmail());
+            }
+
+
+            ArrayAdapter personNamesAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,allPersonsNames);
+            ArrayAdapter personMobilesAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,allPersonsMobiles);
+            ArrayAdapter personEmailsAdapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,allPersonsEmails);
+
+            actvPersonName.setAdapter(personNamesAdapter);
+            actvPersonMobile.setAdapter(personMobilesAdapter);
+            actvPersonEmail.setAdapter(personEmailsAdapter);
+
+            actvPersonName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String personName = ((TextView)view).getText().toString().trim();
+                    int index = allPersonsNames.indexOf(personName);
+                    if(index!=-1) {
+                        actvPersonMobile.setText(allPersonsMobiles.get(index));
+                        actvPersonEmail.setText(allPersonsEmails.get(index));
+                    }
+                }
+            });
 
 
             final AlertDialog alertDialog = new AlertDialog.Builder(TripDesk.this).setView(view).setTitle("Add Person")

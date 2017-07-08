@@ -28,13 +28,6 @@
             android:textSize="16sp"
             android:checked="false"/>
 
-        <ImageView
-            android:id="@+id/ivStarred"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_gravity="center"
-            android:src="@drawable/icon_star_black" />
-
     </LinearLayout>
 
 

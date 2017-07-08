@@ -19,9 +19,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp">
 
-            <android.support.design.widget.TextInputEditText
+            <AutoCompleteTextView
+                android:id="@+id/actvPersonName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:completionThreshold="1"
                 android:hint="Name"
                 android:inputType="textPersonName"
                 android:maxLines="1" />
@@ -33,9 +35,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp">
 
-            <android.support.design.widget.TextInputEditText
+            <AutoCompleteTextView
+                android:id="@+id/actvPersonDeposit"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:completionThreshold="1"
                 android:hint="Deposit(Optional)"
                 android:inputType="numberDecimal"
                 android:maxLines="1" />
@@ -47,9 +51,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp">
 
-            <android.support.design.widget.TextInputEditText
+            <AutoCompleteTextView
+                android:id="@+id/actvPersonMobile"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:completionThreshold="1"
                 android:hint="Mobile(Optional)"
                 android:inputType="phone"
                 android:maxLines="1" />
@@ -61,9 +67,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp">
 
-            <android.support.design.widget.TextInputEditText
+            <AutoCompleteTextView
+                android:id="@+id/actvPersonEmail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:completionThreshold="1"
                 android:hint="Email(Optional)"
                 android:inputType="textEmailAddress"
                 android:maxLines="1" />
