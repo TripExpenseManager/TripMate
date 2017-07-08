@@ -211,6 +211,17 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
+    public void addToTotalAmount(String trip_id,Double amount){
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT,amount);
+
+        db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
+
+
+    }
+
     public ArrayList<PersonModel> getAllPersons(){
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<PersonModel> personsList = new ArrayList<>();
@@ -256,10 +267,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
             db.insert(ITEMS_TABLE_NAME,null,values);
 
+            addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
+
         }
         else if(amount_type == 2){
-
-
 
             for(int i=0;i<expenseByPersonList.size();i++){
                 ContentValues values = new ContentValues();
@@ -277,6 +288,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseByPersonList.get(i).getName());
 
                 db.insert(ITEMS_TABLE_NAME,null,values);
+                addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
             }
 
         }
@@ -308,7 +320,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return trip_array_list;
     }
 
-
     public String[] getTripNamesAsStringArray() {
 
 
@@ -327,7 +338,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return trip_name_array;
     }
-
 
     public ArrayList<ExpenseModel> getAllExpenses(String trip_id){
         ArrayList<ExpenseModel> expenseModelArrayList = new ArrayList<>();
@@ -1067,7 +1077,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean deleteExpenseItem(ExpenseModel item){
         SQLiteDatabase db = getWritableDatabase();
 
-        return db.delete(ITEMS_TABLE_NAME, ITEMS_COLUMN_TRIP_ID + " = \"" + item.getTripId()+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+ item.getItemId()+"\"" , null) > 0;
+        db.delete(ITEMS_TABLE_NAME, ITEMS_COLUMN_TRIP_ID + " = \"" + item.getTripId()+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+ item.getItemId()+"\"" , null);
+        addToTotalAmount(item.getTripId(),getTotalExpensesAmount(item.getTripId()));
+        return true;
     }
 
     public boolean isTripExists(String trip_id){
@@ -1156,7 +1168,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
 
             db.update(ITEMS_TABLE_NAME,values,ITEMS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+item_id+"\"", null);
-
+            addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
         }
         else if(amount_type == 2){
 
@@ -1172,7 +1184,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseByPersonList.get(0).getName());
 
             db.update(ITEMS_TABLE_NAME,values,ITEMS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+item_id+"\"", null);
-
+            addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
         }
 
         return true;
@@ -1207,8 +1219,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(NOTES_COLUMN_NOTE_CONTENT_STATUS,notesModel.getNote_ContentStatus());
         values.put(NOTES_COLUMN_NOTE_DATE,notesModel.getNote_Date());
 
-        db.update(NOTES_TABLE_NAME,values,NOTES_COLUMN_TRIP_ID+ "=? AND " + NOTES_COLUMN_NOTE_ID + "=?",
-                new String[]{notesModel.getNote_TripId(),notesModel.getNote_Id()});
+        db.update(NOTES_TABLE_NAME,values,NOTES_COLUMN_TRIP_ID+ "=? AND " + NOTES_COLUMN_NOTE_ID + "=?", new String[]{notesModel.getNote_TripId(),notesModel.getNote_Id()});
     }
 
     public NotesModel getNotes(String tripId, String notesId){

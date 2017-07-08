@@ -143,6 +143,8 @@ public class CheckListActivity extends AppCompatActivity {
         todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size());
         etAddTodo.setText("");
 
+        todosAdapter.notifyDataSetChanged();
+
         // Focus edit text after a todo is aaded // // TODO: 06-07-2017
 
     }

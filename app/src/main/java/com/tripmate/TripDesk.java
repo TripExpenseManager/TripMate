@@ -68,7 +68,23 @@ public class TripDesk extends AppCompatActivity {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TripDesk.this,AddExpense.class);
+                intent.putExtra("trip_id",trip_id);
 
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(TripDesk.this, fab, getString(R.string.activity_image_trans1));
+                    startActivity(intent, options.toBundle());
+                }
+                else {
+                    startActivity(intent);
+                }
+
+            }
+        });
 
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -90,7 +106,6 @@ public class TripDesk extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 
-                Log.i("saikrishna","123");
 
                 if(tab.getPosition() == 0){
 
@@ -100,25 +115,6 @@ public class TripDesk extends AppCompatActivity {
                     fabMenu.showMenuButton(false);
                     fabMenu.setVisibility(View.GONE);
 
-
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(TripDesk.this,AddExpense.class);
-                            intent.putExtra("trip_id",trip_id);
-
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(TripDesk.this, fab, getString(R.string.activity_image_trans1));
-                                startActivity(intent, options.toBundle());
-                            }
-                            else {
-                                startActivity(intent);
-                            }
-
-                        }
-                    });
-
                 }else if(tab.getPosition() == 1){
 
                     fab.show();
@@ -126,25 +122,6 @@ public class TripDesk extends AppCompatActivity {
 
                     fabMenu.showMenuButton(false);
                     fabMenu.setVisibility(View.GONE);
-
-
-                    fab.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(TripDesk.this,AddExpense.class);
-                            intent.putExtra("trip_id",trip_id);
-
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(TripDesk.this, fab, getString(R.string.activity_image_trans1));
-                                startActivity(intent, options.toBundle());
-                            }
-                            else {
-                                startActivity(intent);
-                            }
-
-                        }
-                    });
 
                 }else if(tab.getPosition() == 2){
 
@@ -180,50 +157,6 @@ public class TripDesk extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-/*
-        if(viewPager.getCurrentItem() == 0){
-
-            Log.i("saikrishna","0");
-
-            fab.show();
-            fab.setVisibility(View.VISIBLE);
-
-            fabMenu.showMenuButton(false);
-            fabMenu.setVisibility(View.GONE);
-
-        }else if(viewPager.getCurrentItem() == 1){
-
-            Log.i("saikrishna","1");
-
-            fab.show();
-            fab.setVisibility(View.VISIBLE);
-
-            fabMenu.showMenuButton(false);
-            fabMenu.setVisibility(View.GONE);
-
-
-        }else if(viewPager.getCurrentItem() == 2){
-
-            Log.i("saikrishna","2");
-
-            fab.hide();
-            fab.setVisibility(View.GONE);
-
-            fabMenu.showMenuButton(false);
-            fabMenu.setVisibility(View.GONE);
-
-        }else if(viewPager.getCurrentItem() == 3){
-
-            Log.i("saikrishna","3");
-
-            fab.hide();
-            fab.setVisibility(View.GONE);
-
-            fabMenu.showMenuButton(true);
-            fabMenu.setVisibility(View.VISIBLE);
-
-        }  */
-
         super.onResume();
 
     }
@@ -426,10 +359,10 @@ public class TripDesk extends AppCompatActivity {
 
     private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new Persons(), "PERSONS");
-        adapter.addFragment(new Expenses(), "EXPENSES");
-        adapter.addFragment(new Statistics(), "STATISTICS");
-        adapter.addFragment(new Notes(), "NOTES");
+        adapter.addFragment(new Persons(), "Persons");
+        adapter.addFragment(new Expenses(), "Expenses");
+        adapter.addFragment(new Statistics(), "Statistics");
+        adapter.addFragment(new Notes(), "Notes");
         viewPager.setAdapter(adapter);
     }
 

@@ -2,8 +2,10 @@ package com.tripmate;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -32,6 +34,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        int should_display = app_preferences.getInt("should_display",1);
+
+        if(should_display == 1){
+            Intent intent = new Intent(MainActivity.this,AppIntroActivity.class);
+            startActivity(intent);
+        }
 
         fab = (FloatingActionButton) findViewById(R.id.addTripFab);
         searchView = (MaterialSearchView) findViewById(R.id.search_view);
@@ -116,7 +126,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //donot reload on same item is reselected
-        if(prevId != id){
+        if(prevId != id) {
 
             android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -153,7 +163,10 @@ public class MainActivity extends AppCompatActivity
                 transaction.addToBackStack(null);
                 transaction.commit();
 
-            } else if (id == R.id.nav_share) {
+            }
+
+        }
+        if (id == R.id.nav_share) {
 
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
@@ -161,15 +174,15 @@ public class MainActivity extends AppCompatActivity
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
 
-            } else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_settings) {
 
                 // restoreDriveBackup();
                 Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
                 startActivity(intent);
 
-            }
-
         }
+
+
 
          /*  mGoogleApiClient.connect();
             if(mGoogleApiClient.isConnected()){

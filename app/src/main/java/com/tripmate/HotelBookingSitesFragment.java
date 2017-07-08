@@ -64,7 +64,7 @@ public class HotelBookingSitesFragment extends Fragment {
         ((MainActivity) getActivity()).getSupportActionBar().setTitle("Hotel Booking Sites");
 
         pd = new ProgressDialog(getActivity());
-        pd.setTitle("Please wait...");
+        pd.setMessage("Please wait...");
         pd.setCancelable(true);
         pd.setCanceledOnTouchOutside(false);
 
