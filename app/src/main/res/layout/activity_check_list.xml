@@ -64,12 +64,6 @@ android:layout_height="match_parent">
                     android:maxLines="1"
                     android:textColor="#FFFFFF" />
 
-                <ImageView
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_gravity="center"
-                    app:srcCompat="@drawable/icon_star" />
-
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
