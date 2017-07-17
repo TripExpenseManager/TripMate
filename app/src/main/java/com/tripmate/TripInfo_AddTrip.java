@@ -152,7 +152,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                         .setNegativeButton("CANCEL", null)
                         .create();
 
-                alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationRightToLeft);
+                alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
                 alertDialog.show();
 
 

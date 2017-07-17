@@ -42,6 +42,8 @@ public class Notes extends Fragment {
     RecyclerView rvNotes;
     NotesAdapter mAdapter = null;
 
+    RelativeLayout no_notes_RL;
+
     String trip_id;
 
     ArrayList<NotesModel> notesModels = new ArrayList<>();
@@ -56,6 +58,7 @@ public class Notes extends Fragment {
         View customView = inflater.inflate(R.layout.fragment_notes, container, false);
 
         rvNotes = (RecyclerView) customView.findViewById(R.id.rvNotes);
+        no_notes_RL = (RelativeLayout) customView.findViewById(R.id.no_notes_RL);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvNotes.setLayoutManager(linearLayoutManager);
@@ -65,6 +68,12 @@ public class Notes extends Fragment {
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         notesModels = dataBaseHelper.getNotes(trip_id);
+
+        if(notesModels.size() == 0){
+            no_notes_RL.setVisibility(View.VISIBLE);
+        }else{
+            no_notes_RL.setVisibility(View.GONE);
+        }
 
         mAdapter = new NotesAdapter(notesModels);
         mAdapter.notifyDataSetChanged();
@@ -125,6 +134,12 @@ public class Notes extends Fragment {
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         notesModels = dataBaseHelper.getNotes(trip_id);
 
+        if(notesModels.size() == 0){
+            no_notes_RL.setVisibility(View.VISIBLE);
+        }else{
+            no_notes_RL.setVisibility(View.GONE);
+        }
+
         mAdapter = new NotesAdapter(notesModels);
         mAdapter.notifyDataSetChanged();
         rvNotes.setAdapter(mAdapter);
@@ -133,8 +148,6 @@ public class Notes extends Fragment {
         final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
         fab.hide();
         fab.setVisibility(View.GONE);
-
-        Log.i("saikrishna","fabhided");
 
         super.onResume();
 
@@ -309,6 +322,13 @@ public class Notes extends Fragment {
                             dataBaseHelper.deleteNotes(notesModels.get(position));
                             mAdapter.notifyItemRemoved(position);
                             notesModels = dataBaseHelper.getNotes(trip_id);
+
+                            if(notesModels.size() == 0){
+                                no_notes_RL.setVisibility(View.VISIBLE);
+                            }else{
+                                no_notes_RL.setVisibility(View.GONE);
+                            }
+
                             Snackbar.make(getActivity().findViewById(R.id.fab), "Notes deleted Succesfully", Snackbar.LENGTH_LONG).show();
                         }
                     });
@@ -319,7 +339,7 @@ public class Notes extends Fragment {
                         }
                     });
                     AlertDialog dialog = deleteDialog.create();
-                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
+                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
                     dialog.show();
                     isHolderLongPressed = false;
 

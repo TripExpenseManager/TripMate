@@ -9,4 +9,39 @@
         android:layout_height="match_parent"
         android:id="@+id/rvNotes"/>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:visibility="gone"
+        android:id="@+id/no_notes_RL"
+        >
+
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/no_notes_image"
+            android:src="@drawable/no_notes"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No Notes/Checklists created yet!"
+            android:layout_below="@+id/no_notes_image"
+            android:layout_marginTop="2dp"
+            android:textSize="18dp"
+            android:fontFamily="serif"
+            android:textColor="@color/colorPrimary"
+            android:layout_centerHorizontal="true"
+            />
+
+
+    </RelativeLayout>
+
+
 </RelativeLayout>

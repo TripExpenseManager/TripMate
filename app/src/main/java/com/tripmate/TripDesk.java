@@ -257,7 +257,7 @@ public class TripDesk extends AppCompatActivity {
                     .setNegativeButton("CANCEL", null)
                     .create();
 
-            alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationRightToLeft);
+            alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
             alertDialog.show();
 
 
@@ -349,7 +349,7 @@ public class TripDesk extends AppCompatActivity {
             builder1.setMessage("You want to delete the trip "+trip_name+"?\nYou will lose all the data about the trip(including Notes)");
             builder1.setCancelable(false);
             AlertDialog dialog1 = builder1.create();
-            dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+            dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
             dialog1.show();
 
         }

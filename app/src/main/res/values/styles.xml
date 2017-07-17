@@ -46,6 +46,11 @@
 
 
     <style name="DialogAnimationCentreInsta">
+        <item name="android:windowEnterAnimation">@anim/model_in_normal</item>
+        <item name="android:windowExitAnimation">@anim/modal_out</item>
+    </style>
+
+    <style name="DialogAnimationCentreAlert">
         <item name="android:windowEnterAnimation">@anim/modal_in</item>
         <item name="android:windowExitAnimation">@anim/modal_out</item>
     </style>

@@ -317,7 +317,7 @@ public class Expenses extends Fragment {
                                     builder.setMessage("You want to delete "+item.getItemName()+"("+item.getAmount()+") expended by "+item.getExpBy()+" and shared by "+item.getShareBy()+"?");
                                     builder.setCancelable(false);
                                     AlertDialog dialog = builder.create();
-                                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
                                     dialog.show();
 
                                     break;

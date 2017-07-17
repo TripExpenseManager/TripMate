@@ -377,7 +377,7 @@ public class Persons extends Fragment {
                                     builder.setMessage("You want to make "+model.getName()+" as Admin?");
                                     builder.setCancelable(false);
                                     AlertDialog dialog = builder.create();
-                                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
                                     dialog.show();
                                     break;
                                 case R.id.call:
@@ -429,7 +429,7 @@ public class Persons extends Fragment {
                                     builder1.setMessage("You want to delete "+model.getName()+" from Trip?");
                                     builder1.setCancelable(false);
                                     AlertDialog dialog1 = builder1.create();
-                                    dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                                    dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
                                     dialog1.show();
 
                                     break;
