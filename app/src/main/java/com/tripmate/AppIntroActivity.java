@@ -65,6 +65,7 @@ public class AppIntroActivity extends AppIntro {
 
         Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override
@@ -77,6 +78,7 @@ public class AppIntroActivity extends AppIntro {
         editor.commit();
         Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override
