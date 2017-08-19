@@ -354,13 +354,21 @@ public class Notes extends Fragment {
                     holder.rlNotes.setEnabled(true);
                     holder.llNotesEdit.setVisibility(View.GONE);
                     isHolderLongPressed = false;
-                    Intent intent = new Intent(getContext(),NotesEditActivity.class);
-                    intent.putExtra("tripId",trip_id);
-                    intent.putExtra("editOrAdd","edit");
-                    intent.putExtra("notesId",notesModels.get(position).getNote_Id());
-                    intent.putExtra("anim","yes");
-                    startActivity(intent);
-
+                    if(notesModel.getNote_ContentType() == 1){
+                        Intent intent = new Intent(getContext(),NotesEditActivity.class);
+                        intent.putExtra("tripId",trip_id);
+                        intent.putExtra("editOrAdd","edit");
+                        intent.putExtra("notesId",notesModels.get(position).getNote_Id());
+                        intent.putExtra("anim","yes");
+                        startActivity(intent);
+                    }else {
+                        Intent intent = new Intent(getContext(), CheckListActivity.class);
+                        intent.putExtra("tripId", trip_id);
+                        intent.putExtra("editOrAdd", "edit");
+                        intent.putExtra("notesId", notesModels.get(position).getNote_Id());
+                        intent.putExtra("anim", "yes");
+                        startActivity(intent);
+                    }
                    mAdapter.notifyItemChanged(position);
 
                 }

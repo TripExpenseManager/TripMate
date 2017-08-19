@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -84,8 +85,7 @@ public class CheckListActivity extends AppCompatActivity {
         editOrAdd = getIntent().getStringExtra("editOrAdd");
         if(editOrAdd.equals("add")){
 
-
-        }else {
+        }else  {
             notesId = getIntent().getStringExtra("notesId");
             DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivity.this);
             NotesModel notesModel = dataBaseHelper.getNotes(tripId,notesId);
@@ -96,6 +96,16 @@ public class CheckListActivity extends AppCompatActivity {
 
             }
 
+        if(editOrAdd.equals("view")) {
+            etAddTodo.setClickable(false);
+            etAddTodo.setFocusableInTouchMode(false);
+            etAddTodo.clearFocus();
+            rvTodos.setFocusable(false);
+            rvCompletedTodos.setFocusable(false);
+            rvTodos.setClickable(false);
+            rvCompletedTodos.setClickable(false);
+
+        }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvTodos.setLayoutManager(linearLayoutManager);
@@ -114,6 +124,7 @@ public class CheckListActivity extends AppCompatActivity {
         tvDisplayCompleted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hideSoftKeyboard();
                 if(tvDisplayCompleted.getText().toString().contains("Show")){
                     rvCompletedTodos.setVisibility(View.VISIBLE);
                     tvDisplayCompleted.setText("Completed TO-DOS");
@@ -149,7 +160,7 @@ public class CheckListActivity extends AppCompatActivity {
         rvTodos.setItemAnimator(null);
 
         DragSortRecycler dragSortRecycler = new DragSortRecycler();
-        dragSortRecycler.setViewHandleId(R.id.cbTodo);
+        dragSortRecycler.setViewHandleId(R.id.tvTodo);
         dragSortRecycler.setFloatingAlpha(0.4f);
         dragSortRecycler.setFloatingBgColor(0x800000FF);
         dragSortRecycler.setAutoScrollSpeed(0.3f);
@@ -183,7 +194,7 @@ public class CheckListActivity extends AppCompatActivity {
         rvTodos.addOnItemTouchListener(dragSortRecycler);
 
         DragSortRecycler dragSortRecyclerCompleted = new DragSortRecycler();
-        dragSortRecyclerCompleted.setViewHandleId(R.id.cbTodo);
+        dragSortRecyclerCompleted.setViewHandleId(R.id.tvTodo);
         dragSortRecyclerCompleted.setFloatingAlpha(0.4f);
         dragSortRecyclerCompleted.setFloatingBgColor(0x800000FF);
         dragSortRecyclerCompleted.setAutoScrollSpeed(0.3f);
@@ -226,8 +237,35 @@ public class CheckListActivity extends AppCompatActivity {
         todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size());
         etAddTodo.setText("");
         isEdited = true;
+        hideSoftKeyboard();
         // Focus edit text after a todo is aaded // // TODO: 06-07-2017
 
+    }
+
+    /**
+     * Hides the soft keyboard
+     */
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    /**
+     * Shows the soft keyboard
+     */
+    public void showSoftKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        view.requestFocus();
+        inputMethodManager.showSoftInput(view, 0);
+    }
+
+    public void editCheckList(){
+        etAddTodo.setFocusableInTouchMode(true);
+        etAddTodo.setClickable(true);
+        rvTodos.setClickable(true);
+        rvCompletedTodos.setClickable(true);
     }
 
     public void saveCheckList(){
@@ -365,9 +403,13 @@ public class CheckListActivity extends AppCompatActivity {
 
         public class TodoViewHolder extends  RecyclerView.ViewHolder{
             CheckBox cbTodo;
+            FrameLayout flTodo;
+            TextView tvTodo;
             public TodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
+                flTodo = (FrameLayout) itemView.findViewById(R.id.flTodo);
+                tvTodo = (TextView) itemView.findViewById(R.id.tvTodo);
 
             }
         }
@@ -381,7 +423,7 @@ public class CheckListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final TodoViewHolder holder, final int position) {
-            holder.cbTodo.setText(todosList.get(position).getName());
+            holder.tvTodo.setText(todosList.get(position).getName());
             holder.cbTodo.setChecked(false);
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -416,10 +458,15 @@ public class CheckListActivity extends AppCompatActivity {
         }
 
         public class CompletedTodoViewHolder extends  RecyclerView.ViewHolder{
+
             CheckBox cbTodo;
+            FrameLayout flTodo;
+            TextView tvTodo;
             public CompletedTodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
+                flTodo = (FrameLayout) itemView.findViewById(R.id.flTodo);
+                tvTodo = (TextView) itemView.findViewById(R.id.tvTodo);
 
 
             }
@@ -434,9 +481,8 @@ public class CheckListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final CompletedTodoViewHolder holder, final int position) {
-            holder.cbTodo.setText(completedTodosList.get(position).getName());
+            holder.tvTodo.setText(completedTodosList.get(position).getName());
             holder.cbTodo.setChecked(true);
-
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -465,9 +511,25 @@ public class CheckListActivity extends AppCompatActivity {
     static Menu MenuTemp = null;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_notes_edit,menu);
+        getMenuInflater().inflate(R.menu.menu_notes_edit,menu);;
+        MenuTemp = menu;
 
-        menu.findItem(R.id.action_edit).setVisible(false);
+        if(editOrAdd != null){
+            if(editOrAdd.equals("add") || editOrAdd.equals("edit")){
+                menu.findItem(R.id.action_edit).setVisible(false);
+            }
+
+            if(!editOrAdd.equals("edit")){
+                menu.findItem(R.id.action_cancel).setVisible(false);
+            }
+
+            if(editOrAdd.equals("view")){
+                menu.findItem(R.id.action_save).setVisible(false);
+            }
+
+
+
+        }
         return  true;
     }
     @Override
@@ -504,6 +566,15 @@ public class CheckListActivity extends AppCompatActivity {
                     completedTodosAdapter.notifyDataSetChanged();
                 }
 
+                return true;
+            case R.id.action_edit :
+                editCheckList();
+                isEdited = true;
+                if(MenuTemp != null){
+                    MenuTemp.findItem(R.id.action_cancel).setVisible(true);
+                    MenuTemp.findItem(R.id.action_save).setVisible(true);
+                }
+                item.setVisible(false);
                 return true;
             default:
                 return true;
