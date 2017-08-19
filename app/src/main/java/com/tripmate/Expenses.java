@@ -12,12 +12,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -107,7 +109,7 @@ public class Expenses extends Fragment {
                 if (dy > 0 && fab.isShown())
                 {
                     fab.hide();
-                }else{
+                }else if(((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition() == 1){
 
                     fab.show();
 
@@ -315,7 +317,7 @@ public class Expenses extends Fragment {
                                     builder.setMessage("You want to delete "+item.getItemName()+"("+item.getAmount()+") expended by "+item.getExpBy()+" and shared by "+item.getShareBy()+"?");
                                     builder.setCancelable(false);
                                     AlertDialog dialog = builder.create();
-                                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
+                                    dialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
                                     dialog.show();
 
                                     break;

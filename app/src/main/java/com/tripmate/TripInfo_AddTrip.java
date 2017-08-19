@@ -13,7 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -98,16 +100,59 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
                 final View view = getLayoutInflater().inflate(R.layout.layout_add_person, null);
                 final TextInputLayout tilPersonName, tilPersonDeposit, tilPersonMobile, tilPersonEmail;
+                final AutoCompleteTextView actvPersonName,actvPersonDeposit,actvPersonMobile,actvPersonEmail;
+
                 tilPersonName = (TextInputLayout) view.findViewById(R.id.tilPersonName);
                 tilPersonDeposit = (TextInputLayout) view.findViewById(R.id.tilPersonDeposit);
                 tilPersonMobile = (TextInputLayout) view.findViewById(R.id.tilPersonMobile);
                 tilPersonEmail = (TextInputLayout) view.findViewById(R.id.tilPersonEmail);
+
+                actvPersonName = (AutoCompleteTextView) view.findViewById(R.id.actvPersonName);
+                actvPersonDeposit = (AutoCompleteTextView) view.findViewById(R.id.actvPersonDeposit);
+                actvPersonMobile = (AutoCompleteTextView) view.findViewById(R.id.actvPersonMobile);
+                actvPersonEmail = (AutoCompleteTextView) view.findViewById(R.id.actvPersonEmail);
+
+                DataBaseHelper db = new DataBaseHelper(TripInfo_AddTrip.this);
+                ArrayList<PersonModel> allPersons = db.getAllPersons();
+
+                final ArrayList<String> allPersonsNames = new ArrayList<>();
+                final ArrayList<String> allPersonsMobiles= new ArrayList<>();
+                final ArrayList<String> allPersonsEmails = new ArrayList<>();
+
+                for(PersonModel p : allPersons){
+                    allPersonsNames.add(p.getName());
+                    allPersonsMobiles.add(p.getMobile());
+                    allPersonsEmails.add(p.getEmail());
+                }
+
+
+                ArrayAdapter personNamesAdapter = new ArrayAdapter(getBaseContext(),android.R.layout.simple_list_item_1,allPersonsNames);
+                ArrayAdapter personMobilesAdapter = new ArrayAdapter(getBaseContext(),android.R.layout.simple_list_item_1,allPersonsMobiles);
+                ArrayAdapter personEmailsAdapter = new ArrayAdapter(getBaseContext(),android.R.layout.simple_list_item_1,allPersonsEmails);
+
+                actvPersonName.setAdapter(personNamesAdapter);
+                actvPersonMobile.setAdapter(personMobilesAdapter);
+                actvPersonEmail.setAdapter(personEmailsAdapter);
+
+
+                actvPersonName.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String personName = ((TextView)view).getText().toString().trim();
+                        int index = allPersonsNames.indexOf(personName);
+                        if(index!=-1) {
+                            actvPersonMobile.setText(allPersonsMobiles.get(index));
+                            actvPersonEmail.setText(allPersonsEmails.get(index));
+                        }
+                    }
+                });
+
                 final AlertDialog alertDialog = new AlertDialog.Builder(TripInfo_AddTrip.this).setView(view).setTitle("Add Person")
                         .setPositiveButton("OK",null)
                         .setNegativeButton("CANCEL", null)
                         .create();
 
-                alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationRightToLeft);
+                alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
                 alertDialog.show();
 
 
@@ -225,6 +270,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_trip_info_activity,menu);
         return  true;
     }
+
 
     public class PersonsAdapter extends BaseAdapter{
         Context mContext;

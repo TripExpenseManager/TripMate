@@ -10,7 +10,7 @@
     <item
         android:id="@+id/action_ok"
         android:icon="@drawable/icon_tick"
-        android:title="Trip Info"
+        android:title="Create Trip"
         app:showAsAction="ifRoom"
         android:orderInCategory="101" />
 </menu>

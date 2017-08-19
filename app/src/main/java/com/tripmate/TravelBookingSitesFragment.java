@@ -63,7 +63,7 @@ public class TravelBookingSitesFragment extends Fragment {
         travelBookingRV = (RecyclerView) view.findViewById(R.id.travelBookingRV);
 
         pd = new ProgressDialog(getActivity());
-        pd.setTitle("Please wait...");
+        pd.setMessage("Please wait...");
         pd.setCancelable(true);
         pd.setCanceledOnTouchOutside(false);
 

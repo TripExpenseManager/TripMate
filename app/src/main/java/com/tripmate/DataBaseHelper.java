@@ -204,8 +204,45 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 personsList.add(personModel);
 
             }while(cursor.moveToNext());
+            cursor.close();
         }
-        cursor.close();
+
+
+        return  personsList;
+    }
+
+    public void addToTotalAmount(String trip_id,Double amount){
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT,amount);
+
+        db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
+
+
+    }
+
+    public ArrayList<PersonModel> getAllPersons(){
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<PersonModel> personsList = new ArrayList<>();
+
+        Cursor cursor = db.query(PERSONS_TABLE_NAME,null,null,null,
+                null,null,null);
+        if(cursor!=null && cursor.moveToFirst()){
+            do{
+                PersonModel personModel = new PersonModel();
+                personModel.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
+                personModel.setMobile(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_MOBILE)));
+                personModel.setEmail(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_EMAIL)));
+                personModel.setDeposit(cursor.getDouble(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_DEPOSIT)));
+                personModel.setAdmin(cursor.getInt(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_ADMIN)));
+
+                personsList.add(personModel);
+
+            }while(cursor.moveToNext());
+            cursor.close();
+        }
+
 
         return  personsList;
     }
@@ -230,10 +267,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
             db.insert(ITEMS_TABLE_NAME,null,values);
 
+            addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
+
         }
         else if(amount_type == 2){
-
-
 
             for(int i=0;i<expenseByPersonList.size();i++){
                 ContentValues values = new ContentValues();
@@ -251,6 +288,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseByPersonList.get(i).getName());
 
                 db.insert(ITEMS_TABLE_NAME,null,values);
+                addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
             }
 
         }
@@ -282,7 +320,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return trip_array_list;
     }
 
-
     public String[] getTripNamesAsStringArray() {
 
 
@@ -301,7 +338,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return trip_name_array;
     }
-
 
     public ArrayList<ExpenseModel> getAllExpenses(String trip_id){
         ArrayList<ExpenseModel> expenseModelArrayList = new ArrayList<>();
@@ -327,9 +363,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 expenseModelArrayList.add(expenseModel);
 
             }while(cursor.moveToNext());
+
+            cursor.close();
         }
 
-        cursor.close();
+
 
         return expenseModelArrayList;
 
@@ -380,7 +418,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         ArrayList<ExpenseModel> allExpensesList = getAllExpenses(trip_id);
 
         Double totalDepositShare = 0.0,totalPersonalShare = 0.0;
-
 
         for(int i=0;i<allExpensesList.size();i++){
             ExpenseModel expenseModel = allExpensesList.get(i);
@@ -569,7 +606,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        Set<String> finalCategories = categoryWiseExpenses.keySet();;
+        Set<String> finalCategories = categoryWiseExpenses.keySet();
         Iterator it = finalCategories.iterator();
 
         for(int i=0;i<categoryWiseExpenses.size();i++){
@@ -611,7 +648,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             }
         }
 
-        Set<String> finalDates = dateWiseExpenses.keySet();;
+        Set<String> finalDates = dateWiseExpenses.keySet();
         Iterator it = finalDates.iterator();
 
         for(int i=0;i<dateWiseExpenses.size();i++){
@@ -675,35 +712,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     public Double RoundOff(Double d){
         return Math.round(d * 100.0) / 100.0;
-    }
-
-    public ArrayList<NotesModel> getNotes(String trip_id){
-
-        SQLiteDatabase db = getReadableDatabase();
-        ArrayList<NotesModel> notesList = new ArrayList<>();
-
-        Cursor cursor = db.query(NOTES_TABLE_NAME,null,NOTES_COLUMN_TRIP_ID+"=?",new String[]{trip_id},
-                null,null,null);
-        if(cursor!=null && cursor.moveToFirst()){
-            do{
-                NotesModel notesModel = new NotesModel();
-                notesModel.setNote_Body(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT)));
-                notesModel.setNote_ContentStatus(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_STATUS)));
-                notesModel.setNote_ContentType(cursor.getInt(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_TYPE)));
-                notesModel.setNote_Date(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_DATE)));
-                notesModel.setNote_Id(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_ID)));
-                notesModel.setNote_Title(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_TITLE)));
-                notesModel.setNote_TripId(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_TRIP_ID)));
-
-                notesList.add(notesModel);
-
-            }while(cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        return  notesList;
-
     }
 
     public ArrayList<ParentExpenseItemModel> getAllExpensesToDisplay(String trip_id){
@@ -1069,7 +1077,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean deleteExpenseItem(ExpenseModel item){
         SQLiteDatabase db = getWritableDatabase();
 
-        return db.delete(ITEMS_TABLE_NAME, ITEMS_COLUMN_TRIP_ID + " = \"" + item.getTripId()+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+ item.getItemId()+"\"" , null) > 0;
+        db.delete(ITEMS_TABLE_NAME, ITEMS_COLUMN_TRIP_ID + " = \"" + item.getTripId()+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+ item.getItemId()+"\"" , null);
+        addToTotalAmount(item.getTripId(),getTotalExpensesAmount(item.getTripId()));
+        return true;
     }
 
     public boolean isTripExists(String trip_id){
@@ -1079,8 +1089,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 null,null,null);
 
         if(cursor.getCount() == 0){
+            cursor.close();
             return false;
         }else{
+            cursor.close();
             return  true;
         }
 
@@ -1156,7 +1168,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             values.put(ITEMS_COLUMN_ITEM_DATE_VALUE,date_value);
 
             db.update(ITEMS_TABLE_NAME,values,ITEMS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+item_id+"\"", null);
-
+            addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
         }
         else if(amount_type == 2){
 
@@ -1172,11 +1184,107 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             values.put(ITEMS_COLUMN_ITEM_EXP_BY,expenseByPersonList.get(0).getName());
 
             db.update(ITEMS_TABLE_NAME,values,ITEMS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+item_id+"\"", null);
-
+            addToTotalAmount(trip_id,getTotalExpensesAmount(trip_id));
         }
 
         return true;
     }
 
+    public void addNotes(NotesModel notesModel){
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NOTES_COLUMN_TRIP_ID,notesModel.getNote_TripId());
+        values.put(NOTES_COLUMN_NOTE_ID,notesModel.getNote_Id());
+        values.put(NOTES_COLUMN_NOTE_TITLE,notesModel.getNote_Title());
+        values.put(NOTES_COLUMN_NOTE_CONTENT,notesModel.getNote_Body());
+        values.put(NOTES_COLUMN_NOTE_CONTENT_TYPE,notesModel.getNote_ContentType());
+        values.put(NOTES_COLUMN_NOTE_CONTENT_STATUS,notesModel.getNote_ContentStatus());
+        values.put(NOTES_COLUMN_NOTE_DATE,notesModel.getNote_Date());
+
+        db.insert(NOTES_TABLE_NAME,null,values);
+
+
+    }
+
+    public void updateNotes(NotesModel notesModel){
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NOTES_COLUMN_TRIP_ID,notesModel.getNote_TripId());
+        values.put(NOTES_COLUMN_NOTE_ID,notesModel.getNote_Id());
+        values.put(NOTES_COLUMN_NOTE_TITLE,notesModel.getNote_Title());
+        values.put(NOTES_COLUMN_NOTE_CONTENT,notesModel.getNote_Body());
+        values.put(NOTES_COLUMN_NOTE_CONTENT_TYPE,notesModel.getNote_ContentType());
+        values.put(NOTES_COLUMN_NOTE_CONTENT_STATUS,notesModel.getNote_ContentStatus());
+        values.put(NOTES_COLUMN_NOTE_DATE,notesModel.getNote_Date());
+
+        db.update(NOTES_TABLE_NAME,values,NOTES_COLUMN_TRIP_ID+ "=? AND " + NOTES_COLUMN_NOTE_ID + "=?", new String[]{notesModel.getNote_TripId(),notesModel.getNote_Id()});
+    }
+
+    public NotesModel getNotes(String tripId, String notesId){
+
+        SQLiteDatabase db = getReadableDatabase();
+        NotesModel notesModel = null;
+
+        Cursor cursor = db.query(NOTES_TABLE_NAME,null,NOTES_COLUMN_TRIP_ID+ "=? AND " + NOTES_COLUMN_NOTE_ID + "=?"
+                ,new String[]{tripId,notesId},null,null,null);
+        if(cursor!=null && cursor.moveToFirst()){
+            notesModel = new NotesModel();
+            notesModel.setNote_Body(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT)));
+            notesModel.setNote_ContentStatus(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_STATUS)));
+            notesModel.setNote_ContentType(cursor.getInt(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_TYPE)));
+            notesModel.setNote_Date(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_DATE)));
+            notesModel.setNote_Id(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_ID)));
+            notesModel.setNote_Title(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_TITLE)));
+            notesModel.setNote_TripId(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_TRIP_ID)));
+
+            cursor.close();
+        }
+
+
+
+        return  notesModel;
+
+    }
+
+    public ArrayList<NotesModel> getNotes(String trip_id){
+
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<NotesModel> notesList = new ArrayList<>();
+
+        Cursor cursor = db.query(NOTES_TABLE_NAME,null,NOTES_COLUMN_TRIP_ID+"=?",new String[]{trip_id},
+                null,null,null);
+        if(cursor!=null && cursor.moveToFirst()){
+            do{
+                NotesModel notesModel = new NotesModel();
+                notesModel.setNote_Body(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT)));
+                notesModel.setNote_ContentStatus(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_STATUS)));
+                notesModel.setNote_ContentType(cursor.getInt(cursor.getColumnIndex(NOTES_COLUMN_NOTE_CONTENT_TYPE)));
+                notesModel.setNote_Date(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_DATE)));
+                notesModel.setNote_Id(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_ID)));
+                notesModel.setNote_Title(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_NOTE_TITLE)));
+                notesModel.setNote_TripId(cursor.getString(cursor.getColumnIndex(NOTES_COLUMN_TRIP_ID)));
+
+                notesList.add(notesModel);
+
+            }while(cursor.moveToNext());
+
+            cursor.close();
+        }
+
+
+
+        return  notesList;
+
+    }
+
+    public void deleteNotes(NotesModel notesModel){
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete(NOTES_TABLE_NAME,NOTES_COLUMN_TRIP_ID+ "=? AND " + NOTES_COLUMN_NOTE_ID + "=?",
+                new String[]{notesModel.getNote_TripId(),notesModel.getNote_Id()});
+    }
 
 }
+

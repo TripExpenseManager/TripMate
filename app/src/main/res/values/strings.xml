@@ -16,6 +16,9 @@
     <string name="activity_image_trans1">ImageTransition1</string>
     <string name="activity_image_trans2">ImageTransition2</string>
     <string name="activity_image_trans3">ImageTransition3</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
 
 
 </resources>

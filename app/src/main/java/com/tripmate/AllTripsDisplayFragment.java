@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -36,6 +37,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -87,6 +90,45 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         ((MainActivity) getActivity()).getSupportActionBar().setTitle("Trip Mate");
         
         setHasOptionsMenu(true);
+
+
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int should_display1 = app_preferences.getInt("should_display1",1);
+
+     /*   if(should_display1 == 1){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                TapTargetView.showFor(getActivity(),                 // `this` is an Activity
+                        TapTarget.forView(getActivity().findViewById(R.id.addTripFab), "This is a target", "We have the best targets, believe me")
+                                // All options below are optional
+                                .outerCircleColor(R.color.red)      // Specify a color for the outer circle
+                                .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
+                                .targetCircleColor(R.color.white)   // Specify a color for the target circle
+                                .titleTextSize(20)                  // Specify the size (in sp) of the title text
+                                .titleTextColor(R.color.white)      // Specify the color of the title text
+                                .descriptionTextSize(10)            // Specify the size (in sp) of the description text
+                                .descriptionTextColor(R.color.red)  // Specify the color of the description text
+                                .textColor(R.color.colorPrimary)            // Specify a color for both the title and description text
+                                .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+                                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                                .drawShadow(true)                   // Whether to draw a drop shadow or not
+                                .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
+                                .tintTarget(true)                   // Whether to tint the target view's color
+                                .transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
+                                .icon(getActivity().getDrawable(R.drawable.icon_notes))                     // Specify a custom drawable to draw as the target
+                                .targetRadius(60),                  // Specify the target radius (in dp)
+                        new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
+                            @Override
+                            public void onTargetClick(TapTargetView view) {
+                                super.onTargetClick(view);      // This call is optional
+                            }
+                        });
+            }
+        }
+
+*/
+
+
 
         //googledrive stuff
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())

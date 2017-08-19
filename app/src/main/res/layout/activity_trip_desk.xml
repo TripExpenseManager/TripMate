@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/tools"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
@@ -69,15 +69,61 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:visibility="gone"
         android:transitionName="@string/activity_image_trans1"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/icon_add" />
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fabMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:menu_fab_size="normal"
+        app:menu_showShadow="false"
+        android:visibility="gone"
+        app:menu_colorNormal="@color/colorAccent"
+        app:menu_colorPressed="@color/colorAccent"
+        app:menu_colorRipple="#99ffffff"
+        app:menu_animationDelayPerItem="50"
+        app:menu_icon="@drawable/fab_add">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabCheckList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"
+            app:fab_label="CheckList"
+            android:src="@drawable/icon_checklist"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_colorPressed="@color/colorPrimary"
+            app:fab_colorRipple="@color/colorAccent"
+            app:menu_labels_colorPressed="@color/colorPrimary"
+            app:menu_labels_colorRipple="@color/colorAccent"
+            fab:ignore="VectorDrawableCompat" />
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fabNotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"
+            app:fab_label="Notes"
+            android:src="@drawable/icon_notes"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_colorPressed="@color/colorPrimary"
+            app:fab_colorRipple="@color/colorAccent"
+            fab:ignore="VectorDrawableCompat" />
+
+
+    </com.github.clans.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>

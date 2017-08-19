@@ -5,8 +5,8 @@ package android.app.models;
  */
 
 public class NotesModel {
-    String note_Title,note_Date,note_Body,note_Id,note_TripId,note_ContentStatus;
-    int note_ContentType;
+    private String note_Title,note_Date,note_Body,note_Id,note_TripId,note_ContentStatus;
+    private  int note_ContentType; // 1 - Notes 2 - CheckList
 
     public int getNote_ContentType() {
         return note_ContentType;
