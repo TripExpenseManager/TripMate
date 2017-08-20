@@ -101,7 +101,7 @@ public class Notes extends Fragment {
             @Override
             public void onClick(View v) {
                 fabMenu.close(true);
-                Intent intent = new Intent(getContext(),CheckListActivity.class);
+                Intent intent = new Intent(getContext(),CheckListActivityNew.class);
                 intent.putExtra("tripId",trip_id);
                 intent.putExtra("editOrAdd","add");
                 intent.putExtra("anim","yes");
@@ -261,7 +261,7 @@ public class Notes extends Fragment {
                         intent = new Intent(getContext(), NotesEditActivity.class);
                     }
                     else{
-                        intent = new Intent(getContext(), CheckListActivity.class);
+                        intent = new Intent(getContext(), CheckListActivityNew.class);
                     }
                     intent.putExtra("tripId",trip_id);
                     intent.putExtra("editOrAdd","view");
@@ -362,7 +362,7 @@ public class Notes extends Fragment {
                         intent.putExtra("anim","yes");
                         startActivity(intent);
                     }else {
-                        Intent intent = new Intent(getContext(), CheckListActivity.class);
+                        Intent intent = new Intent(getContext(), CheckListActivityNew.class);
                         intent.putExtra("tripId", trip_id);
                         intent.putExtra("editOrAdd", "edit");
                         intent.putExtra("notesId", notesModels.get(position).getNote_Id());
