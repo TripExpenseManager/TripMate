@@ -171,6 +171,7 @@ public class CheckListActivityNew extends AppCompatActivity {
                 TodoModel todoModel = unCompletedTodosArrayList.remove(from);
                 unCompletedTodosArrayList.add(to, todoModel);
                 todosAdapter.notifyDataSetChanged();
+                saveCheckList();
                 //notifyItemMoved does work, but it makes the list scroll pos jump a little when dragging near the top or bottom
                 //adapter.notifyItemMoved(from,to);
             }
@@ -207,6 +208,7 @@ public class CheckListActivityNew extends AppCompatActivity {
                 TodoModel todoModel = completedTodosArrayList.remove(from);
                 completedTodosArrayList.add(to, todoModel);
                 completedTodosAdapter.notifyDataSetChanged();
+                saveCheckList();
                 //notifyItemMoved does work, but it makes the list scroll pos jump a little when dragging near the top or bottom
                 //adapter.notifyItemMoved(from,to);
             }
@@ -253,19 +255,6 @@ public class CheckListActivityNew extends AppCompatActivity {
     }
 
 
-   /* public void addTodo(){
-        if(etAddTodo.getText().toString().trim().equals("")){}
-        else
-            unCompletedTodosArrayList.add(new TodoModel(etAddTodo.getText().toString().trim(),false));
-
-        todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size());
-        etAddTodo.setText("");
-        isEdited = true;
-        hideSoftKeyboard();
-        // Focus edit text after a todo is aaded // // TODO: 06-07-2017
-
-    }
-
     /**
      * Hides the soft keyboard
      */
@@ -287,11 +276,13 @@ public class CheckListActivityNew extends AppCompatActivity {
 
 
 
+
     public void saveCheckList(){
         Long datevalue = Calendar.getInstance().getTimeInMillis();
         String notesDate = String.valueOf(datevalue);
 
-        ArrayList<TodoModel> allTodos = unCompletedTodosArrayList;
+        ArrayList<TodoModel> allTodos = new ArrayList<>();
+        allTodos.addAll(unCompletedTodosArrayList);
         allTodos.addAll(completedTodosArrayList);
         notesContent = encryptTodos(allTodos);
 
@@ -310,7 +301,7 @@ public class CheckListActivityNew extends AppCompatActivity {
             DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
             dataBaseHelper.addNotes(notesModel);
 
-            Toast.makeText(getApplicationContext(),"CheckList Added Successfully",Toast.LENGTH_SHORT).show();
+           /* Toast.makeText(getApplicationContext(),"CheckList Added Successfully",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(CheckListActivityNew.this,CheckListActivityNew.class);
             intent.putExtra("tripId",tripId);
             intent.putExtra("editOrAdd","view");
@@ -318,6 +309,7 @@ public class CheckListActivityNew extends AppCompatActivity {
             intent.putExtra("anim","no");
             startActivity(intent);
             finish();
+            */
         }else{
             NotesModel notesModel = new NotesModel();
             notesModel.setNote_TripId(tripId);
@@ -331,7 +323,7 @@ public class CheckListActivityNew extends AppCompatActivity {
             DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
             dataBaseHelper.updateNotes(notesModel);
 
-            Toast.makeText(getApplicationContext(),"CheckList Updated Successfully",Toast.LENGTH_SHORT).show();
+           /* Toast.makeText(getApplicationContext(),"CheckList Updated Successfully",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(CheckListActivityNew.this,CheckListActivityNew.class);
             intent.putExtra("tripId",tripId);
             intent.putExtra("editOrAdd","view");
@@ -339,6 +331,7 @@ public class CheckListActivityNew extends AppCompatActivity {
             intent.putExtra("anim","no");
             startActivity(intent);
             finish();
+            */
         }
     }
 
@@ -376,6 +369,7 @@ public class CheckListActivityNew extends AppCompatActivity {
 
         for(TodoModel  todoModel : todoModels) {
             // Name of todos
+            if(todoModel.getName()!=null)
             noteContent+=todoModel.getName().trim();
             noteContent+=DELIMETER_FOR_A_TODO;
             // Status of the todos
@@ -473,6 +467,8 @@ public class CheckListActivityNew extends AppCompatActivity {
                     unCompletedTodosArrayList.remove(holder.getAdapterPosition());
                     todosAdapter.notifyItemRemoved(holder.getAdapterPosition());
                     todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),todosList.size());
+
+                   // hideSoftKeyboard();
                 }
             });
 
@@ -500,6 +496,30 @@ public class CheckListActivityNew extends AppCompatActivity {
 
             holder.ivCancelTodo.setVisibility(View.GONE);
 
+            holder.etTodo.setOnKeyListener(new View.OnKeyListener()
+            {
+                public boolean onKey(View v, int keyCode, KeyEvent event)
+                {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN)
+                    {
+                        switch (keyCode)
+                        {
+                            case KeyEvent.KEYCODE_ENTER:
+                                if(!(holder.etTodo.getText().toString().equalsIgnoreCase(""))){
+                                    int pos = holder.getAdapterPosition();
+                                    TodoModel todoModel = new TodoModel();
+                                    unCompletedTodosArrayList.add(pos,todoModel);
+                                    todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition()+1,unCompletedTodosArrayList.size()-1);
+                                }
+                                return true;
+                            default:
+                                break;
+                        }
+                    }
+                    return false;
+                }
+            });
+
 
 
             holder.etTodo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -507,8 +527,10 @@ public class CheckListActivityNew extends AppCompatActivity {
                 public void onFocusChange(View v, boolean hasFocus) {
                     if(hasFocus)
                         holder.ivCancelTodo.setVisibility(View.VISIBLE);
-                    else
+                    else {
                         holder.ivCancelTodo.setVisibility(View.GONE);
+                        saveCheckList();
+                    }
                 }
             });
 
@@ -591,6 +613,17 @@ public class CheckListActivityNew extends AppCompatActivity {
                     completedTodosArrayList.remove(holder.getAdapterPosition());
                     completedTodosAdapter.notifyItemRemoved(holder.getAdapterPosition());
                     completedTodosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),completedTodosArrayList.size());
+
+
+                    if(completedTodosArrayList.size()==1){
+                        tvTitleCompletedTodos.setText(completedTodosArrayList.size()+ " Ticked Item");
+                    }else {
+                        tvTitleCompletedTodos.setText(completedTodosArrayList.size() + " Ticked Items");
+                    }
+                    if (completedTodosArrayList.size()==0){
+                        llTickedItems.setVisibility(View.GONE);
+                    }
+                   // hideSoftKeyboard();
                 }
             });
 
@@ -625,8 +658,10 @@ public class CheckListActivityNew extends AppCompatActivity {
                 public void onFocusChange(View v, boolean hasFocus) {
                     if(hasFocus)
                         holder.ivCancelTodo.setVisibility(View.VISIBLE);
-                    else
+                    else {
                         holder.ivCancelTodo.setVisibility(View.GONE);
+                        saveCheckList();
+                    }
                 }
             });
 
@@ -674,9 +709,6 @@ public class CheckListActivityNew extends AppCompatActivity {
                 return true;
 
             case R.id.action_cancel :
-
-                isEdited = false;
-
                 if(notesId != null && tripId != null){
                     DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
                     NotesModel notesModel = dataBaseHelper.getNotes(tripId,notesId);

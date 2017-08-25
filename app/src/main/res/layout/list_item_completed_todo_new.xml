@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingBottom="3dp"
+        android:textColor="#45000000"
         android:background="@android:color/transparent" />
     <ImageView
         android:id="@+id/ivCancelTodo"

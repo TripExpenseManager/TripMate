@@ -115,7 +115,6 @@ public class HotelBookingSitesFragment extends Fragment {
                             showJSON(response);
                             mWaveSwipeRefreshLayout.setRefreshing(false);
                             pd.dismiss();
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -161,6 +160,7 @@ public class HotelBookingSitesFragment extends Fragment {
         adapter.setDuration(400);
 
         hotelBookingRV.setAdapter(adapter);
+
     }
 
 

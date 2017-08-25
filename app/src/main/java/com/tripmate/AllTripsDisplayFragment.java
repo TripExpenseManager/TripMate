@@ -1,7 +1,9 @@
 package com.tripmate;
 
 
+import android.app.models.TripImageModel;
 import android.app.models.TripModel;
+import android.app.models.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -37,6 +39,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.common.ConnectionResult;
@@ -44,15 +52,25 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.squareup.picasso.Picasso;
 
+
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -65,6 +83,9 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
     GridView trip_grid_view;
 
     ArrayList<TripModel> trip_array_list = new ArrayList<>();
+
+    ArrayList<TripImageModel> tripImageModels = new ArrayList<>();
+
 
     TripAdapter grid_view_adapter;
 
@@ -981,6 +1002,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
 
     }
 
+
     //gridview adapter
     public class TripAdapter extends BaseAdapter {
         private Context context;
@@ -996,7 +1018,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
             View v;
             if(convertView==null)
             {
-                LayoutInflater li = getActivity().getLayoutInflater();
+                LayoutInflater li = LayoutInflater.from(context);
                 v = li.inflate(R.layout.trip_item_grid_row, null);
             }else{
                 v = convertView;
@@ -1012,12 +1034,12 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
             ImageView trip_image_view = (ImageView) v.findViewById(R.id.trip_image_view);
 
 
-          /*  Picasso.with(getActivity())
-                    .load("https://www.simplifiedcoding.net/wp-content/uploads/2015/10/advertise.png")
-                    .image_placeholder(R.drawable.image_placeholder)   // optional
+            Picasso.with(context)
+                    .load(model.getImageUrl()).fit().centerCrop()
+                    .placeholder(R.drawable.image_placeholder)   // optional
                     .error(R.drawable.image_placeholder)      // optional
                   //  .resize(135, 135)                       // optional
-                    .into(trip_image_view);*/
+                    .into(trip_image_view);
 
             trip_name_tv.setText(model.getTrip_name());
             trip_date_tv.setText(model.getTrip_date());
@@ -1042,6 +1064,75 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         }
 
     }
+
+    public  void sendRequest(Context context , final String name) {
+
+        String query = name;
+        final String[] imageUrl = new String[1];
+
+        query = query.toLowerCase().replace("trip", "tour").toLowerCase().replace("holiday", "tour");
+        if (!query.contains("tour")) {
+            query = query + " tour";
+        }
+
+
+        String queryText = null;
+        try {
+            queryText = URLEncoder.encode(query,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        //    String url = "https://www.google.co.in/search?q="  "&source=lnms&tbm=isch";
+        String url = "https://www.google.com/search?site=imghp&tbm=isch&source=hp&q="+ queryText +"&gws_rd=cr";
+
+
+        // Volley
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            Document doc = Jsoup.parse(response);
+                            if (doc != null) {
+                                Elements elems = doc.select("div.rg_meta");
+                                if (!(elems == null || elems.isEmpty())) {
+                                    Iterator it = elems.iterator();
+                                    while (it.hasNext()) {
+                                        JSONObject jSONObject = new JSONObject(((Element) it.next()).text());
+                                            imageUrl[0] = jSONObject.getString("ou");
+                                            for( TripModel tripModel : trip_array_list){
+                                                if(tripModel.getTrip_name().equalsIgnoreCase(name)){
+                                                    tripModel.setImageUrl(imageUrl[0]);
+                                                }
+                                           }
+                                        break;
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        requestQueue.add(stringRequest);
+
+
+    }
+
+
+
+
+
 
 
 
