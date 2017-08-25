@@ -1,6 +1,5 @@
 package com.tripmate;
 
-
 import android.app.ProgressDialog;
 import android.app.models.HotelsTravelModel;
 import android.content.Intent;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
 
-
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -51,7 +49,6 @@ public class HotelBookingSitesFragment extends Fragment {
     SwipeRefreshLayout mWaveSwipeRefreshLayout;
 
     ProgressDialog pd;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,7 +74,6 @@ public class HotelBookingSitesFragment extends Fragment {
             }
         });
 
-
         //getting the previously loaded data which is stored in sharedpreferences
         SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String jsonObject = app_preferences.getString("get_hotels","null");
@@ -92,9 +88,6 @@ public class HotelBookingSitesFragment extends Fragment {
             pd.show();
             sendRequest();
         }
-
-
-
         return view;
     }
 
@@ -110,12 +103,11 @@ public class HotelBookingSitesFragment extends Fragment {
                             SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                             SharedPreferences.Editor editor = app_preferences.edit();
                             editor.putString("get_hotels",response);
-                            editor.commit();
+                            editor.apply();
 
                             showJSON(response);
                             mWaveSwipeRefreshLayout.setRefreshing(false);
                             pd.dismiss();
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -161,25 +153,25 @@ public class HotelBookingSitesFragment extends Fragment {
         adapter.setDuration(400);
 
         hotelBookingRV.setAdapter(adapter);
-    }
 
+    }
 
     class HotelsAdapter extends RecyclerView.Adapter<HotelsAdapter.HotelsViewHolder>{
 
         private ArrayList<HotelsTravelModel> hotelsModels = new ArrayList<>();
 
-        public HotelsAdapter(ArrayList<HotelsTravelModel> hotelsModels) {
+        HotelsAdapter(ArrayList<HotelsTravelModel> hotelsModels) {
             this.hotelsModels = hotelsModels;
         }
 
 
-        public  class HotelsViewHolder extends RecyclerView.ViewHolder{
+        class HotelsViewHolder extends RecyclerView.ViewHolder{
 
             TextView nameTv,urlTv,descTv;
             ImageView imageView;
             CardView hotelsCardView;
 
-            public HotelsViewHolder(View itemView) {
+            HotelsViewHolder(View itemView) {
                 super(itemView);
                 nameTv = (TextView) itemView.findViewById(R.id.nameTv);
                 urlTv = (TextView) itemView.findViewById(R.id.urlTv);
@@ -229,6 +221,5 @@ public class HotelBookingSitesFragment extends Fragment {
             return hotelsModels.size();
         }
     }
-
 
 }

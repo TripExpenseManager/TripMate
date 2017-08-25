@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,22 +37,30 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
+import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -65,6 +73,8 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
     GridView trip_grid_view;
 
     ArrayList<TripModel> trip_array_list = new ArrayList<>();
+
+
 
     TripAdapter grid_view_adapter;
 
@@ -217,6 +227,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                             intent.putExtra("trip_id",tempModelList.get(position).getTrip_id());
                             intent.putExtra("trip_name",tempModelList.get(position).getTrip_name());
                             intent.putExtra("trip_date",tempModelList.get(position).getTrip_date());
+                            intent.putExtra("trip_url",tempModelList.get(position).getImageUrl());
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -251,6 +262,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                             intent.putExtra("trip_id",tempModelList.get(position).getTrip_id());
                             intent.putExtra("trip_name",tempModelList.get(position).getTrip_name());
                             intent.putExtra("trip_date",tempModelList.get(position).getTrip_date());
+                            intent.putExtra("trip_url",tempModelList.get(position).getImageUrl());
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -285,6 +297,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                             intent.putExtra("trip_id",tempModelList.get(position).getTrip_id());
                             intent.putExtra("trip_name",tempModelList.get(position).getTrip_name());
                             intent.putExtra("trip_date",tempModelList.get(position).getTrip_date());
+                            intent.putExtra("trip_url",tempModelList.get(position).getImageUrl());
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -367,6 +380,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                             intent.putExtra("trip_id",tempModelList.get(position).getTrip_id());
                             intent.putExtra("trip_name",tempModelList.get(position).getTrip_name());
                             intent.putExtra("trip_date",tempModelList.get(position).getTrip_date());
+                            intent.putExtra("trip_url",tempModelList.get(position).getImageUrl());
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -428,6 +442,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                             intent.putExtra("trip_id",tempModelList.get(position).getTrip_id());
                             intent.putExtra("trip_name",tempModelList.get(position).getTrip_name());
                             intent.putExtra("trip_date",tempModelList.get(position).getTrip_date());
+                            intent.putExtra("trip_url",tempModelList.get(position).getImageUrl());
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -488,6 +503,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                             intent.putExtra("trip_id",tempModelList.get(position).getTrip_id());
                             intent.putExtra("trip_name",tempModelList.get(position).getTrip_name());
                             intent.putExtra("trip_date",tempModelList.get(position).getTrip_date());
+                            intent.putExtra("trip_url",tempModelList.get(position).getImageUrl());
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -548,6 +564,8 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         trip_array_list = dataBaseHelper.getTripsData();
 
+
+
         trip_grid_view = (GridView) view.findViewById(R.id.trip_grid_view);
 
 
@@ -582,10 +600,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
             });
         }
 
-
-
-
-
+        new getImageUrlConnection().execute();
 
         return view;
     }
@@ -643,7 +658,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -705,6 +719,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                     intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
                     intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
                     intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
+                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -764,6 +779,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                     intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
                     intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
                     intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
+                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -818,6 +834,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                     intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
                     intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
                     intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
+                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -850,6 +867,8 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
 
         trip_array_list = dataBaseHelper.getTripsData();
+
+        new getImageUrlConnection().execute();
 
         if(trip_array_list.size() == 0){
             no_trips_found_searched_RL.setVisibility(View.GONE);
@@ -895,6 +914,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                     intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
                     intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
                     intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
+                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -929,6 +949,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                     intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
                     intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
                     intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
+                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -964,6 +985,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                     intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
                     intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
                     intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
+                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
@@ -982,11 +1004,11 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
     }
 
     //gridview adapter
-    public class TripAdapter extends BaseAdapter {
+    private class TripAdapter extends BaseAdapter {
         private Context context;
         ArrayList<TripModel> trip_array_list;
 
-        public TripAdapter(Context context, ArrayList<TripModel> trip_array_list) {
+        TripAdapter(Context context, ArrayList<TripModel> trip_array_list) {
             this.context = context;
             this.trip_array_list = trip_array_list;
         }
@@ -996,7 +1018,7 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
             View v;
             if(convertView==null)
             {
-                LayoutInflater li = getActivity().getLayoutInflater();
+                LayoutInflater li = LayoutInflater.from(context);
                 v = li.inflate(R.layout.trip_item_grid_row, null);
             }else{
                 v = convertView;
@@ -1012,12 +1034,20 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
             ImageView trip_image_view = (ImageView) v.findViewById(R.id.trip_image_view);
 
 
-          /*  Picasso.with(getActivity())
-                    .load("https://www.simplifiedcoding.net/wp-content/uploads/2015/10/advertise.png")
-                    .image_placeholder(R.drawable.image_placeholder)   // optional
-                    .error(R.drawable.image_placeholder)      // optional
-                  //  .resize(135, 135)                       // optional
-                    .into(trip_image_view);*/
+            if(model.getImageUrl().equalsIgnoreCase("")){
+                Picasso.with(context)
+                        .load(R.drawable.image_placeholder).fit().centerCrop()
+                        .placeholder(R.drawable.image_placeholder)
+                        .error(R.drawable.image_placeholder)
+                        .into(trip_image_view);
+            }else{
+                Picasso.with(context)
+                        .load(model.getImageUrl()).fit().centerCrop()
+                        .placeholder(R.drawable.image_placeholder)
+                        .error(R.drawable.image_placeholder)
+                        .into(trip_image_view);
+            }
+
 
             trip_name_tv.setText(model.getTrip_name());
             trip_date_tv.setText(model.getTrip_date());
@@ -1043,7 +1073,58 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
 
     }
 
+    // Title AsyncTask
+    private class getImageUrlConnection extends AsyncTask<Void, Void, String> {
+        @Override
+        protected String doInBackground(Void... params) {
 
+            for(TripModel tripModel : trip_array_list){
+                if(tripModel.getImageUrl().equalsIgnoreCase("")){
+                    String query = tripModel.getTrip_name();
+                    query = query.toLowerCase().replace("trip", "tour").toLowerCase().replace("holiday", "tour");
+                    if (!query.contains("tour")) {
+                        query = query + " tour";
+                    }
+                    try {
+                        query = URLEncoder.encode(query, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        Document doc = Jsoup.connect("https://www.google.co.in/search?q=" + query + "&source=lnms&tbm=isch")
+                                .userAgent("Mozilla/5.0 Gecko/20100101 Firefox/21.0").get();
+                        if (doc != null) {
+                            Elements elems = doc.select("div.rg_meta");
+                            if (!(elems == null || elems.isEmpty())) {
+                                Iterator it = elems.iterator();
+                                while (it.hasNext()) {
+                                    try {
+                                        JSONObject jSONObject = new JSONObject(((Element) it.next()).text());
+                                    //    if (jSONObject.getInt("ow") > 500) {
+                                            String imageUrl = jSONObject.getString("ou");
+                                            tripModel.setImageUrl(imageUrl);
+                                            grid_view_adapter.notifyDataSetChanged();
+                                            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+                                            dataBaseHelper.updateTripImageUrl(tripModel.getTrip_id(),imageUrl);
+
+                                            break;
+                                      //  }
+                                    } catch (Exception e2) {
+                                        e2.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+            }
+            return "";
+        }
+    }
 
     private  File getDbPath() {
         return getActivity().getDatabasePath(DataBaseHelper.DATABASE_NAME);

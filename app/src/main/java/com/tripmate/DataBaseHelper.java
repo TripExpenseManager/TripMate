@@ -46,6 +46,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TRIPS_COLUMN_TRIP_DATE = "key_trip_date";
     private static final String TRIPS_COLUMN_TRIP_PLACES = "key_trip_places";
     private static final String TRIPS_COLUMN_TRIP_TOTAL_AMOUNT = "key_trip_total_amt";
+    private static final String TRIPS_COLUMN_IMAGE_URL = "key_trip_image_url";
 
 
     private static final String ITEMS_TABLE_NAME = "items";
@@ -56,7 +57,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String ITEMS_COLUMN_ITEM_EXP_BY = "key_item_exp_by";
     private static final String ITEMS_COLUMN_ITEM_CAT = "key_item_cat";
     private static final String ITEMS_COLUMN_ITEM_DATE = "key_item_date";
-   // private static final String ITEMS_COLUMN_ITEM_SHARE_BY_TYPE = "key_item_share_by_type";
     private static final String ITEMS_COLUMN_ITEM_SHARE_BY = "key_item_share_by";
     private static final String ITEMS_COLUMN_ITEM_DATE_VALUE = "key_item_date_value";
     private static final String ITEMS_COLUMN_ITEM_ID = "key_item_id";
@@ -83,9 +83,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String CATEGORIES_TABLE_NAME = "categories";
     private static final String CATEGORIES_COLUMN_CAT_NAME = "key_cat_name";
 
-
-
-
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -93,7 +90,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String CREATE_TRIPS_TABLE = "CREATE TABLE " + TRIPS_TABLE_NAME + " ( "+ TRIPS_COLUMN_ID + " TEXT PRIMARY KEY, " + TRIPS_COLUMN_TRIP_NAME + " TEXT, "+ TRIPS_COLUMN_TRIP_DESC + " TEXT, "+ TRIPS_COLUMN_TRIP_DATE+" TEXT, "+TRIPS_COLUMN_TRIP_PLACES+" TEXT, "+TRIPS_COLUMN_TRIP_TOTAL_AMOUNT+" REAL )";
+        String CREATE_TRIPS_TABLE = "CREATE TABLE " + TRIPS_TABLE_NAME + " ( "+ TRIPS_COLUMN_ID + " TEXT PRIMARY KEY, " + TRIPS_COLUMN_TRIP_NAME + " TEXT, "+ TRIPS_COLUMN_TRIP_DESC + " TEXT, "+ TRIPS_COLUMN_TRIP_DATE+" TEXT, "+TRIPS_COLUMN_TRIP_PLACES+" TEXT, "+TRIPS_COLUMN_TRIP_TOTAL_AMOUNT+" REAL , "+ TRIPS_COLUMN_IMAGE_URL +" TEXT )";
         String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ITEMS_COLUMN_AMOUNT_TYPE+" INTEGER, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
         String CREATE_PERSONS_TABLE = "CREATE TABLE " + PERSONS_TABLE_NAME + "("+ PERSONS_COLUMN_TRIP_ID + " TEXT," + PERSONS_COLUMN_PERSON_NAME + " TEXT,"+ PERSONS_COLUMN_PERSON_MOBILE + " TEXT, "+PERSONS_COLUMN_PERSON_EMAIL+" TEXT,"+ PERSONS_COLUMN_PERSON_DEPOSIT+" REAL, "+PERSONS_COLUMN_PERSON_ADMIN+" INTEGER )";
         String CREATE_NOTES_TABLE = "CREATE TABLE " + NOTES_TABLE_NAME + "("+ NOTES_COLUMN_NOTE_ID + " TEXT PRIMARY KEY," + NOTES_COLUMN_TRIP_ID + " TEXT,"+ NOTES_COLUMN_NOTE_TITLE + " TEXT, " +NOTES_COLUMN_NOTE_CONTENT_TYPE+" INTEGER, "+NOTES_COLUMN_NOTE_CONTENT+" TEXT, "+ NOTES_COLUMN_NOTE_CONTENT_STATUS + " TEXT, "+NOTES_COLUMN_NOTE_DATE+" TEXT)";
@@ -107,10 +104,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         String cats[] = {"Drink","Entertainment","Food","Hotel","Medical","Miscellaneous","Parking","Shopping","Toll","Travel"};
 
-        for(int i=0;i<cats.length;i++){
+        for (String cat : cats) {
             ContentValues values = new ContentValues();
-            values.put(CATEGORIES_COLUMN_CAT_NAME,cats[i]);
-            db.insert(CATEGORIES_TABLE_NAME,null,values);
+            values.put(CATEGORIES_COLUMN_CAT_NAME, cat);
+            db.insert(CATEGORIES_TABLE_NAME, null, values);
         }
 
     }
@@ -125,7 +122,16 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addTrip(TripModel trip){
+    void updateTripImageUrl(String trip_id,String imageUrl){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TRIPS_COLUMN_IMAGE_URL,imageUrl);
+        db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
+    }
+
+    boolean addTrip(TripModel trip){
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -135,12 +141,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(TRIPS_COLUMN_TRIP_DESC,trip.getTrip_desc());
         values.put(TRIPS_COLUMN_TRIP_DATE,trip.getTrip_date());
         values.put(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT,trip.getTrip_amount());
+        values.put(TRIPS_COLUMN_IMAGE_URL,trip.getImageUrl());
 
         db.insert(TRIPS_TABLE_NAME,null,values);
         return true;
     }
 
-    public String[] getCategories(){
+    String[] getCategories(){
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.query(CATEGORIES_TABLE_NAME,null,null,null,null,null,null);
@@ -156,7 +163,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  catList;
     }
 
-    public String[] getPersonsListAsString(String trip_id){
+    String[] getPersonsListAsString(String trip_id){
         SQLiteDatabase db = getReadableDatabase();
 
         Cursor cursor = db.query(PERSONS_TABLE_NAME,new String[]{PERSONS_COLUMN_PERSON_NAME},PERSONS_COLUMN_TRIP_ID+"=?",new String[]{trip_id},null,null,null);
@@ -172,7 +179,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
-    public void addPersons(String trip_id , ArrayList<PersonModel> personsList){
+    void addPersons(String trip_id, ArrayList<PersonModel> personsList){
         SQLiteDatabase db = getWritableDatabase();
         for (PersonModel personModel : personsList) {
             ContentValues values = new ContentValues();
@@ -311,6 +318,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 model.setTrip_desc(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DESC)));
                 model.setTrip_id(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID)));
                 model.setTrip_places(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_PLACES)));
+                model.setImageUrl(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_IMAGE_URL)));
 
                 trip_array_list.add(model);
             } while (cursor.moveToNext());
@@ -1098,7 +1106,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean addPersonInMiddel(PersonModel model){
+    public boolean addPersonInMiddle(PersonModel model){
 
         SQLiteDatabase db = getWritableDatabase();
 
@@ -1279,7 +1287,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void deleteNotes(NotesModel notesModel){
+    void deleteNotes(NotesModel notesModel){
         SQLiteDatabase db = getWritableDatabase();
 
         db.delete(NOTES_TABLE_NAME,NOTES_COLUMN_TRIP_ID+ "=? AND " + NOTES_COLUMN_NOTE_ID + "=?",

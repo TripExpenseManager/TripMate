@@ -6,12 +6,16 @@ import android.app.models.TodoModel;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,24 +28,24 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 import Libraries.DragSortRecycler;
 
-public class CheckListActivity extends AppCompatActivity {
+public class CheckListActivityNew extends AppCompatActivity {
 
-    EditText etAddTodo;
+    EditText etNotesTitle;
+    TextView tvTitleIcon,tvAddTodo,tvTitleCompletedTodos;
     RecyclerView rvTodos,rvCompletedTodos;
-    TextView tvDisplayCompleted;
+    ImageView ivShowCompleted;
+    LinearLayout llTickedItems;
     int mYear,mMonth,mDay;
     ArrayList<TodoModel> allTodosArrayList = new ArrayList<>();
     ArrayList<TodoModel> completedTodosArrayList = new ArrayList<>();
@@ -56,17 +60,25 @@ public class CheckListActivity extends AppCompatActivity {
     public static String DELIMETER_FOR_A_TODO ="@+&";
     boolean isEdited = false;
     final String TAG = "CheckListActivity";
+    Boolean showCompleted=true;
+
+    ArrayList<TodoModel> tempTodosCompleted = new ArrayList<>(),tempTodosUncompleted = new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_check_list);
+        setContentView(R.layout.activity_check_list_new);
 
-        etAddTodo = (EditText) findViewById(R.id.etAddTodo);
+        etNotesTitle = (EditText) findViewById(R.id.etNotesTitle);
+        tvTitleIcon = (TextView) findViewById(R.id.tvTitleIcon);
         rvTodos = (RecyclerView)findViewById(R.id.rvTodos);
+        tvAddTodo = (TextView) findViewById(R.id.tvAddTodo);
+        ivShowCompleted = (ImageView) findViewById(R.id.ivShowCompleted);
+        tvTitleCompletedTodos = (TextView) findViewById(R.id.tvTitleCompletedTodos);
         rvCompletedTodos = (RecyclerView) findViewById(R.id.rvCompletedTodos);
-        tvDisplayCompleted = (TextView) findViewById(R.id.tvDisplayCompleted);
+        llTickedItems = (LinearLayout) findViewById(R.id.llTickedItems);
+
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -85,27 +97,32 @@ public class CheckListActivity extends AppCompatActivity {
         editOrAdd = getIntent().getStringExtra("editOrAdd");
         if(editOrAdd.equals("add")){
 
+
         }else  {
             notesId = getIntent().getStringExtra("notesId");
-            DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivity.this);
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
             NotesModel notesModel = dataBaseHelper.getNotes(tripId,notesId);
             notesContent = notesModel.getNote_Body();
             if(!notesContent.trim().equals(""))
                 seperateTodosBasedOnStatus(notesContent);
+            if(completedTodosArrayList.size()==1){
+                tvTitleCompletedTodos.setText(completedTodosArrayList.size()+ " Ticked Item");
+            }else {
+                tvTitleCompletedTodos.setText(completedTodosArrayList.size() + " Ticked Items");
+            }
+            if (unCompletedTodosArrayList.size()==0){
+                tvAddTodo.setVisibility(View.VISIBLE);
+            }
+            etNotesTitle.setText(notesModel.getNote_Title());
             Log.d("note ",notesContent);
 
-            }
-
-        if(editOrAdd.equals("view")) {
-            etAddTodo.setClickable(false);
-            etAddTodo.setFocusableInTouchMode(false);
-            etAddTodo.clearFocus();
-            rvTodos.setFocusable(false);
-            rvCompletedTodos.setFocusable(false);
-            rvTodos.setClickable(false);
-            rvCompletedTodos.setClickable(false);
-
         }
+
+        tempTodosCompleted.addAll(completedTodosArrayList);
+        tempTodosUncompleted.addAll(unCompletedTodosArrayList);
+
+        etNotesTitle.clearFocus();
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvTodos.setLayoutManager(linearLayoutManager);
@@ -119,39 +136,20 @@ public class CheckListActivity extends AppCompatActivity {
         rvCompletedTodos.setAdapter(completedTodosAdapter);
 
 
-        rvCompletedTodos.setVisibility(View.GONE);
-
-        tvDisplayCompleted.setOnClickListener(new View.OnClickListener() {
+        ivShowCompleted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideSoftKeyboard();
-                if(tvDisplayCompleted.getText().toString().contains("Show")){
+                if(showCompleted){
+                    ivShowCompleted.setImageDrawable(getResources().getDrawable(R.drawable.icon_arrow_up));
                     rvCompletedTodos.setVisibility(View.VISIBLE);
-                    tvDisplayCompleted.setText("Completed TO-DOS");
-                }else {
+                    showCompleted = !showCompleted;
+                }else{
+                    ivShowCompleted.setImageDrawable(getResources().getDrawable(R.drawable.icon_arrow_down));
                     rvCompletedTodos.setVisibility(View.GONE);
-                    tvDisplayCompleted.setText("Show Completed TO-DOS");
+                    showCompleted = !showCompleted;
                 }
 
-            }
-        });
-        //Adding a Todo
-        etAddTodo.setOnKeyListener(new View.OnKeyListener()
-        {
-            public boolean onKey(View v, int keyCode, KeyEvent event)
-            {
-                if (event.getAction() == KeyEvent.ACTION_DOWN)
-                {
-                    switch (keyCode)
-                    {
-                        case KeyEvent.KEYCODE_ENTER:
-                            addTodo();
-                            return true;
-                        default:
-                            break;
-                    }
-                }
-                return false;
+
             }
         });
 
@@ -160,7 +158,7 @@ public class CheckListActivity extends AppCompatActivity {
         rvTodos.setItemAnimator(null);
 
         DragSortRecycler dragSortRecycler = new DragSortRecycler();
-        dragSortRecycler.setViewHandleId(R.id.tvTodo);
+        dragSortRecycler.setViewHandleId(R.id.tvTodoDragger);
         dragSortRecycler.setFloatingAlpha(0.4f);
         dragSortRecycler.setFloatingBgColor(0x800000FF);
         dragSortRecycler.setAutoScrollSpeed(0.3f);
@@ -173,6 +171,7 @@ public class CheckListActivity extends AppCompatActivity {
                 TodoModel todoModel = unCompletedTodosArrayList.remove(from);
                 unCompletedTodosArrayList.add(to, todoModel);
                 todosAdapter.notifyDataSetChanged();
+                saveCheckList();
                 //notifyItemMoved does work, but it makes the list scroll pos jump a little when dragging near the top or bottom
                 //adapter.notifyItemMoved(from,to);
             }
@@ -196,7 +195,7 @@ public class CheckListActivity extends AppCompatActivity {
         rvTodos.addOnItemTouchListener(dragSortRecycler);
 
         DragSortRecycler dragSortRecyclerCompleted = new DragSortRecycler();
-        dragSortRecyclerCompleted.setViewHandleId(R.id.tvTodo);
+        dragSortRecyclerCompleted.setViewHandleId(R.id.tvTodoDragger);
         dragSortRecyclerCompleted.setFloatingAlpha(0.4f);
         dragSortRecyclerCompleted.setFloatingBgColor(0x800000FF);
         dragSortRecyclerCompleted.setAutoScrollSpeed(0.3f);
@@ -209,6 +208,7 @@ public class CheckListActivity extends AppCompatActivity {
                 TodoModel todoModel = completedTodosArrayList.remove(from);
                 completedTodosArrayList.add(to, todoModel);
                 completedTodosAdapter.notifyDataSetChanged();
+                saveCheckList();
                 //notifyItemMoved does work, but it makes the list scroll pos jump a little when dragging near the top or bottom
                 //adapter.notifyItemMoved(from,to);
             }
@@ -228,21 +228,34 @@ public class CheckListActivity extends AppCompatActivity {
 
         rvCompletedTodos.addItemDecoration(dragSortRecyclerCompleted);
         rvCompletedTodos.addOnItemTouchListener(dragSortRecyclerCompleted);
+
+        TodoModel todoModel = new TodoModel();
+        todoModel.setName("");
+        unCompletedTodosArrayList.add(todoModel);
+
+        if(completedTodosArrayList.size()==0){
+            llTickedItems.setVisibility(View.GONE);
+            rvCompletedTodos.setVisibility(View.GONE);
+        }
+
+
+        tvAddTodo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(unCompletedTodosArrayList.size() != 0 &&
+                        unCompletedTodosArrayList.get(unCompletedTodosArrayList.size()-1).getName().equalsIgnoreCase("")){
+
+                    tvAddTodo.setVisibility(View.VISIBLE);
+                }else {
+                    TodoModel todoModel = new TodoModel();
+                    unCompletedTodosArrayList.add(todoModel);
+                    todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size() - 1);
+                    tvAddTodo.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
-
-    public void addTodo(){
-        if(etAddTodo.getText().toString().trim().equals("")){}
-        else
-            unCompletedTodosArrayList.add(new TodoModel(etAddTodo.getText().toString().trim(),false));
-
-        todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size());
-        etAddTodo.setText("");
-        isEdited = true;
-        hideSoftKeyboard();
-        // Focus edit text after a todo is aaded // // TODO: 06-07-2017
-
-    }
 
     /**
      * Hides the soft keyboard
@@ -265,11 +278,13 @@ public class CheckListActivity extends AppCompatActivity {
 
 
 
+
     public void saveCheckList(){
         Long datevalue = Calendar.getInstance().getTimeInMillis();
         String notesDate = String.valueOf(datevalue);
 
-        ArrayList<TodoModel> allTodos = unCompletedTodosArrayList;
+        ArrayList<TodoModel> allTodos = new ArrayList<>();
+        allTodos.addAll(unCompletedTodosArrayList);
         allTodos.addAll(completedTodosArrayList);
         notesContent = encryptTodos(allTodos);
 
@@ -279,44 +294,46 @@ public class CheckListActivity extends AppCompatActivity {
             notesModel.setNote_TripId(tripId);
             String note_id = "Notes" + UUID.randomUUID().toString();
             notesModel.setNote_Id(note_id);
-            notesModel.setNote_Title("CheckList"); // needs to be updated()// TODO: 06-07-2017
+            notesModel.setNote_Title(etNotesTitle.getText().toString()); // needs to be updated()// TODO: 06-07-2017
             notesModel.setNote_Body(notesContent);
             notesModel.setNote_ContentType(2);
             notesModel.setNote_Date(notesDate);
             notesModel.setNote_ContentStatus("CheckList");
 
-            DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivity.this);
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
             dataBaseHelper.addNotes(notesModel);
 
-            Toast.makeText(getApplicationContext(),"CheckList Added Successfully",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(CheckListActivity.this,CheckListActivity.class);
+           /* Toast.makeText(getApplicationContext(),"CheckList Added Successfully",Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(CheckListActivityNew.this,CheckListActivityNew.class);
             intent.putExtra("tripId",tripId);
             intent.putExtra("editOrAdd","view");
             intent.putExtra("notesId",note_id);
             intent.putExtra("anim","no");
             startActivity(intent);
             finish();
+            */
         }else{
             NotesModel notesModel = new NotesModel();
             notesModel.setNote_TripId(tripId);
             notesModel.setNote_Id(notesId);
-            notesModel.setNote_Title("CheckList"); // needs to be updated()// TODO: 06-07-2017
+            notesModel.setNote_Title(etNotesTitle.getText().toString()); // needs to be updated()// TODO: 06-07-2017
             notesModel.setNote_Body(notesContent);
             notesModel.setNote_ContentType(2);
             notesModel.setNote_Date(notesDate);
             notesModel.setNote_ContentStatus("CheckList");
 
-            DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivity.this);
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
             dataBaseHelper.updateNotes(notesModel);
 
-            Toast.makeText(getApplicationContext(),"CheckList Updated Successfully",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(CheckListActivity.this,CheckListActivity.class);
+           /* Toast.makeText(getApplicationContext(),"CheckList Updated Successfully",Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(CheckListActivityNew.this,CheckListActivityNew.class);
             intent.putExtra("tripId",tripId);
             intent.putExtra("editOrAdd","view");
             intent.putExtra("notesId",notesId);
             intent.putExtra("anim","no");
             startActivity(intent);
             finish();
+            */
         }
     }
 
@@ -354,6 +371,7 @@ public class CheckListActivity extends AppCompatActivity {
 
         for(TodoModel  todoModel : todoModels) {
             // Name of todos
+            if(todoModel.getName()!=null)
             noteContent+=todoModel.getName().trim();
             noteContent+=DELIMETER_FOR_A_TODO;
             // Status of the todos
@@ -376,7 +394,7 @@ public class CheckListActivity extends AppCompatActivity {
         ArrayList<TodoModel> todoModels = new ArrayList<>();
 
         for(String s : todosModelsasStrings) {
-           TodoModel todoModel = new TodoModel();
+            TodoModel todoModel = new TodoModel();
             String[] todo = s.split(Pattern.quote(DELIMETER_FOR_A_TODO));
             todoModel.setName(todo[0].trim());
             if(todo[1].trim().equalsIgnoreCase("t"))
@@ -400,27 +418,27 @@ public class CheckListActivity extends AppCompatActivity {
 
         public class TodoViewHolder extends  RecyclerView.ViewHolder{
             CheckBox cbTodo;
-            FrameLayout flTodo;
-            TextView tvTodo;
+            ImageView ivCancelTodo;
+            TextView tvTodoDragger,etTodo;
             public TodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
-                flTodo = (FrameLayout) itemView.findViewById(R.id.flTodo);
-                tvTodo = (TextView) itemView.findViewById(R.id.tvTodo);
-
+                ivCancelTodo = (ImageView) itemView.findViewById(R.id.ivCancelTodo);
+                etTodo = (EditText) itemView.findViewById(R.id.etTodo);
+                tvTodoDragger = (TextView) itemView.findViewById(R.id.tvTodoDragger);
             }
         }
 
         @Override
         public TodoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View customView = getLayoutInflater().inflate(R.layout.list_item_todo,parent,false);
+            View customView = getLayoutInflater().inflate(R.layout.list_item_todo_new,parent,false);
             return new TodoViewHolder(customView);
 
         }
 
         @Override
         public void onBindViewHolder(final TodoViewHolder holder, final int position) {
-            holder.tvTodo.setText(todosList.get(position).getName());
+            holder.etTodo.setText(todosList.get(position).getName());
             holder.cbTodo.setChecked(false);
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -432,9 +450,95 @@ public class CheckListActivity extends AppCompatActivity {
                         todosAdapter.notifyItemRemoved(position);
                         todosAdapter.notifyDataSetChanged();
                         completedTodosAdapter.notifyDataSetChanged();
+                        llTickedItems.setVisibility(View.VISIBLE);
+                        rvCompletedTodos.setVisibility(View.VISIBLE);
+                        if(completedTodosArrayList.size()==1){
+                            tvTitleCompletedTodos.setText(completedTodosArrayList.size()+ " Ticked Item");
+                        }else {
+                            tvTitleCompletedTodos.setText(completedTodosArrayList.size() + " Ticked Items");
+                        }
+                        if (unCompletedTodosArrayList.size()==0){
+                            tvAddTodo.setVisibility(View.VISIBLE);
+                        }
+                    }
+                } });
+
+            holder.ivCancelTodo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    unCompletedTodosArrayList.remove(holder.getAdapterPosition());
+                    todosAdapter.notifyItemRemoved(holder.getAdapterPosition());
+                    todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),todosList.size());
+                    if(unCompletedTodosArrayList.size() == 0){
+                        tvAddTodo.setVisibility(View.VISIBLE);
+                    }
+                   // hideSoftKeyboard();
+                }
+            });
+
+            holder.etTodo.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
                 }
-            } });
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if(holder.etTodo.getText().toString().equalsIgnoreCase("")){
+
+                    }else {
+                        unCompletedTodosArrayList.get(holder.getAdapterPosition()).setName(holder.etTodo.getText().toString());
+                        tvAddTodo.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+            holder.ivCancelTodo.setVisibility(View.GONE);
+
+            holder.etTodo.setOnKeyListener(new View.OnKeyListener()
+            {
+                public boolean onKey(View v, int keyCode, KeyEvent event)
+                {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN)
+                    {
+                        switch (keyCode)
+                        {
+                            case KeyEvent.KEYCODE_ENTER:
+                                if(!(holder.etTodo.getText().toString().equalsIgnoreCase(""))){
+                                    int pos = holder.getAdapterPosition();
+                                    TodoModel todoModel = new TodoModel();
+                                    unCompletedTodosArrayList.add(pos,todoModel);
+                                    todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition()+1,unCompletedTodosArrayList.size()-1);
+                                }
+                                return true;
+                            default:
+                                break;
+                        }
+                    }
+                    return false;
+                }
+            });
+
+
+
+            holder.etTodo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus)
+                        holder.ivCancelTodo.setVisibility(View.VISIBLE);
+                    else {
+                        holder.ivCancelTodo.setVisibility(View.GONE);
+                        saveCheckList();
+                    }
+                }
+            });
+
+
 
         }
 
@@ -457,13 +561,14 @@ public class CheckListActivity extends AppCompatActivity {
         public class CompletedTodoViewHolder extends  RecyclerView.ViewHolder{
 
             CheckBox cbTodo;
-            FrameLayout flTodo;
-            TextView tvTodo;
+            ImageView ivCancelTodo;
+            TextView tvTodoDragger,etTodo;
             public CompletedTodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
-                flTodo = (FrameLayout) itemView.findViewById(R.id.flTodo);
-                tvTodo = (TextView) itemView.findViewById(R.id.tvTodo);
+                ivCancelTodo = (ImageView) itemView.findViewById(R.id.ivCancelTodo);
+                etTodo = (EditText) itemView.findViewById(R.id.etTodo);
+                tvTodoDragger = (TextView) itemView.findViewById(R.id.tvTodoDragger);
 
 
             }
@@ -471,14 +576,14 @@ public class CheckListActivity extends AppCompatActivity {
 
         @Override
         public CompletedTodoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View customView = getLayoutInflater().inflate(R.layout.list_item_completed_todo,parent,false);
+            View customView = getLayoutInflater().inflate(R.layout.list_item_completed_todo_new,parent,false);
             return new CompletedTodoViewHolder(customView);
 
         }
 
         @Override
         public void onBindViewHolder(final CompletedTodoViewHolder holder, final int position) {
-            holder.tvTodo.setText(completedTodosList.get(position).getName());
+            holder.etTodo.setText(completedTodosList.get(position).getName());
             holder.cbTodo.setChecked(true);
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -490,10 +595,79 @@ public class CheckListActivity extends AppCompatActivity {
                         completedTodosAdapter.notifyItemRemoved(position);
                         completedTodosAdapter.notifyDataSetChanged();
                         todosAdapter.notifyDataSetChanged();
+                        if(completedTodosArrayList.size()==0){
+                            llTickedItems.setVisibility(View.GONE);
+                            rvCompletedTodos.setVisibility(View.GONE);
+                        }
 
+                        if(completedTodosArrayList.size()==1){
+                            tvTitleCompletedTodos.setText(completedTodosArrayList.size()+ " Ticked Item");
+                        }else {
+                            tvTitleCompletedTodos.setText(completedTodosArrayList.size() + " Ticked Items");
+                        }
                     }
                 } });
 
+            holder.etTodo.setPaintFlags( Paint.STRIKE_THRU_TEXT_FLAG);
+
+
+            holder.ivCancelTodo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    completedTodosArrayList.remove(holder.getAdapterPosition());
+                    completedTodosAdapter.notifyItemRemoved(holder.getAdapterPosition());
+                    completedTodosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),completedTodosArrayList.size());
+
+
+                    if(completedTodosArrayList.size()==1){
+                        tvTitleCompletedTodos.setText(completedTodosArrayList.size()+ " Ticked Item");
+                    }else {
+                        tvTitleCompletedTodos.setText(completedTodosArrayList.size() + " Ticked Items");
+                    }
+                    if (completedTodosArrayList.size()==0){
+                        llTickedItems.setVisibility(View.GONE);
+                    }
+                   // hideSoftKeyboard();
+                }
+            });
+
+            holder.etTodo.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if(holder.etTodo.getText().toString().equalsIgnoreCase("")){
+
+                    }else {
+                        completedTodosArrayList.get(holder.getAdapterPosition()).setName(holder.etTodo.getText().toString());
+                        tvAddTodo.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+            holder.ivCancelTodo.setVisibility(View.GONE);
+
+
+
+            holder.etTodo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus)
+                        holder.ivCancelTodo.setVisibility(View.VISIBLE);
+                    else {
+                        holder.ivCancelTodo.setVisibility(View.GONE);
+                        saveCheckList();
+                    }
+                }
+            });
 
 
         }
@@ -511,13 +685,11 @@ public class CheckListActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_notes_edit,menu);;
         MenuTemp = menu;
 
-        if(editOrAdd != null){
-            if(editOrAdd.equals("add") || editOrAdd.equals("edit")){
-                menu.findItem(R.id.action_edit).setVisible(false);
-            }
+        menu.findItem(R.id.action_edit).setVisible(false);
 
-            if(!editOrAdd.equals("edit")){
-                menu.findItem(R.id.action_cancel).setVisible(false);
+        if(editOrAdd != null){
+            if(!editOrAdd.equals("edit") || editOrAdd.equals("view")){
+                menu.findItem(R.id.action_cancel).setVisible(true);
             }
 
 
@@ -541,9 +713,8 @@ public class CheckListActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_cancel :
-
                 if(notesId != null && tripId != null){
-                    DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivity.this);
+                    DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
                     NotesModel notesModel = dataBaseHelper.getNotes(tripId,notesId);
                     notesContent = notesModel.getNote_Body();
                     if(!notesContent.trim().equals("")) {
@@ -572,8 +743,13 @@ public class CheckListActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if(isEdited){
-            final AlertDialog.Builder dialog = new AlertDialog.Builder(CheckListActivity.this);
+
+
+        if(tempTodosCompleted.equals(completedTodosArrayList) && tempTodosUncompleted.equals(unCompletedTodosArrayList)){
+            finish();
+            overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
+        } else {
+            final AlertDialog.Builder dialog = new AlertDialog.Builder(CheckListActivityNew.this);
 
             dialog.setMessage("Do you want to exit without saving the CheckList?");
             dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -590,14 +766,10 @@ public class CheckListActivity extends AppCompatActivity {
                 }
             });
             dialog.show();
-        }else{
-            finish();
-            overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
         }
 
+
     }
-
-
 
 
 

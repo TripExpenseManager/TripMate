@@ -14,19 +14,26 @@
 
         <CheckBox
             android:id="@+id/cbTodo"
-            android:layout_width="0dp"
+            android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_weight="1"
             android:background="@android:color/transparent"
             android:gravity="center_vertical"
-            android:hint="Add a to-do"
-            android:textColor="#000000"
+
             android:textColorHighlight="@color/white"
             android:textColorLink="@color/white"
-            android:textSize="16sp"
             android:checked="false"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
+            android:textColor="#000000"
+            android:id="@+id/tvTodo"
+            android:text="Todo"
+            android:textSize="16sp"
+            />
 
     </LinearLayout>
 

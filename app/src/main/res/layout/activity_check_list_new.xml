@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
+                <EditText
+                    android:id="@+id/etNotesTitle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginTop="8dp"
+                    android:layout_margin="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:hint="Title"
+                    android:textColor="@color/black"
+                    android:background="@android:color/transparent"/>
+                <TextView
+                    android:id="@+id/tvTitleIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:textStyle="bold"
+                    android:text="&#8942;"
+                    android:textColor="#45000000"
+                    android:textSize="24dp"/>
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvTodos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never">
+
+            </android.support.v7.widget.RecyclerView>
+
+
+            <TextView
+                android:id="@+id/tvAddTodo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_marginRight="10dp"
+                android:text="     +   List Item"
+                android:textColor="#45000000"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:background="#45000000" />
+
+            <LinearLayout
+                android:id="@+id/llTickedItems"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivShowCompleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="10dp"
+                    app:srcCompat="@drawable/icon_arrow_up" />
+
+                <TextView
+                    android:id="@+id/tvTitleCompletedTodos"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="1 Ticked Item"
+                    android:textColor="#56000000"
+                    android:textStyle="italic" />
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvCompletedTodos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                android:layout_marginBottom="10dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+
+        </LinearLayout>
+
+
+    </android.support.v4.widget.NestedScrollView>
+
+    </android.support.design.widget.CoordinatorLayout>

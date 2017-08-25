@@ -25,10 +25,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionMenu;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +41,9 @@ public class TripDesk extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    ImageView header_image;
     
-    String trip_id,trip_name,trip_date;
+    String trip_id,trip_name,trip_date,trip_url;
 
     FloatingActionButton fab;
     FloatingActionMenu fabMenu;
@@ -52,10 +55,30 @@ public class TripDesk extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        header_image = (ImageView) findViewById(R.id.header_image);
+
         Intent tripIdIntent = getIntent();
         trip_id = tripIdIntent.getStringExtra("trip_id");
         trip_name = tripIdIntent.getStringExtra("trip_name");
         trip_date = tripIdIntent.getStringExtra("trip_date");
+        trip_url = tripIdIntent.getStringExtra("trip_url");
+
+
+        if(trip_url.equalsIgnoreCase("")){
+            Picasso.with(TripDesk.this)
+                    .load(R.drawable.image_placeholder)
+                    .fit().centerCrop()
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .into(header_image);
+        }else{
+            Picasso.with(TripDesk.this)
+                    .load(trip_url)
+                    .fit().centerCrop()
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .into(header_image);
+        }
 
 
         if(getSupportActionBar()!=null) {
@@ -299,7 +322,7 @@ public class TripDesk extends AppCompatActivity {
                         personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
                         personModel.setAdmin(0);
 
-                        dbHelper.addPersonInMiddel(personModel);
+                        dbHelper.addPersonInMiddle(personModel);
 
                         setupViewPager();
 

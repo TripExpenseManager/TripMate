@@ -12,6 +12,8 @@ public class TripModel {
     private String trip_places;
     private String trip_desc;
     private String trip_id;
+    private boolean isImageLoaded = false;
+    private  String imageUrl = "";
 
 
 
@@ -73,5 +75,21 @@ public class TripModel {
 
     public void setTrip_amount(Double trip_amount) {
         this.trip_amount = trip_amount;
+    }
+
+    public boolean isImageLoaded() {
+        return isImageLoaded;
+    }
+
+    public void setImageLoaded(boolean imageLoaded) {
+        isImageLoaded = imageLoaded;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
