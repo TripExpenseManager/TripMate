@@ -242,8 +242,10 @@ public class CheckListActivityNew extends AppCompatActivity {
         tvAddTodo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(unCompletedTodosArrayList.get(unCompletedTodosArrayList.size()-1).getName().equalsIgnoreCase("")){
+                if(unCompletedTodosArrayList.size() != 0 &&
+                        unCompletedTodosArrayList.get(unCompletedTodosArrayList.size()-1).getName().equalsIgnoreCase("")){
 
+                    tvAddTodo.setVisibility(View.VISIBLE);
                 }else {
                     TodoModel todoModel = new TodoModel();
                     unCompletedTodosArrayList.add(todoModel);
@@ -467,7 +469,9 @@ public class CheckListActivityNew extends AppCompatActivity {
                     unCompletedTodosArrayList.remove(holder.getAdapterPosition());
                     todosAdapter.notifyItemRemoved(holder.getAdapterPosition());
                     todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),todosList.size());
-
+                    if(unCompletedTodosArrayList.size() == 0){
+                        tvAddTodo.setVisibility(View.VISIBLE);
+                    }
                    // hideSoftKeyboard();
                 }
             });

@@ -13,7 +13,7 @@ public class TripModel {
     private String trip_desc;
     private String trip_id;
     private boolean isImageLoaded = false;
-    private  String imageUrl = null;
+    private  String imageUrl = "";
 
 
 
