@@ -28,6 +28,8 @@ dependencies {
     compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.10.6@aar') {
         transitive = true
     }
+
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'jp.wasabeef:recyclerview-animators:2.2.5'
@@ -47,11 +49,11 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.github.apl-devs:appintro:v4.2.0'
     compile 'com.getkeepsafe.taptargetview:taptargetview:1.9.1'
-    testCompile 'junit:junit:4.12'
     compile 'org.jsoup:jsoup:1.7.3'
-
-
+    testCompile 'junit:junit:4.12'
 }
+
+
 
 
 
