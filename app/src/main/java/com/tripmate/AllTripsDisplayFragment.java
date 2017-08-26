@@ -559,15 +559,36 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
 
             }
         });
-        
+
+        trip_grid_view = (GridView) view.findViewById(R.id.trip_grid_view);
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
         trip_array_list = dataBaseHelper.getTripsData();
 
+        grid_view_adapter  = new TripAdapter(getActivity(), trip_array_list);
 
+        trip_grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
 
-        trip_grid_view = (GridView) view.findViewById(R.id.trip_grid_view);
+                Intent intent = new Intent(getActivity(),TripDesk.class);
+                intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
+                intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
+                intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
+                intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
+                    startActivity(intent, options.toBundle());
+                }
+                else {
+                    startActivity(intent);
+                }
+
+            }
+        });
+
+        trip_grid_view.setAdapter(grid_view_adapter);
 
         AnimationSet set = new AnimationSet(true);
         Animation animation = new AlphaAnimation(0.0f, 1.0f);
@@ -860,145 +881,77 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
 
         //closing the searchview if it is open
         if (searchView.isSearchOpen()) {
-            searchView.closeSearch();
-        }
-
-        //refreshing the contents of gridview by retrieving data from backend
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-
-        trip_array_list = dataBaseHelper.getTripsData();
-
-        new getImageUrlConnection().execute();
-
-        if(trip_array_list.size() == 0){
-            no_trips_found_searched_RL.setVisibility(View.GONE);
-            no_trips_RL.setVisibility(View.VISIBLE);
+           // searchView.closeSearch();
         }else{
-            no_trips_found_searched_RL.setVisibility(View.GONE);
-            no_trips_RL.setVisibility(View.GONE);
-        }
 
-        //retrieves the last selected icon_sort-by position, which is saved in sharedpreferencse and display the corresponding result
-        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        int prevSelectedPosition = app_preferences.getInt("get_sort_position",0);
+            //refreshing the contents of gridview by retrieving data from backend
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
 
-        if(prevSelectedPosition ==0){
+            trip_array_list.clear();
+            trip_array_list.addAll(dataBaseHelper.getTripsData());
 
-            //sorting date wise
-            Collections.sort(trip_array_list, new Comparator<TripModel>() {
-                @Override
-                public int compare(TripModel o1, TripModel o2) {
+            if(trip_array_list.size() == 0){
+                no_trips_found_searched_RL.setVisibility(View.GONE);
+                no_trips_RL.setVisibility(View.VISIBLE);
+            }else{
+                no_trips_found_searched_RL.setVisibility(View.GONE);
+                no_trips_RL.setVisibility(View.GONE);
+            }
+
+            //retrieves the last selected icon_sort-by position, which is saved in sharedpreferencse and display the corresponding result
+            SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            int prevSelectedPosition = app_preferences.getInt("get_sort_position",0);
+
+            if(prevSelectedPosition ==0){
+
+                //sorting date wise
+                Collections.sort(trip_array_list, new Comparator<TripModel>() {
+                    @Override
+                    public int compare(TripModel o1, TripModel o2) {
 
 
-                    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-                    Date date1 = null,date2 = null;
-                    try {
-                        date1 = format.parse(o1.getTrip_date());
-                        date2 = format.parse(o2.getTrip_date());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                        Date date1 = null,date2 = null;
+                        try {
+                            date1 = format.parse(o1.getTrip_date());
+                            date2 = format.parse(o2.getTrip_date());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        return date2.compareTo(date1);
+
                     }
+                });
 
-                    return date2.compareTo(date1);
+                grid_view_adapter.notifyDataSetChanged();
 
-                }
-            });
+            }else if(prevSelectedPosition ==1){
 
-            grid_view_adapter  = new TripAdapter(getActivity(), trip_array_list);
-
-            trip_grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View v,
-                                        int position, long id) {
-
-                    Intent intent = new Intent(getActivity(),TripDesk.class);
-                    intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
-                    intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
-                    intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
-                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
-                        startActivity(intent, options.toBundle());
+                //sorting amount wise
+                Collections.sort(trip_array_list, new Comparator<TripModel>() {
+                    @Override
+                    public int compare(TripModel o1, TripModel o2) {
+                        return o2.getTrip_amount().compareTo(o1.getTrip_amount());
                     }
-                    else {
-                        startActivity(intent);
+                });
+
+                grid_view_adapter.notifyDataSetChanged();
+
+            }else if(prevSelectedPosition ==2){
+                //sorting name wise
+                Collections.sort(trip_array_list, new Comparator<TripModel>() {
+                    @Override
+                    public int compare(TripModel o1, TripModel o2) {
+                        return o1.getTrip_name().compareTo(o2.getTrip_name());
                     }
+                });
 
-                }
-            });
+                grid_view_adapter.notifyDataSetChanged();
+            }
 
-            trip_grid_view.setAdapter(grid_view_adapter);
+            new getImageUrlConnection().execute();
 
-        }else if(prevSelectedPosition ==1){
-
-            //sorting amount wise
-            Collections.sort(trip_array_list, new Comparator<TripModel>() {
-                @Override
-                public int compare(TripModel o1, TripModel o2) {
-                    return o2.getTrip_amount().compareTo(o1.getTrip_amount());
-                }
-            });
-
-            grid_view_adapter  = new TripAdapter(getActivity(), trip_array_list);
-
-            trip_grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View v,
-                                        int position, long id) {
-
-                    Intent intent = new Intent(getActivity(),TripDesk.class);
-                    intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
-                    intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
-                    intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
-                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
-                        startActivity(intent, options.toBundle());
-                    }
-                    else {
-                        startActivity(intent);
-                    }
-
-                }
-            });
-
-            trip_grid_view.setAdapter(grid_view_adapter);
-
-        }else if(prevSelectedPosition ==2){
-
-
-            //sorting name wise
-            Collections.sort(trip_array_list, new Comparator<TripModel>() {
-                @Override
-                public int compare(TripModel o1, TripModel o2) {
-                    return o1.getTrip_name().compareTo(o2.getTrip_name());
-                }
-            });
-
-            grid_view_adapter  = new TripAdapter(getActivity(), trip_array_list);
-
-            trip_grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View v,
-                                        int position, long id) {
-
-                    Intent intent = new Intent(getActivity(),TripDesk.class);
-                    intent.putExtra("trip_id",trip_array_list.get(position).getTrip_id());
-                    intent.putExtra("trip_name",trip_array_list.get(position).getTrip_name());
-                    intent.putExtra("trip_date",trip_array_list.get(position).getTrip_date());
-                    intent.putExtra("trip_url",trip_array_list.get(position).getImageUrl());
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), (ImageView)v.findViewById(R.id.trip_image_view), getString(R.string.activity_image_trans));
-                        startActivity(intent, options.toBundle());
-                    }
-                    else {
-                        startActivity(intent);
-                    }
-
-                }
-            });
-
-            trip_grid_view.setAdapter(grid_view_adapter);
         }
 
     }
@@ -1078,7 +1031,8 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         @Override
         protected String doInBackground(Void... params) {
 
-            for(TripModel tripModel : trip_array_list){
+            for(int i=0;i<trip_array_list.size();i++){
+                TripModel tripModel = trip_array_list.get(i);
                 if(tripModel.getImageUrl().equalsIgnoreCase("")){
                     String query = tripModel.getTrip_name();
                     query = query.toLowerCase().replace("trip", "tour").toLowerCase().replace("holiday", "tour");
@@ -1103,10 +1057,9 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                                     //    if (jSONObject.getInt("ow") > 500) {
                                             String imageUrl = jSONObject.getString("ou");
                                             tripModel.setImageUrl(imageUrl);
-                                            grid_view_adapter.notifyDataSetChanged();
                                             DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
                                             dataBaseHelper.updateTripImageUrl(tripModel.getTrip_id(),imageUrl);
-
+                                            grid_view_adapter.notifyDataSetChanged();
                                             break;
                                       //  }
                                     } catch (Exception e2) {

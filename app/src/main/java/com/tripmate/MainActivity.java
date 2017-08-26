@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,11 +22,15 @@ import android.view.MenuItem;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     FloatingActionButton fab;
     MaterialSearchView searchView;
+
+    NavigationView navigationView;
 
     int prevId = 0;
 
@@ -52,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
@@ -92,6 +98,28 @@ public class MainActivity extends AppCompatActivity
 
             } else {
                 getSupportFragmentManager().popBackStack();
+                int pos = Integer.parseInt(getSupportFragmentManager().getBackStackEntryAt(0).getName());
+
+                switch (pos) {
+                    case 0:
+                        fab.setVisibility(View.VISIBLE);
+                        searchView.setVisibility(View.VISIBLE);
+                        navigationView.setCheckedItem(R.id.nav_trips);
+                        prevId = R.id.nav_trips;
+                        break;
+                    case 1:
+                        fab.setVisibility(View.GONE);
+                        searchView.setVisibility(View.GONE);
+                        navigationView.setCheckedItem(R.id.nav_hotels);
+                        prevId = R.id.nav_hotels;
+                        break;
+                    case 2:
+                        fab.setVisibility(View.GONE);
+                        searchView.setVisibility(View.GONE);
+                        navigationView.setCheckedItem(R.id.nav_travel);
+                        prevId = R.id.nav_travel;
+                        break;
+                }
             }
         }
 
@@ -121,51 +149,58 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         //donot reload on same item is reselected
-        if(prevId != id) {
 
-            android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            if (id == R.id.nav_trips) {
+        if (id == R.id.nav_trips) {
 
-                fab.setVisibility(View.VISIBLE);
-                searchView.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.VISIBLE);
+            searchView.setVisibility(View.VISIBLE);
 
+            if(prevId != id) {
                 AllTripsDisplayFragment allTripsFragment = new AllTripsDisplayFragment();
                 transaction.replace(R.id.fragment_container, allTripsFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.addToBackStack(null);
+                transaction.addToBackStack("0");
                 transaction.commit();
+                prevId = id;
+            }
 
-            } else if (id == R.id.nav_hotels) {
+        } else if (id == R.id.nav_hotels) {
 
-                fab.setVisibility(View.GONE);
-                searchView.setVisibility(View.GONE);
+            fab.setVisibility(View.GONE);
+            searchView.setVisibility(View.GONE);
 
+            if(prevId != id) {
                 HotelBookingSitesFragment hotelsFragment = new HotelBookingSitesFragment();
                 transaction.replace(R.id.fragment_container, hotelsFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.addToBackStack(null);
+                transaction.addToBackStack("1");
                 transaction.commit();
+                prevId = id;
+            }
 
-            } else if (id == R.id.nav_travel) {
+        } else if (id == R.id.nav_travel) {
 
-                fab.setVisibility(View.GONE);
-                searchView.setVisibility(View.GONE);
+            fab.setVisibility(View.GONE);
+            searchView.setVisibility(View.GONE);
 
+            if(prevId != id) {
                 TravelBookingSitesFragment travelFragment = new TravelBookingSitesFragment();
                 transaction.replace(R.id.fragment_container, travelFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.addToBackStack(null);
+                transaction.addToBackStack("2");
                 transaction.commit();
-
+                prevId = id;
             }
 
         }
+
         if (id == R.id.nav_share) {
 
                 Intent sendIntent = new Intent();
@@ -177,7 +212,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
 
                 // restoreDriveBackup();
-                Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
+                Intent intent = new Intent(MainActivity.this,SettingsActivityNew.class);
                 startActivity(intent);
 
         }
@@ -188,9 +223,6 @@ public class MainActivity extends AppCompatActivity
             if(mGoogleApiClient.isConnected()){
                 mGoogleApiClient.clearDefaultAccountAndReconnect();
             }  */
-
-
-        prevId = id;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
