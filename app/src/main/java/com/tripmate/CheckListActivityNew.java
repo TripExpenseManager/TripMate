@@ -5,9 +5,12 @@ import android.app.models.NotesModel;
 import android.app.models.TodoModel;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,9 +18,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -27,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.content.DialogInterface.OnKeyListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,12 +44,11 @@ import Libraries.DragSortRecycler;
 public class CheckListActivityNew extends AppCompatActivity {
 
     EditText etNotesTitle;
-    TextView tvTitleIcon,tvAddTodo,tvTitleCompletedTodos;
+    TextView tvAddTodo,tvTitleCompletedTodos;
     RecyclerView rvTodos,rvCompletedTodos;
+    NestedScrollView nswChecklist;
     ImageView ivShowCompleted;
     LinearLayout llTickedItems;
-    int mYear,mMonth,mDay;
-    ArrayList<TodoModel> allTodosArrayList = new ArrayList<>();
     ArrayList<TodoModel> completedTodosArrayList = new ArrayList<>();
     ArrayList<TodoModel> unCompletedTodosArrayList = new ArrayList<>();
     TodosAdapter todosAdapter;
@@ -54,12 +59,7 @@ public class CheckListActivityNew extends AppCompatActivity {
     String notesContent = "";
     public static String DELIMETER_FOR_TODOS ="$*^";
     public static String DELIMETER_FOR_A_TODO ="@+&";
-    boolean isEdited = false;
-    final String TAG = "CheckListActivity";
     Boolean showCompleted=true;
-
-    ArrayList<TodoModel> tempTodosCompleted = new ArrayList<>(),tempTodosUncompleted = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +67,13 @@ public class CheckListActivityNew extends AppCompatActivity {
         setContentView(R.layout.activity_check_list_new);
 
         etNotesTitle = (EditText) findViewById(R.id.etNotesTitle);
-        tvTitleIcon = (TextView) findViewById(R.id.tvTitleIcon);
         rvTodos = (RecyclerView)findViewById(R.id.rvTodos);
         tvAddTodo = (TextView) findViewById(R.id.tvAddTodo);
         ivShowCompleted = (ImageView) findViewById(R.id.ivShowCompleted);
         tvTitleCompletedTodos = (TextView) findViewById(R.id.tvTitleCompletedTodos);
         rvCompletedTodos = (RecyclerView) findViewById(R.id.rvCompletedTodos);
         llTickedItems = (LinearLayout) findViewById(R.id.llTickedItems);
-
+        nswChecklist  = (NestedScrollView) findViewById(R.id.nswChecklist);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -88,12 +87,11 @@ public class CheckListActivityNew extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-
         tripId = getIntent().getStringExtra("tripId");
         editOrAdd = getIntent().getStringExtra("editOrAdd");
         if(editOrAdd.equals("add")){
-
-
+            TodoModel todoModel = new TodoModel();
+            unCompletedTodosArrayList.add(todoModel);
         }else  {
             notesId = getIntent().getStringExtra("notesId");
             DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
@@ -114,25 +112,18 @@ public class CheckListActivityNew extends AppCompatActivity {
 
         }
 
-        tempTodosCompleted.addAll(completedTodosArrayList);
-        tempTodosUncompleted.addAll(unCompletedTodosArrayList);
-
-        etNotesTitle.clearFocus();
 
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        rvTodos.setLayoutManager(linearLayoutManager);
-        LinearLayoutManager linearLayoutManager1 = new LinearLayoutManager(this);
-        rvCompletedTodos.setLayoutManager(linearLayoutManager1);
-
+        rvTodos.setLayoutManager(new LinearLayoutManager(this));
         todosAdapter = new TodosAdapter(this,unCompletedTodosArrayList);
         rvTodos.setAdapter(todosAdapter);
 
+        rvCompletedTodos.setLayoutManager(new LinearLayoutManager(this));
         completedTodosAdapter = new CompletedTodosAdapter(this,completedTodosArrayList);
         rvCompletedTodos.setAdapter(completedTodosAdapter);
 
 
-        ivShowCompleted.setOnClickListener(new View.OnClickListener() {
+        llTickedItems.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(showCompleted){
@@ -151,10 +142,15 @@ public class CheckListActivityNew extends AppCompatActivity {
 
 
 
-        rvTodos.setItemAnimator(null);
+        //for uncompleted todos
+       rvTodos.setItemAnimator(null);
+
+        Resources r = getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, r.getDisplayMetrics());
 
         DragSortRecycler dragSortRecycler = new DragSortRecycler();
         dragSortRecycler.setViewHandleId(R.id.tvTodoDragger);
+        //dragSortRecycler.setLeftDragArea((int)px);
         dragSortRecycler.setFloatingAlpha(0.4f);
         dragSortRecycler.setFloatingBgColor(0x800000FF);
         dragSortRecycler.setAutoScrollSpeed(0.3f);
@@ -163,7 +159,7 @@ public class CheckListActivityNew extends AppCompatActivity {
         dragSortRecycler.setOnItemMovedListener(new DragSortRecycler.OnItemMovedListener() {
             @Override
             public void onItemMoved(int from, int to) {
-                Log.d(TAG, "onItemMoved " + from + " to " + to);
+                Log.d("DragDrop", "onItemMoved " + from + " to " + to);
                 TodoModel todoModel = unCompletedTodosArrayList.remove(from);
                 unCompletedTodosArrayList.add(to, todoModel);
                 todosAdapter.notifyDataSetChanged();
@@ -176,58 +172,29 @@ public class CheckListActivityNew extends AppCompatActivity {
         dragSortRecycler.setOnDragStateChangedListener(new DragSortRecycler.OnDragStateChangedListener() {
             @Override
             public void onDragStart() {
-                Log.d(TAG, "Drag Start");
+                Log.d("DragDrop", "Drag Start");
+                nswChecklist.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return true;
+                    }
+                });
             }
 
             @Override
             public void onDragStop() {
-                Log.d(TAG, "Drag Stop");
+                Log.d("DragDrop", "Drag Stop");
+                nswChecklist.setOnTouchListener(null);
             }
-        });
+        });;
 
 
 
         rvTodos.addItemDecoration(dragSortRecycler);
         rvTodos.addOnItemTouchListener(dragSortRecycler);
+        rvTodos.setOnScrollListener(dragSortRecycler.getScrollListener());
 
-        DragSortRecycler dragSortRecyclerCompleted = new DragSortRecycler();
-        dragSortRecyclerCompleted.setViewHandleId(R.id.tvTodoDragger);
-        dragSortRecyclerCompleted.setFloatingAlpha(0.4f);
-        dragSortRecyclerCompleted.setFloatingBgColor(0x800000FF);
-        dragSortRecyclerCompleted.setAutoScrollSpeed(0.3f);
-        dragSortRecyclerCompleted.setAutoScrollWindow(0.1f);
 
-        dragSortRecyclerCompleted.setOnItemMovedListener(new DragSortRecycler.OnItemMovedListener() {
-            @Override
-            public void onItemMoved(int from, int to) {
-                Log.d(TAG, "onItemMoved " + from + " to " + to);
-                TodoModel todoModel = completedTodosArrayList.remove(from);
-                completedTodosArrayList.add(to, todoModel);
-                completedTodosAdapter.notifyDataSetChanged();
-                saveCheckList();
-                //notifyItemMoved does work, but it makes the list scroll pos jump a little when dragging near the top or bottom
-                //adapter.notifyItemMoved(from,to);
-            }
-        });
-
-        dragSortRecyclerCompleted.setOnDragStateChangedListener(new DragSortRecycler.OnDragStateChangedListener() {
-            @Override
-            public void onDragStart() {
-                Log.d(TAG, "Drag Start");
-            }
-
-            @Override
-            public void onDragStop() {
-                Log.d(TAG, "Drag Stop");
-            }
-        });
-
-        rvCompletedTodos.addItemDecoration(dragSortRecyclerCompleted);
-        rvCompletedTodos.addOnItemTouchListener(dragSortRecyclerCompleted);
-
-        TodoModel todoModel = new TodoModel();
-        todoModel.setName("");
-        unCompletedTodosArrayList.add(todoModel);
 
         if(completedTodosArrayList.size()==0){
             llTickedItems.setVisibility(View.GONE);
@@ -240,7 +207,6 @@ public class CheckListActivityNew extends AppCompatActivity {
             public void onClick(View v) {
                 if(unCompletedTodosArrayList.size() != 0 &&
                         unCompletedTodosArrayList.get(unCompletedTodosArrayList.size()-1).getName().equalsIgnoreCase("")){
-
                     tvAddTodo.setVisibility(View.VISIBLE);
                 }else {
                     TodoModel todoModel = new TodoModel();
@@ -273,8 +239,6 @@ public class CheckListActivityNew extends AppCompatActivity {
     }
 
 
-
-
     public void saveCheckList(){
         Long datevalue = Calendar.getInstance().getTimeInMillis();
         String notesDate = String.valueOf(datevalue);
@@ -299,15 +263,6 @@ public class CheckListActivityNew extends AppCompatActivity {
             DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
             dataBaseHelper.addNotes(notesModel);
 
-           /* Toast.makeText(getApplicationContext(),"CheckList Added Successfully",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(CheckListActivityNew.this,CheckListActivityNew.class);
-            intent.putExtra("tripId",tripId);
-            intent.putExtra("editOrAdd","view");
-            intent.putExtra("notesId",note_id);
-            intent.putExtra("anim","no");
-            startActivity(intent);
-            finish();
-            */
         }else{
             NotesModel notesModel = new NotesModel();
             notesModel.setNote_TripId(tripId);
@@ -320,34 +275,8 @@ public class CheckListActivityNew extends AppCompatActivity {
 
             DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
             dataBaseHelper.updateNotes(notesModel);
-
-           /* Toast.makeText(getApplicationContext(),"CheckList Updated Successfully",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(CheckListActivityNew.this,CheckListActivityNew.class);
-            intent.putExtra("tripId",tripId);
-            intent.putExtra("editOrAdd","view");
-            intent.putExtra("notesId",notesId);
-            intent.putExtra("anim","no");
-            startActivity(intent);
-            finish();
-            */
         }
     }
-
-
-    public void populateRecyclerViewItems(){
-
-        /*String noteContent = " Go to Temple at 7 am" + DELIMETER_FOR_A_TODO + " T,T " + DELIMETER_FOR_TODOS +
-                " Go to Hotel at 9 am" + DELIMETER_FOR_A_TODO +"T,T " + DELIMETER_FOR_TODOS +
-                " Go  to Shopping at 10 am" + DELIMETER_FOR_A_TODO +"T,T " + DELIMETER_FOR_TODOS +
-                " Have Lunch at 1pm" + DELIMETER_FOR_A_TODO +"F,T " + DELIMETER_FOR_TODOS +
-                " Have snacks at 4pm" + DELIMETER_FOR_A_TODO +"F,T " ; */
-
-        seperateTodosBasedOnStatus(notesContent);
-
-        todosAdapter.notifyDataSetChanged();
-        completedTodosAdapter.notifyDataSetChanged();
-    }
-
 
     public void seperateTodosBasedOnStatus(String noteContent){
         ArrayList<TodoModel> todoModelArrayList = decryptTodos(noteContent);
@@ -384,7 +313,6 @@ public class CheckListActivityNew extends AppCompatActivity {
         return  noteContent;
     }
 
-
     public ArrayList<TodoModel>  decryptTodos(String noteContent){
         String[] todosModelsasStrings = noteContent.split(Pattern.quote(DELIMETER_FOR_TODOS));
         ArrayList<TodoModel> todoModels = new ArrayList<>();
@@ -407,16 +335,16 @@ public class CheckListActivityNew extends AppCompatActivity {
         Context context;
         ArrayList<TodoModel> todosList = new ArrayList<>();
 
-        public TodosAdapter(Context context, ArrayList<TodoModel> todosList) {
+        TodosAdapter(Context context, ArrayList<TodoModel> todosList) {
             this.context = context;
             this.todosList = todosList;
         }
 
-        public class TodoViewHolder extends  RecyclerView.ViewHolder{
+        class TodoViewHolder extends  RecyclerView.ViewHolder{
             CheckBox cbTodo;
             ImageView ivCancelTodo;
             TextView tvTodoDragger,etTodo;
-            public TodoViewHolder(View itemView) {
+            TodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
                 ivCancelTodo = (ImageView) itemView.findViewById(R.id.ivCancelTodo);
@@ -433,19 +361,19 @@ public class CheckListActivityNew extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final TodoViewHolder holder, final int position) {
+        public void onBindViewHolder(final TodoViewHolder holder, int position) {
             holder.etTodo.setText(todosList.get(position).getName());
             holder.cbTodo.setChecked(false);
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked){
-                        unCompletedTodosArrayList.get(position).setCompleted(true);
-                        completedTodosArrayList.add(unCompletedTodosArrayList.get(position));
-                        unCompletedTodosArrayList.remove(position);
-                        todosAdapter.notifyItemRemoved(position);
-                        todosAdapter.notifyDataSetChanged();
-                        completedTodosAdapter.notifyDataSetChanged();
+                        unCompletedTodosArrayList.get(holder.getAdapterPosition()).setCompleted(true);
+                        completedTodosArrayList.add(unCompletedTodosArrayList.get(holder.getAdapterPosition()));
+                        unCompletedTodosArrayList.remove(holder.getAdapterPosition());
+                        todosAdapter.notifyItemRemoved(holder.getAdapterPosition());
+                        todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),unCompletedTodosArrayList.size());
+                        completedTodosAdapter.notifyItemInserted(completedTodosArrayList.size()-1);
                         llTickedItems.setVisibility(View.VISIBLE);
                         rvCompletedTodos.setVisibility(View.VISIBLE);
                         if(completedTodosArrayList.size()==1){
@@ -457,18 +385,21 @@ public class CheckListActivityNew extends AppCompatActivity {
                             tvAddTodo.setVisibility(View.VISIBLE);
                         }
                     }
-                } });
+                }
+            });
 
             holder.ivCancelTodo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     unCompletedTodosArrayList.remove(holder.getAdapterPosition());
                     todosAdapter.notifyItemRemoved(holder.getAdapterPosition());
-                    todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),todosList.size());
+                    todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),unCompletedTodosArrayList.size());
+
+
                     if(unCompletedTodosArrayList.size() == 0){
                         tvAddTodo.setVisibility(View.VISIBLE);
                     }
-                   // hideSoftKeyboard();
                 }
             });
 
@@ -494,9 +425,8 @@ public class CheckListActivityNew extends AppCompatActivity {
                 }
             });
 
-            holder.ivCancelTodo.setVisibility(View.GONE);
 
-            holder.etTodo.setOnKeyListener(new View.OnKeyListener()
+         /*  holder.etTodo.setOnKeyListener(new View.OnKeyListener()
             {
                 public boolean onKey(View v, int keyCode, KeyEvent event)
                 {
@@ -506,19 +436,33 @@ public class CheckListActivityNew extends AppCompatActivity {
                         {
                             case KeyEvent.KEYCODE_ENTER:
                                 if(!(holder.etTodo.getText().toString().equalsIgnoreCase(""))){
-                                    int pos = holder.getAdapterPosition();
                                     TodoModel todoModel = new TodoModel();
-                                    unCompletedTodosArrayList.add(pos,todoModel);
-                                    todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition()+1,unCompletedTodosArrayList.size()-1);
+                                    unCompletedTodosArrayList.add(holder.getAdapterPosition()+1,todoModel);
+                                    todosAdapter.notifyItemInserted(holder.getAdapterPosition()+1);
+                                    todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition()+1,unCompletedTodosArrayList.size());
                                 }
                                 return true;
+
                             default:
                                 break;
                         }
                     }
-                    return false;
+                    return true;
                 }
-            });
+            }); */
+
+       holder.etTodo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+              @Override
+              public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                  if(!(holder.etTodo.getText().toString().equalsIgnoreCase(""))){
+                      TodoModel todoModel = new TodoModel();
+                      unCompletedTodosArrayList.add(holder.getAdapterPosition()+1,todoModel);
+                      todosAdapter.notifyItemInserted(holder.getAdapterPosition()+1);
+                      todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition()+1,unCompletedTodosArrayList.size());
+                  }
+                  return true;
+              }
+          });
 
 
 
@@ -529,7 +473,6 @@ public class CheckListActivityNew extends AppCompatActivity {
                         holder.ivCancelTodo.setVisibility(View.VISIBLE);
                     else {
                         holder.ivCancelTodo.setVisibility(View.GONE);
-                        saveCheckList();
                     }
                 }
             });
@@ -537,6 +480,7 @@ public class CheckListActivityNew extends AppCompatActivity {
 
 
         }
+
 
         @Override
         public int getItemCount() {
@@ -549,24 +493,22 @@ public class CheckListActivityNew extends AppCompatActivity {
         Context context;
         ArrayList<TodoModel> completedTodosList = new ArrayList<>();
 
-        public CompletedTodosAdapter(Context context, ArrayList<TodoModel> completedTodosList) {
+        CompletedTodosAdapter(Context context, ArrayList<TodoModel> completedTodosList) {
             this.context = context;
             this.completedTodosList = completedTodosList;
         }
 
-        public class CompletedTodoViewHolder extends  RecyclerView.ViewHolder{
+        class CompletedTodoViewHolder extends  RecyclerView.ViewHolder{
 
             CheckBox cbTodo;
             ImageView ivCancelTodo;
             TextView tvTodoDragger,etTodo;
-            public CompletedTodoViewHolder(View itemView) {
+            CompletedTodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
                 ivCancelTodo = (ImageView) itemView.findViewById(R.id.ivCancelTodo);
                 etTodo = (EditText) itemView.findViewById(R.id.etTodo);
                 tvTodoDragger = (TextView) itemView.findViewById(R.id.tvTodoDragger);
-
-
             }
         }
 
@@ -578,19 +520,19 @@ public class CheckListActivityNew extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(final CompletedTodoViewHolder holder, final int position) {
-            holder.etTodo.setText(completedTodosList.get(position).getName());
+        public void onBindViewHolder(final CompletedTodoViewHolder holder,int position) {
+            holder.etTodo.setText(completedTodosList.get(holder.getAdapterPosition()).getName());
             holder.cbTodo.setChecked(true);
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(!(isChecked)){
-                        completedTodosArrayList.get(position).setCompleted(false);
-                        unCompletedTodosArrayList.add(completedTodosArrayList.get(position));
-                        completedTodosArrayList.remove(position);
-                        completedTodosAdapter.notifyItemRemoved(position);
-                        completedTodosAdapter.notifyDataSetChanged();
-                        todosAdapter.notifyDataSetChanged();
+                        completedTodosArrayList.get(holder.getAdapterPosition()).setCompleted(false);
+                        unCompletedTodosArrayList.add(completedTodosArrayList.get(holder.getAdapterPosition()));
+                        completedTodosArrayList.remove(holder.getAdapterPosition());
+                        completedTodosAdapter.notifyItemRemoved(holder.getAdapterPosition());
+                        completedTodosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),completedTodosArrayList.size());
+                        todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size()-1);
                         if(completedTodosArrayList.size()==0){
                             llTickedItems.setVisibility(View.GONE);
                             rvCompletedTodos.setVisibility(View.GONE);
@@ -604,7 +546,7 @@ public class CheckListActivityNew extends AppCompatActivity {
                     }
                 } });
 
-            holder.etTodo.setPaintFlags( Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.etTodo.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
 
             holder.ivCancelTodo.setOnClickListener(new View.OnClickListener() {
@@ -614,7 +556,6 @@ public class CheckListActivityNew extends AppCompatActivity {
                     completedTodosAdapter.notifyItemRemoved(holder.getAdapterPosition());
                     completedTodosAdapter.notifyItemRangeChanged(holder.getAdapterPosition(),completedTodosArrayList.size());
 
-
                     if(completedTodosArrayList.size()==1){
                         tvTitleCompletedTodos.setText(completedTodosArrayList.size()+ " Ticked Item");
                     }else {
@@ -622,10 +563,12 @@ public class CheckListActivityNew extends AppCompatActivity {
                     }
                     if (completedTodosArrayList.size()==0){
                         llTickedItems.setVisibility(View.GONE);
+                    }else{
+                        llTickedItems.setVisibility(View.VISIBLE);
                     }
-                   // hideSoftKeyboard();
                 }
             });
+
 
             holder.etTodo.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -644,12 +587,9 @@ public class CheckListActivityNew extends AppCompatActivity {
 
                     }else {
                         completedTodosArrayList.get(holder.getAdapterPosition()).setName(holder.etTodo.getText().toString());
-                        tvAddTodo.setVisibility(View.VISIBLE);
                     }
                 }
             });
-
-            holder.ivCancelTodo.setVisibility(View.GONE);
 
 
 
@@ -660,7 +600,6 @@ public class CheckListActivityNew extends AppCompatActivity {
                         holder.ivCancelTodo.setVisibility(View.VISIBLE);
                     else {
                         holder.ivCancelTodo.setVisibility(View.GONE);
-                        saveCheckList();
                     }
                 }
             });
@@ -674,99 +613,24 @@ public class CheckListActivityNew extends AppCompatActivity {
         }
     }
 
-
-    static Menu MenuTemp = null;
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_notes_edit,menu);;
-        MenuTemp = menu;
-
-        menu.findItem(R.id.action_edit).setVisible(false);
-
-        if(editOrAdd != null){
-            if(!editOrAdd.equals("edit") || editOrAdd.equals("view")){
-                menu.findItem(R.id.action_cancel).setVisible(true);
-            }
-
-
-
-
-        }
-        return  true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.action_save :
-                if(completedTodosArrayList.size()==0 && unCompletedTodosArrayList.size()==0){
-                    Snackbar.make(findViewById(android.R.id.content),"Please enter the content of the Note", Snackbar.LENGTH_LONG).show();
-                }else{
-                    saveCheckList();
-                }
-                return true;
-
-            case R.id.action_cancel :
-                if(notesId != null && tripId != null){
-                    DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
-                    NotesModel notesModel = dataBaseHelper.getNotes(tripId,notesId);
-                    notesContent = notesModel.getNote_Body();
-                    if(!notesContent.trim().equals("")) {
-                        unCompletedTodosArrayList.clear();
-                        completedTodosArrayList.clear();
-                        seperateTodosBasedOnStatus(notesContent);
-                        todosAdapter.notifyDataSetChanged();
-                        completedTodosAdapter.notifyDataSetChanged();
-                    }
-                }else{
-                    unCompletedTodosArrayList.clear();
-                    completedTodosArrayList.clear();
-                    todosAdapter.notifyDataSetChanged();
-                    completedTodosAdapter.notifyDataSetChanged();
-                }
-
-                return true;
-
-            default:
-                return true;
-        }
-    }
-
-
-
     @Override
     public void onBackPressed() {
-
-
-
-        if(tempTodosCompleted.equals(completedTodosArrayList) && tempTodosUncompleted.equals(unCompletedTodosArrayList)){
-            finish();
-            overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
-        } else {
-            final AlertDialog.Builder dialog = new AlertDialog.Builder(CheckListActivityNew.this);
-
-            dialog.setMessage("Do you want to exit without saving the CheckList?");
-            dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    finish();
-                    overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
-                }
-            });
-            dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            });
-            dialog.show();
-        }
-
-
+        saveCheckList();
+        super.onBackPressed();
+        overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
     }
 
+    @Override
+    protected void onPause() {
+        saveCheckList();
+        super.onPause();
+    }
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

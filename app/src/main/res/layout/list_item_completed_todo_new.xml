@@ -13,7 +13,7 @@
         android:layout_marginRight="10dp"
         android:textStyle="bold"
         android:text="&#8942;&#8942;"
-        android:textColor="#FFFFFF"
+        android:textColor="@android:color/transparent"
         android:textSize="24dp"/>
     <CheckBox
         android:id="@+id/cbTodo"
@@ -29,13 +29,16 @@
         android:layout_weight="1"
         android:paddingBottom="3dp"
         android:textColor="#45000000"
-        android:background="@android:color/transparent" />
+        android:background="@android:color/transparent"
+        android:inputType="text"/>
+
     <ImageView
         android:id="@+id/ivCancelTodo"
         android:layout_margin="5dp"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        app:srcCompat="@drawable/icon_cancel_checklist"/>
+        app:srcCompat="@drawable/icon_cancel_checklist"
+        android:visibility="gone"/>
 
 
 
