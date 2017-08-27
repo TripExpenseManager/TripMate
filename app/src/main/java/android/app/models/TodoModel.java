@@ -5,7 +5,7 @@ package android.app.models;
  */
 
 public class TodoModel {
-    private String name;
+    private String name="";
     private boolean isCompleted;
 
     public TodoModel() {

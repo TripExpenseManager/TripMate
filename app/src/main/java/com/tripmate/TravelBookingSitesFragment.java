@@ -108,7 +108,7 @@ public class TravelBookingSitesFragment extends Fragment {
                             SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                             SharedPreferences.Editor editor = app_preferences.edit();
                             editor.putString("get_travel", response);
-                            editor.commit();
+                            editor.apply();
 
                             showJSON(response);
                             pd.dismiss();

@@ -105,18 +105,18 @@ public class Persons extends Fragment {
     }
 
 
-    public class PersonsAdapter extends RecyclerView.Adapter<PersonsAdapter.MyViewHolder> {
+    class PersonsAdapter extends RecyclerView.Adapter<PersonsAdapter.MyViewHolder> {
 
         private ArrayList<PersonWiseExpensesSummaryModel> personsList;
 
-        public class MyViewHolder extends RecyclerView.ViewHolder {
+        class MyViewHolder extends RecyclerView.ViewHolder {
 
             TextView title_tv,expend_tv,due_tv,textViewOptions;
             ImageView imageView;
             CardView stickiesCardView;
             LinearLayout clickLL;
 
-            public MyViewHolder(View view) {
+            MyViewHolder(View view) {
                 super(view);
                 title_tv = (TextView) view.findViewById(R.id.person_name);
                 expend_tv = (TextView) view.findViewById(R.id.amount_expend);
@@ -130,7 +130,7 @@ public class Persons extends Fragment {
         }
 
 
-        public PersonsAdapter(ArrayList<PersonWiseExpensesSummaryModel> personsList) {
+        PersonsAdapter(ArrayList<PersonWiseExpensesSummaryModel> personsList) {
             this.personsList = personsList;
         }
 

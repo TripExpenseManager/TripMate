@@ -1,5 +1,10 @@
 package GoogleSync;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -42,15 +47,22 @@ public class DriveDbSyncer {
 
     static File db_file;
 
-    public void DriveDbSyncer(GoogleApiClient mGoogleApiClient,File db_file){
+    static ProgressDialog progressDialog;
+
+    Context context;
+
+
+    public DriveDbSyncer(GoogleApiClient mGoogleApiClient, File db_file, Context context){
 
         this.mGoogleApiClient = mGoogleApiClient;
         this.db_file = db_file;
+        this.context = context;
+        progressDialog = new ProgressDialog(context);
 
     }
 
     public static void doDriveBackup () {
-        Drive.DriveApi.newDriveContents(mGoogleApiClient).setResultCallback(backupContentsCallback);
+         Drive.DriveApi.newDriveContents(mGoogleApiClient).setResultCallback(backupContentsCallback);
     }
 
     public static void restoreDriveBackup() {
@@ -60,7 +72,7 @@ public class DriveDbSyncer {
 
         Drive.DriveApi.query(mGoogleApiClient, query).setResultCallback(new ResultCallback<DriveApi.MetadataBufferResult>() {
             @Override
-            public void onResult(DriveApi.MetadataBufferResult metadataBufferResult) {
+            public void onResult(@NonNull DriveApi.MetadataBufferResult metadataBufferResult) {
 
             /*for(int i = 0 ;i < metadataBufferResult.getMetadataBuffer().getCount() ;i++) {
                 debug("got index "+i);
@@ -68,18 +80,21 @@ public class DriveDbSyncer {
                 debug("driveId(1): "+ metadataBufferResult.getMetadataBuffer().get(i).getDriveId());
             }*/
 
-
                 int count = metadataBufferResult.getMetadataBuffer().getCount() - 1;
-                //debug("Count: " + count);
                 Log.i("saikrishna",count+"");
-                if (count != -1) {
-                    driveId = metadataBufferResult.getMetadataBuffer().get(0).getDriveId();
 
+
+                if(count == -1){
+
+
+
+                }else{
+
+                    driveId = metadataBufferResult.getMetadataBuffer().get(0).getDriveId();
 
                     //debug("driveId: " + driveId);
                     //  debug("filesize in cloud " + metadataBufferResult.getMetadataBuffer().get(0).getFileSize());
                     metadataBufferResult.getMetadataBuffer().release();
-
 
                     mfile = Drive.DriveApi.getFile(mGoogleApiClient, driveId);
 
@@ -90,6 +105,7 @@ public class DriveDbSyncer {
                         }
                     })
                             .setResultCallback(restoreContentsCallback);
+
                 }
             }
         });
@@ -100,12 +116,9 @@ public class DriveDbSyncer {
                 @Override
                 public void onResult(DriveApi.DriveContentsResult result) {
                     if (!result.getStatus().isSuccess()) {
-                        //Toast.makeText(MainActivity.this, "Unable to open file, try again.", Toast.LENGTH_SHORT).show();
                         Log.i("saikrishna","Unable to open file, try again.");
                         return;
                     }
-
-                    //utilsM.dbClose();
 
                     String path = db_file.getPath();
 
@@ -125,16 +138,11 @@ public class DriveDbSyncer {
                         byte[] buffer = new byte[1024];
                         int n, cnt = 0;
 
-
                         //debug("before read " + in.available());
 
                         while( ( n = in.read(buffer) ) > 0) {
                             bos.write(buffer, 0, n);
                             cnt += n;
-                            // debug("buffer: " + buffer[0]);
-                            // debug("buffer: " + buffer[1]);
-                            // debug("buffer: " + buffer[2]);
-                            // debug("buffer: " + buffer[3]);
                             bos.flush();
                         }
 
@@ -142,8 +150,6 @@ public class DriveDbSyncer {
 
                         bos.close();
 
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -151,13 +157,7 @@ public class DriveDbSyncer {
                     //  mToast(act.getResources().getString(R.string.restoreComplete));
                     //   DialogFragment_Sync.dismissDialog();
                     Log.i("saikrishna","restore completed");
-
-
-                    //   utilsM.dbOpen();
-                    // mRecyclerView.invalidate();
-                    //    mAdapter.notifyDataSetChanged();
                     contents.discard(mGoogleApiClient);
-
                 }
             };
 
@@ -166,7 +166,6 @@ public class DriveDbSyncer {
         @Override
         public void onResult(DriveApi.DriveContentsResult result) {
             if (!result.getStatus().isSuccess()) {
-                // mToast("Error while trying to create new file contents");
                 Log.i("saikrishna","Error while trying to create new file contents");
                 return;
             }
@@ -197,7 +196,11 @@ public class DriveDbSyncer {
                 @Override
                 public void onProgress(long bytesDownloaded, long bytesExpected) {
                     Log.i("saikrishna","Creating backup file... ("+bytesDownloaded+"/"+bytesExpected+")");
+
+                    progressDialog.show();
+                    progressDialog.setMessage("Backing up... Please wait\n"+bytesDownloaded+"/"+bytesExpected);
                     // DialogFragment_Sync.setProgressText("Creating backup file... ("+bytesDownloaded+"/"+bytesExpected+")");
+
                 }
             }).setResultCallback(backupContentsOpenedCallback);
         }
@@ -216,7 +219,7 @@ public class DriveDbSyncer {
             //DialogFragment_Sync.setProgressText("Backing up..");
             Log.i("saikrishna","Backing up..");
 
-            DriveContents contents = result.getDriveContents();
+            final DriveContents contents = result.getDriveContents();
             BufferedOutputStream bos = new BufferedOutputStream(contents.getOutputStream());
             byte[] buffer = new byte[1024];
             int n;
@@ -231,8 +234,6 @@ public class DriveDbSyncer {
                     Log.i("saikrishna","Backing up..");
                 }
                 bos.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -243,6 +244,9 @@ public class DriveDbSyncer {
                     // DialogFragment_Sync.setProgressText("Backup completed!");
                     //   mToast(act.getResources().getString(R.string.backupComplete));
                     Log.i("saikrishna","Backup completed!");
+
+
+                    progressDialog.dismiss();
                     //  DialogFragment_Sync.dismissDialog();
                 }
             });

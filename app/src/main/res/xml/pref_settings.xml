@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+   >
+    <PreferenceCategory
+        android:title="General"
+        android:key="pref_general_category">
+
+        <Preference
+            android:title="Theme"
+            android:key="pref_theme" />
+
+        <Preference
+            android:title="Backup"
+            android:key="pref_backup"
+           >
+        </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Social"
+        android:key="pref_social_category">
+
+        <Preference
+            android:title="Send Feedback"
+            android:key="pref_send_feedback" />
+
+        <Preference
+            android:title="Like TripMate? Rate it!"
+            android:key="pref_rate_it" />
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="About"
+        android:key="pref_about_category">
+
+        <Preference
+            android:title="About TripMate"
+            android:key="pref_about_tripmate" />
+
+        <Preference
+            android:title="App Intro"
+            android:key="pref_app_intro" />
+
+        <Preference
+            android:title="Help"
+            android:key="pref_help" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
