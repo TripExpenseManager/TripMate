@@ -4,15 +4,12 @@ package com.tripmate;
 import android.app.models.TripModel;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
@@ -37,10 +34,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.squareup.picasso.Picasso;
 
@@ -50,7 +43,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -68,7 +60,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class AllTripsDisplayFragment extends Fragment{
 
     GridView trip_grid_view;
 
@@ -83,13 +75,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
     MaterialSearchView searchView;
 
     RelativeLayout no_trips_RL,no_trips_found_searched_RL;
-
-    //google drive stuff
-    static GoogleApiClient mGoogleApiClient;
-
-    final int RESOLVE_CONNECTION_REQUEST_CODE = 1827;
-
-    static File db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -138,18 +123,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
 
 */
 
-
-
-        //googledrive stuff
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        db = getDbPath();
-
         no_trips_RL = (RelativeLayout) view.findViewById(R.id.no_trips_RL);
         no_trips_found_searched_RL = (RelativeLayout) view.findViewById(R.id.no_trips_found_searched_RL);
 
@@ -157,8 +130,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         //for search suggestions (this feature is removed from the app, due to some inconvenience caused by coordinate layout)
         //String tripsStringArray[] = dataBaseHelper.getTripNamesAsStringArray();
         // searchView.setSuggestions(tripsStringArray);
-
-
 
         searchView = (MaterialSearchView) getActivity().findViewById(R.id.search_view);
 
@@ -641,13 +612,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
 
             return;
         }
-
-        else if(requestCode == RESOLVE_CONNECTION_REQUEST_CODE){
-            if (resultCode == RESULT_OK) {
-                Log.d("DriveDbHandler","RESULT_OK");
-                mGoogleApiClient.connect();
-            }
-        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -875,84 +839,82 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
         return super.onOptionsItemSelected(item);
     }
 
+
+
     @Override
     public void onResume() {
-        super.onResume();
 
-        //closing the searchview if it is open
-        if (searchView.isSearchOpen()) {
-           // searchView.closeSearch();
+        Log.i("saikrishna","onresume Called");
+
+
+        //refreshing the contents of gridview by retrieving data from backend
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+        trip_array_list.clear();
+        trip_array_list.addAll(dataBaseHelper.getTripsData());
+
+        if(trip_array_list.size() == 0){
+            no_trips_found_searched_RL.setVisibility(View.GONE);
+            no_trips_RL.setVisibility(View.VISIBLE);
         }else{
+            no_trips_found_searched_RL.setVisibility(View.GONE);
+            no_trips_RL.setVisibility(View.GONE);
+        }
 
-            //refreshing the contents of gridview by retrieving data from backend
-            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        //retrieves the last selected icon_sort-by position, which is saved in sharedpreferencse and display the corresponding result
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int prevSelectedPosition = app_preferences.getInt("get_sort_position",0);
 
-            trip_array_list.clear();
-            trip_array_list.addAll(dataBaseHelper.getTripsData());
+        if(prevSelectedPosition ==0){
 
-            if(trip_array_list.size() == 0){
-                no_trips_found_searched_RL.setVisibility(View.GONE);
-                no_trips_RL.setVisibility(View.VISIBLE);
-            }else{
-                no_trips_found_searched_RL.setVisibility(View.GONE);
-                no_trips_RL.setVisibility(View.GONE);
-            }
-
-            //retrieves the last selected icon_sort-by position, which is saved in sharedpreferencse and display the corresponding result
-            SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            int prevSelectedPosition = app_preferences.getInt("get_sort_position",0);
-
-            if(prevSelectedPosition ==0){
-
-                //sorting date wise
-                Collections.sort(trip_array_list, new Comparator<TripModel>() {
-                    @Override
-                    public int compare(TripModel o1, TripModel o2) {
+            //sorting date wise
+            Collections.sort(trip_array_list, new Comparator<TripModel>() {
+                @Override
+                public int compare(TripModel o1, TripModel o2) {
 
 
-                        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-                        Date date1 = null,date2 = null;
-                        try {
-                            date1 = format.parse(o1.getTrip_date());
-                            date2 = format.parse(o2.getTrip_date());
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        return date2.compareTo(date1);
-
+                    SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+                    Date date1 = null,date2 = null;
+                    try {
+                        date1 = format.parse(o1.getTrip_date());
+                        date2 = format.parse(o2.getTrip_date());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
-                });
 
-                grid_view_adapter.notifyDataSetChanged();
+                    return date2.compareTo(date1);
 
-            }else if(prevSelectedPosition ==1){
+                }
+            });
 
-                //sorting amount wise
-                Collections.sort(trip_array_list, new Comparator<TripModel>() {
-                    @Override
-                    public int compare(TripModel o1, TripModel o2) {
-                        return o2.getTrip_amount().compareTo(o1.getTrip_amount());
-                    }
-                });
 
-                grid_view_adapter.notifyDataSetChanged();
+        }else if(prevSelectedPosition ==1){
 
-            }else if(prevSelectedPosition ==2){
-                //sorting name wise
-                Collections.sort(trip_array_list, new Comparator<TripModel>() {
-                    @Override
-                    public int compare(TripModel o1, TripModel o2) {
-                        return o1.getTrip_name().compareTo(o2.getTrip_name());
-                    }
-                });
+            //sorting amount wise
+            Collections.sort(trip_array_list, new Comparator<TripModel>() {
+                @Override
+                public int compare(TripModel o1, TripModel o2) {
+                    return o2.getTrip_amount().compareTo(o1.getTrip_amount());
+                }
+            });
 
-                grid_view_adapter.notifyDataSetChanged();
-            }
 
-            new getImageUrlConnection().execute();
+        }else if(prevSelectedPosition ==2){
+            //sorting name wise
+            Collections.sort(trip_array_list, new Comparator<TripModel>() {
+                @Override
+                public int compare(TripModel o1, TripModel o2) {
+                    return o1.getTrip_name().compareTo(o2.getTrip_name());
+                }
+            });
 
         }
+
+        grid_view_adapter.notifyDataSetChanged();
+
+        new getImageUrlConnection().execute();
+
+        super.onResume();
 
     }
 
@@ -1076,43 +1038,6 @@ public class AllTripsDisplayFragment extends Fragment implements GoogleApiClient
                 }
             }
             return "";
-        }
-    }
-
-    private  File getDbPath() {
-        return getActivity().getDatabasePath(DataBaseHelper.DATABASE_NAME);
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.d("DriveDbHandler","connected");
-
-        //doDriveBackup();
-
-        // Drive.DriveApi.newDriveContents(mGoogleApiClient).setResultCallback(contentsCallback);
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.d("DriveDbHandler","onConnectionSuspended");
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d("DriveDbHandler","onConnectionFailed1");
-        if (connectionResult.hasResolution()) {
-            Log.d("DriveDbHandler","onConnectionFailed");
-            try {
-                connectionResult.startResolutionForResult(getActivity(), RESOLVE_CONNECTION_REQUEST_CODE);
-            } catch (IntentSender.SendIntentException e) {
-
-                // Unable to resolve, message user appropriately
-            }
-        } else {
-            Log.d("DriveDbHandler","GooglePlayServicesUtil.getErrorDialog");
-            GooglePlayServicesUtil.getErrorDialog(connectionResult.getErrorCode(), getActivity(), 0).show();
         }
     }
 

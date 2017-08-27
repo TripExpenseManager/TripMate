@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory app:title="Last Backup" app:key="pref_last_backup_category">
+        <Preference app:title="Local : " app:selectable="false" app:key="pref_last_backup_local" />
+        <Preference app:title="Google Drive : " app:selectable="false" app:key="pref_last_backup_gdrive" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="Local" app:key="pref_local_backup_category">
+        <Preference app:title="Backup Database" app:key="pref_backup_database_local" />
+        <Preference app:title="Restore Database" app:key="pref_restore_database_local" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="Google Drive" app:key="pref_drive_backup_category">
+        <Preference app:title="Account" app:key="pref_google_drive_account" />
+        <Preference app:title="Backup Database" app:key="pref_backup_database_gdrive" app:enabled="false" />
+        <Preference app:title="Restore Database" app:key="pref_restore_database_gdrive" app:enabled="false"/>
+    </PreferenceCategory>
+</PreferenceScreen>

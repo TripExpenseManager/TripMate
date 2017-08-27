@@ -8,21 +8,20 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity
     MaterialSearchView searchView;
 
     NavigationView navigationView;
+    TextView nav_email,nav_user;
 
     int prevId = 0;
 
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
 
         if(should_display == 1){
             Intent intent = new Intent(MainActivity.this,AppIntroActivity.class);
+            intent.putExtra("from","mainactivity");
             startActivity(intent);
         }
 
@@ -62,6 +63,21 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
+
+        View hView =  navigationView.getHeaderView(0);
+        nav_user = (TextView)hView.findViewById(R.id.username);
+        nav_email = (TextView)hView.findViewById(R.id.useremail);
+
+        String gdrive_backup_account = app_preferences.getString("gdrive_backup_account","no");
+       // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
+
+        if(!gdrive_backup_account.equalsIgnoreCase("no")){
+            nav_user.setText(gdrive_backup_account);
+         //   nav_email.setText(gdrive_backup_account);
+        }else{
+            nav_email.setText("");
+            nav_user.setText("Trip Mate");
+        }
 
     }
 
@@ -98,7 +114,9 @@ public class MainActivity extends AppCompatActivity
 
             } else {
                 getSupportFragmentManager().popBackStack();
-                int pos = Integer.parseInt(getSupportFragmentManager().getBackStackEntryAt(0).getName());
+                int pos = Integer.parseInt(getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount()-2).getName());
+
+                Log.i("saikrishna", String.valueOf(pos));
 
                 switch (pos) {
                     case 0:
@@ -141,6 +159,18 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        String gdrive_backup_account = app_preferences.getString("gdrive_backup_account","no");
+       // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
+
+        if(!gdrive_backup_account.equalsIgnoreCase("no")){
+            nav_user.setText(gdrive_backup_account);
+           // nav_email.setText(gdrive_backup_account);
+        }else{
+            nav_email.setText("");
+            nav_user.setText("Trip Mate");
+        }
     }
 
     @Override
@@ -212,7 +242,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
 
                 // restoreDriveBackup();
-                Intent intent = new Intent(MainActivity.this,SettingsActivityNew.class);
+                Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
                 startActivity(intent);
 
         }

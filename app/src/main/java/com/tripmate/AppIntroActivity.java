@@ -2,22 +2,24 @@ package com.tripmate;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import com.github.paolorotolo.appintro.AppIntro;
 import com.github.paolorotolo.appintro.AppIntroFragment;
 
 public class AppIntroActivity extends AppIntro {
 
+    String from= "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        from = getIntent().getStringExtra("from");
 
         // Note here that we DO NOT use setContentView();
 
@@ -58,27 +60,38 @@ public class AppIntroActivity extends AppIntro {
     public void onSkipPressed(Fragment currentFragment) {
         super.onSkipPressed(currentFragment);
         // Do something when users tap on Skip button.
-        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(AppIntroActivity.this);
-        SharedPreferences.Editor editor = app_preferences.edit();
-        editor.putInt("should_display", 0);
-        editor.commit();
 
-        Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
-        startActivity(intent);
-        finish();
+        if(!from.equalsIgnoreCase("settings")){
+            SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(AppIntroActivity.this);
+            SharedPreferences.Editor editor = app_preferences.edit();
+            editor.putInt("should_display", 0);
+            editor.apply();
+
+            Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
+            startActivity(intent);
+            finish();
+        }else{
+            finish();
+        }
     }
 
     @Override
     public void onDonePressed(Fragment currentFragment) {
         super.onDonePressed(currentFragment);
         // Do something when users tap on Done button.
-        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(AppIntroActivity.this);
-        SharedPreferences.Editor editor = app_preferences.edit();
-        editor.putInt("should_display", 0);
-        editor.commit();
-        Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
-        startActivity(intent);
-        finish();
+
+        if(!from.equalsIgnoreCase("settings")){
+            SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(AppIntroActivity.this);
+            SharedPreferences.Editor editor = app_preferences.edit();
+            editor.putInt("should_display", 0);
+            editor.apply();
+            Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
+            startActivity(intent);
+            finish();
+        }else{
+            finish();
+        }
+
     }
 
     @Override
