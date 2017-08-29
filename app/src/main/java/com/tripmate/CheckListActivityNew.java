@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -60,6 +61,7 @@ public class CheckListActivityNew extends AppCompatActivity {
     public static String DELIMETER_FOR_TODOS ="$*^";
     public static String DELIMETER_FOR_A_TODO ="@+&";
     Boolean showCompleted=true;
+    boolean isSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +165,7 @@ public class CheckListActivityNew extends AppCompatActivity {
                 TodoModel todoModel = unCompletedTodosArrayList.remove(from);
                 unCompletedTodosArrayList.add(to, todoModel);
                 todosAdapter.notifyDataSetChanged();
-                saveCheckList();
+            //    saveCheckList();
                 //notifyItemMoved does work, but it makes the list scroll pos jump a little when dragging near the top or bottom
                 //adapter.notifyItemMoved(from,to);
             }
@@ -244,12 +246,34 @@ public class CheckListActivityNew extends AppCompatActivity {
         String notesDate = String.valueOf(datevalue);
 
         ArrayList<TodoModel> allTodos = new ArrayList<>();
+        boolean empty = true;
+        for(TodoModel todoModel : completedTodosArrayList){
+            if(!todoModel.getName().equalsIgnoreCase("")){
+                empty = false;
+                break;
+            }
+        }
+        if(empty) {
+            for (TodoModel todoModel : unCompletedTodosArrayList) {
+                if (!todoModel.getName().equalsIgnoreCase("")) {
+                    empty = false;
+                    break;
+                }
+            }
+        }
+
+        if(empty){
+            if(!etNotesTitle.getText().toString().equalsIgnoreCase("")){
+                empty = false;
+            }
+        }
         allTodos.addAll(unCompletedTodosArrayList);
         allTodos.addAll(completedTodosArrayList);
         notesContent = encryptTodos(allTodos);
 
+        Log.i("encrypt",notesContent);
 
-        if(editOrAdd.equals("add")) {
+        if(editOrAdd.equals("add") && !isSaved && !empty) {
             NotesModel notesModel = new NotesModel();
             notesModel.setNote_TripId(tripId);
             String note_id = "Notes" + UUID.randomUUID().toString();
@@ -264,17 +288,23 @@ public class CheckListActivityNew extends AppCompatActivity {
             dataBaseHelper.addNotes(notesModel);
 
         }else{
-            NotesModel notesModel = new NotesModel();
-            notesModel.setNote_TripId(tripId);
-            notesModel.setNote_Id(notesId);
-            notesModel.setNote_Title(etNotesTitle.getText().toString()); // needs to be updated()// TODO: 06-07-2017
-            notesModel.setNote_Body(notesContent);
-            notesModel.setNote_ContentType(2);
-            notesModel.setNote_Date(notesDate);
-            notesModel.setNote_ContentStatus("CheckList");
+
+                NotesModel notesModel = new NotesModel();
+                notesModel.setNote_TripId(tripId);
+                notesModel.setNote_Id(notesId);
+                notesModel.setNote_Title(etNotesTitle.getText().toString()); // needs to be updated()// TODO: 06-07-2017
+                notesModel.setNote_Body(notesContent);
+                notesModel.setNote_ContentType(2);
+                notesModel.setNote_Date(notesDate);
+                notesModel.setNote_ContentStatus("CheckList");
 
             DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivityNew.this);
-            dataBaseHelper.updateNotes(notesModel);
+
+            if(!empty) {
+                dataBaseHelper.updateNotes(notesModel);
+            }else {
+                dataBaseHelper.deleteNotes(notesModel);
+            }
         }
     }
 
@@ -334,6 +364,7 @@ public class CheckListActivityNew extends AppCompatActivity {
 
         Context context;
         ArrayList<TodoModel> todosList = new ArrayList<>();
+        int posOfFocus = -1;
 
         TodosAdapter(Context context, ArrayList<TodoModel> todosList) {
             this.context = context;
@@ -343,7 +374,8 @@ public class CheckListActivityNew extends AppCompatActivity {
         class TodoViewHolder extends  RecyclerView.ViewHolder{
             CheckBox cbTodo;
             ImageView ivCancelTodo;
-            TextView tvTodoDragger,etTodo;
+            TextView tvTodoDragger;
+            EditText etTodo;
             TodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
@@ -363,7 +395,22 @@ public class CheckListActivityNew extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final TodoViewHolder holder, int position) {
             holder.etTodo.setText(todosList.get(position).getName());
-            holder.cbTodo.setChecked(false);
+
+            if(posOfFocus!= -1 && posOfFocus==position && posOfFocus>0 && posOfFocus<unCompletedTodosArrayList.size()) {
+                holder.etTodo.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (holder.etTodo.requestFocus()) {
+                            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+                            InputMethodManager inputMethodManager = (InputMethodManager) holder.etTodo.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            inputMethodManager.showSoftInput(holder.etTodo, InputMethodManager.SHOW_IMPLICIT);
+                        }
+                    }
+                });
+                posOfFocus = -1;
+            }
+
+                holder.cbTodo.setChecked(false);
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -400,6 +447,9 @@ public class CheckListActivityNew extends AppCompatActivity {
                     if(unCompletedTodosArrayList.size() == 0){
                         tvAddTodo.setVisibility(View.VISIBLE);
                     }
+                    posOfFocus = holder.getAdapterPosition();
+
+
                 }
             });
 
@@ -459,6 +509,7 @@ public class CheckListActivityNew extends AppCompatActivity {
                       unCompletedTodosArrayList.add(holder.getAdapterPosition()+1,todoModel);
                       todosAdapter.notifyItemInserted(holder.getAdapterPosition()+1);
                       todosAdapter.notifyItemRangeChanged(holder.getAdapterPosition()+1,unCompletedTodosArrayList.size());
+                      posOfFocus = holder.getAdapterPosition()+1;
                   }
                   return true;
               }
@@ -469,8 +520,10 @@ public class CheckListActivityNew extends AppCompatActivity {
             holder.etTodo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    if(hasFocus)
+                    if(hasFocus) {
                         holder.ivCancelTodo.setVisibility(View.VISIBLE);
+                        holder.etTodo.setSelection(holder.etTodo.getText().length());
+                    }
                     else {
                         holder.ivCancelTodo.setVisibility(View.GONE);
                     }
@@ -502,7 +555,8 @@ public class CheckListActivityNew extends AppCompatActivity {
 
             CheckBox cbTodo;
             ImageView ivCancelTodo;
-            TextView tvTodoDragger,etTodo;
+            TextView tvTodoDragger;
+            EditText etTodo;
             CompletedTodoViewHolder(View itemView) {
                 super(itemView);
                 cbTodo = (CheckBox) itemView.findViewById(R.id.cbTodo);
@@ -615,7 +669,6 @@ public class CheckListActivityNew extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        saveCheckList();
         super.onBackPressed();
         overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
     }
@@ -623,7 +676,14 @@ public class CheckListActivityNew extends AppCompatActivity {
     @Override
     protected void onPause() {
         saveCheckList();
+        isSaved =true;
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
     }
 
     @Override

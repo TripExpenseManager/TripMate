@@ -131,6 +131,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
     }
 
+    void updateTripPlaces(String trip_id,String places){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TRIPS_COLUMN_TRIP_PLACES,places);
+        db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
+    }
+
+
+
+
     boolean addTrip(TripModel trip){
         SQLiteDatabase db = getWritableDatabase();
 
@@ -327,6 +339,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return trip_array_list;
     }
+
+    public TripModel getTripData(String trip_id) {
+        ArrayList<TripModel> trip_array_list = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TRIPS_TABLE_NAME,null,ITEMS_COLUMN_TRIP_ID + "=?",new String[]{trip_id},null,null,null);
+
+        TripModel model = new TripModel();
+        if (cursor.moveToFirst()) {
+            do {
+                model.setTrip_name(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_NAME)));
+                model.setTrip_date(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DATE)));
+                model.setTrip_amount(cursor.getDouble(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
+                model.setTrip_desc(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DESC)));
+                model.setTrip_id(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID)));
+                model.setTrip_places(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_PLACES)));
+                model.setImageUrl(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_IMAGE_URL)));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return model;
+    }
+
+
 
     public String[] getTripNamesAsStringArray() {
 

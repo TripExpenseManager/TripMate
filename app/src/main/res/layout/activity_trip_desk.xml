@@ -85,7 +85,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:menu_fab_size="normal"
-        app:menu_showShadow="false"
         android:visibility="gone"
         app:menu_colorNormal="@color/colorAccent"
         app:menu_colorPressed="@color/colorAccent"

@@ -55,6 +55,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
@@ -124,16 +126,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                 .build();
 
         db_file = getDbPath();
+
+
+        ArrayList<String> perm = new ArrayList<>();
+
         if (!(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1);
+            perm.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
         if( !(ActivityCompat.checkSelfPermission(this, Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED)){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.GET_ACCOUNTS},1);
+            perm.add(Manifest.permission.GET_ACCOUNTS);
         }
         if( !(ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+            perm.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
+
+        if(perm.size()!=0) {
+            String[] s = new String[perm.size()];
+            for(int i=0;i<perm.size();i++){
+                s[i] = perm.get(i);
+            }
+            ActivityCompat.requestPermissions(this, s, 1);
+        }
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).addToBackStack(null).commit();
 
     }
@@ -302,16 +316,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
     public static class BackupPreferenceFragment extends PreferenceFragment {
 
-        static Preference myPref1,myPref2,myPref3,myPrefLastGDBackup,myPrefLastLocalBackup,myPrefLocalBackup,myPrefLocalRestore;
+        static Preference myPrefGDriveAccountChooser,myPrefGDriveBackup,myPrefGDriveRestore,myPrefLastGDBackup,myPrefLastLocalBackup,myPrefLocalBackup,myPrefLocalRestore;
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_backup);
             //getActivity().getActionBar().setTitle("Backup");
 
-            myPref1 = findPreference("pref_google_drive_account");
-            myPref2 = findPreference("pref_backup_database_gdrive");
-            myPref3 = findPreference("pref_restore_database_gdrive");
+            myPrefGDriveAccountChooser = findPreference("pref_google_drive_account");
+            myPrefGDriveBackup = findPreference("pref_backup_database_gdrive");
+            myPrefGDriveRestore = findPreference("pref_restore_database_gdrive");
             myPrefLastGDBackup = findPreference("pref_last_backup_gdrive");
             myPrefLastLocalBackup = findPreference("pref_last_backup_local");
             myPrefLocalBackup = findPreference("pref_backup_database_local");
@@ -336,24 +350,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
             if((ActivityCompat.checkSelfPermission(context, Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED)){
                 if(!gdrive_backup_account.equalsIgnoreCase("no")){
-                    myPref1.setSummary(gdrive_backup_account);
-                    myPref3.setEnabled(true);
-                    myPref2.setEnabled(true);
+                    myPrefGDriveAccountChooser.setSummary(gdrive_backup_account);
+                    myPrefGDriveRestore.setEnabled(true);
+                    myPrefGDriveBackup.setEnabled(true);
                 }else{
-                    myPref3.setEnabled(false);
-                    myPref2.setEnabled(false);
+                    myPrefGDriveRestore.setEnabled(false);
+                    myPrefGDriveBackup.setEnabled(false);
                 }
             }
 
-            myPref1.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            myPrefGDriveAccountChooser.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
 
                     if( !(ActivityCompat.checkSelfPermission(context, Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED)){
                         ActivityCompat.requestPermissions(act,new String[]{Manifest.permission.GET_ACCOUNTS},1);
                     }else{
-                        myPref1.setSummary("");
-                        myPref2.setEnabled(false);
-                        myPref3.setEnabled(false);
+                        myPrefGDriveAccountChooser.setSummary("");
+                        myPrefGDriveBackup.setEnabled(false);
+                        myPrefGDriveRestore.setEnabled(false);
 
                         SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                         SharedPreferences.Editor editor = app_preferences.edit();
@@ -373,7 +387,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
             });
 
 
-            myPref2.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            myPrefGDriveBackup.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
 
@@ -406,7 +420,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                 }
             });
 
-            myPref3.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            myPrefGDriveRestore.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
 
@@ -461,9 +475,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
         }
 
         public static void connected(String email){
-            myPref1.setSummary(email);
-            myPref2.setEnabled(true);
-            myPref3.setEnabled(true);
+            myPrefGDriveAccountChooser.setSummary(email);
+            myPrefGDriveBackup.setEnabled(true);
+            myPrefGDriveRestore.setEnabled(true);
         }
 
         public static void gdBackUpCompleted(String date){

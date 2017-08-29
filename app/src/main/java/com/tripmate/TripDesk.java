@@ -335,7 +335,18 @@ public class TripDesk extends AppCompatActivity {
 
         }
         else if(item.getItemId() == R.id.action_trip_details){
-            //view trip details
+            //Showing Trip Details
+            Intent tripDetailsIntent = new Intent(getApplicationContext(),TripDetailsActivity.class);
+
+            //put Extra
+            tripDetailsIntent.putExtra("trip_id",trip_id);
+            tripDetailsIntent.putExtra("trip_name",trip_name);
+            tripDetailsIntent.putExtra("trip_date",trip_date);
+            tripDetailsIntent.putExtra("trip_url",trip_url);
+
+            startActivity(tripDetailsIntent);
+
+
         }
         else if(item.getItemId() == R.id.action_delete_trip){
 

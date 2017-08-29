@@ -81,6 +81,9 @@
         <activity
             android:name=".SettingsActivity"
             />
+        <activity android:name=".TripDetailsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
