@@ -3,17 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:layout_marginBottom="0.5dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="0.5dp"
+    android:gravity="center_vertical"
+    android:background="@color/white"
+    android:layout_margin="5dp">
     <ImageView
         android:id="@+id/ivIconPlace"
-        android:layout_margin="5dp"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:padding="5dp"
         android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_places_to_visit"
-    />
+        app:srcCompat="@drawable/ic_places"
+        android:tint="@color/grey"
+        />
 
     <EditText
         android:id="@+id/etPlaceToVisit"
@@ -21,15 +26,15 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:padding="5dp"
-        android:background="@android:color/transparent"
-        android:inputType="text"/>
+        android:inputType="text"
+        />
 
     <ImageView
         android:id="@+id/ivCancelPlace"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_margin="5dp"
-        android:visibility="gone"
+        android:tint="@color/grey"
         app:srcCompat="@drawable/icon_cancel_checklist" />
 
 

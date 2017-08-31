@@ -221,15 +221,36 @@
                             android:layout_height="wrap_content"
                             android:overScrollMode="never" />
 
-                        <TextView
-                            android:id="@+id/tvAddPLacesToVisit"
+
+                        <LinearLayout
+                            android:id="@+id/llAddPlacesToVisit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
                             android:layout_marginRight="10dp"
-                            android:text="     +   Place To Visit"
-                            android:textColor="#45000000"
-                            android:textStyle="bold" />
+                            android:layout_margin="5dp">
+
+                            <ImageView
+                                android:id="@+id/ivAddPlace"
+                                android:layout_width="33dp"
+                                android:layout_height="33dp"
+                                android:padding="5dp"
+                                android:tint="@color/grey"
+                                app:srcCompat="@drawable/icon_add_circle" />
+
+                            <TextView
+                                android:id="@+id/tvAddPlace"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="10dp"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:maxLines="1"
+                                android:textStyle="bold"
+                                android:text="PLACES TO VISIT" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 

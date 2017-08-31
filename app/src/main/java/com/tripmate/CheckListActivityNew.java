@@ -1,26 +1,22 @@
 package com.tripmate;
 
-import android.app.AlertDialog;
 import android.app.models.NotesModel;
 import android.app.models.TodoModel;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.design.widget.Snackbar;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,16 +29,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.content.DialogInterface.OnKeyListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import Libraries.DragSortRecycler;
 
-public class CheckListActivityNew extends AppCompatActivity {
+public class CheckListActivityNew extends AppCompatActivity implements OnStartDragListener {
 
     EditText etNotesTitle;
     TextView tvAddTodo,tvTitleCompletedTodos;
@@ -62,6 +57,8 @@ public class CheckListActivityNew extends AppCompatActivity {
     public static String DELIMETER_FOR_A_TODO ="@+&";
     Boolean showCompleted=true;
     boolean isSaved = false;
+
+    ItemTouchHelper mItemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,8 +114,12 @@ public class CheckListActivityNew extends AppCompatActivity {
 
 
         rvTodos.setLayoutManager(new LinearLayoutManager(this));
-        todosAdapter = new TodosAdapter(this,unCompletedTodosArrayList);
+        todosAdapter = new TodosAdapter(this,unCompletedTodosArrayList,this);
         rvTodos.setAdapter(todosAdapter);
+        ItemTouchHelper.Callback callback =
+                new SimpleItemTouchHelperCallback(todosAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(rvTodos);
 
         rvCompletedTodos.setLayoutManager(new LinearLayoutManager(this));
         completedTodosAdapter = new CompletedTodosAdapter(this,completedTodosArrayList);
@@ -141,62 +142,6 @@ public class CheckListActivityNew extends AppCompatActivity {
 
             }
         });
-
-
-
-        //for uncompleted todos
-       rvTodos.setItemAnimator(null);
-
-        Resources r = getResources();
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, r.getDisplayMetrics());
-
-        DragSortRecycler dragSortRecycler = new DragSortRecycler();
-        dragSortRecycler.setViewHandleId(R.id.tvTodoDragger);
-        //dragSortRecycler.setLeftDragArea((int)px);
-        dragSortRecycler.setFloatingAlpha(0.4f);
-        dragSortRecycler.setFloatingBgColor(0x800000FF);
-        dragSortRecycler.setAutoScrollSpeed(0.3f);
-        dragSortRecycler.setAutoScrollWindow(0.1f);
-
-        dragSortRecycler.setOnItemMovedListener(new DragSortRecycler.OnItemMovedListener() {
-            @Override
-            public void onItemMoved(int from, int to) {
-                Log.d("DragDrop", "onItemMoved " + from + " to " + to);
-                TodoModel todoModel = unCompletedTodosArrayList.remove(from);
-                unCompletedTodosArrayList.add(to, todoModel);
-                todosAdapter.notifyDataSetChanged();
-            //    saveCheckList();
-                //notifyItemMoved does work, but it makes the list scroll pos jump a little when dragging near the top or bottom
-                //adapter.notifyItemMoved(from,to);
-            }
-        });
-
-        dragSortRecycler.setOnDragStateChangedListener(new DragSortRecycler.OnDragStateChangedListener() {
-            @Override
-            public void onDragStart() {
-                Log.d("DragDrop", "Drag Start");
-                nswChecklist.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        return true;
-                    }
-                });
-            }
-
-            @Override
-            public void onDragStop() {
-                Log.d("DragDrop", "Drag Stop");
-                nswChecklist.setOnTouchListener(null);
-            }
-        });;
-
-
-
-        rvTodos.addItemDecoration(dragSortRecycler);
-        rvTodos.addOnItemTouchListener(dragSortRecycler);
-        rvTodos.setOnScrollListener(dragSortRecycler.getScrollListener());
-
-
 
         if(completedTodosArrayList.size()==0){
             llTickedItems.setVisibility(View.GONE);
@@ -221,6 +166,9 @@ public class CheckListActivityNew extends AppCompatActivity {
     }
 
 
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+           mItemTouchHelper.startDrag(viewHolder);
+    }
     /**
      * Hides the soft keyboard
      */
@@ -360,18 +308,115 @@ public class CheckListActivityNew extends AppCompatActivity {
         return  todoModels;
     }
 
-    class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHolder>{
 
+
+    public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
+
+        private final ItemTouchHelperAdapter mAdapter;
+
+        public SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
+            mAdapter = adapter;
+        }
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isItemViewSwipeEnabled() {
+            return true;
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+            int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+            return makeMovementFlags(dragFlags, swipeFlags);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
+                              RecyclerView.ViewHolder target) {
+            mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+        }
+
+        @Override
+        public void onSelectedChanged(RecyclerView.ViewHolder viewHolder,
+                                      int actionState) {
+            // We only want the active item
+            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+                if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                    ItemTouchHelperViewHolder itemViewHolder =
+                            (ItemTouchHelperViewHolder) viewHolder;
+                    itemViewHolder.onItemSelected();
+                }
+            }
+
+            super.onSelectedChanged(viewHolder, actionState);
+        }
+        @Override
+        public void clearView(RecyclerView recyclerView,
+                              RecyclerView.ViewHolder viewHolder) {
+            super.clearView(recyclerView, viewHolder);
+
+            if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                ItemTouchHelperViewHolder itemViewHolder =
+                        (ItemTouchHelperViewHolder) viewHolder;
+                itemViewHolder.onItemClear();
+            }
+        }
+
+    }
+
+
+
+    class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHolder> implements ItemTouchHelperAdapter{
         Context context;
         ArrayList<TodoModel> todosList = new ArrayList<>();
         int posOfFocus = -1;
+        OnStartDragListener mDragStartListener;
 
-        TodosAdapter(Context context, ArrayList<TodoModel> todosList) {
-            this.context = context;
-            this.todosList = todosList;
+
+        @Override
+        public void onItemDismiss(int position) {
+            unCompletedTodosArrayList.remove(position);
+            notifyItemRemoved(position);
+            if(unCompletedTodosArrayList.size() == 0){
+                tvAddTodo.setVisibility(View.VISIBLE);
+            }
+            posOfFocus = position;
         }
 
-        class TodoViewHolder extends  RecyclerView.ViewHolder{
+        @Override
+        public boolean onItemMove(int fromPosition, int toPosition) {
+            if (fromPosition < toPosition) {
+                for (int i = fromPosition; i < toPosition; i++) {
+                    Collections.swap(unCompletedTodosArrayList, i, i + 1);
+                }
+            } else {
+                for (int i = fromPosition; i > toPosition; i--) {
+                    Collections.swap(unCompletedTodosArrayList, i, i - 1);
+                }
+            }
+            notifyItemMoved(fromPosition, toPosition);
+            return true;
+        }
+
+
+        public TodosAdapter(Context context, ArrayList<TodoModel> todosList, OnStartDragListener mDragStartListener) {
+            this.context = context;
+            this.todosList = todosList;
+            this.mDragStartListener = mDragStartListener;
+        }
+
+        class TodoViewHolder extends  RecyclerView.ViewHolder  implements ItemTouchHelperViewHolder{
             CheckBox cbTodo;
             ImageView ivCancelTodo;
             TextView tvTodoDragger;
@@ -382,6 +427,15 @@ public class CheckListActivityNew extends AppCompatActivity {
                 ivCancelTodo = (ImageView) itemView.findViewById(R.id.ivCancelTodo);
                 etTodo = (EditText) itemView.findViewById(R.id.etTodo);
                 tvTodoDragger = (TextView) itemView.findViewById(R.id.tvTodoDragger);
+            }
+            @Override
+            public void onItemSelected() {
+                itemView.setBackgroundColor(Color.LTGRAY);
+            }
+
+            @Override
+            public void onItemClear() {
+                itemView.setBackgroundColor(0);
             }
         }
 
@@ -409,6 +463,17 @@ public class CheckListActivityNew extends AppCompatActivity {
                 });
                 posOfFocus = -1;
             }
+
+            holder.tvTodoDragger.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (MotionEventCompat.getActionMasked(event) ==
+                            MotionEvent.ACTION_DOWN) {
+                        mDragStartListener.onStartDrag(holder);
+                    }
+                    return false;
+                }
+            });
 
                 holder.cbTodo.setChecked(false);
             holder.cbTodo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -650,8 +715,10 @@ public class CheckListActivityNew extends AppCompatActivity {
             holder.etTodo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    if(hasFocus)
+                    if(hasFocus) {
                         holder.ivCancelTodo.setVisibility(View.VISIBLE);
+                        holder.etTodo.setSelection(holder.etTodo.getText().length());
+                    }
                     else {
                         holder.ivCancelTodo.setVisibility(View.GONE);
                     }
