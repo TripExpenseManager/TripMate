@@ -24,29 +24,29 @@ import android.widget.TextView;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     FloatingActionButton fab;
     MaterialSearchView searchView;
 
     NavigationView navigationView;
-    TextView nav_email,nav_user;
+    TextView nav_email, nav_user;
 
     int prevId = 0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        int should_display = app_preferences.getInt("should_display",1);
+        int should_display = app_preferences.getInt("should_display", 1);
 
-        if(should_display == 1){
-            Intent intent = new Intent(MainActivity.this,AppIntroActivity.class);
-            intent.putExtra("from","mainactivity");
+        if (should_display == 1) {
+            Intent intent = new Intent(MainActivity.this, AppIntroActivity.class);
+            intent.putExtra("from", "mainactivity");
             startActivity(intent);
         }
 
@@ -64,17 +64,17 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
 
-        View hView =  navigationView.getHeaderView(0);
-        nav_user = (TextView)hView.findViewById(R.id.username);
-        nav_email = (TextView)hView.findViewById(R.id.useremail);
+        View hView = navigationView.getHeaderView(0);
+        nav_user = (TextView) hView.findViewById(R.id.username);
+        nav_email = (TextView) hView.findViewById(R.id.useremail);
 
-        String gdrive_backup_account = app_preferences.getString("gdrive_backup_account","no");
-       // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
+        String gdrive_backup_account = app_preferences.getString("gdrive_backup_account", "no");
+        // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
 
-        if(!gdrive_backup_account.equalsIgnoreCase("no")){
+        if (!gdrive_backup_account.equalsIgnoreCase("no")) {
             nav_user.setText(gdrive_backup_account);
-         //   nav_email.setText(gdrive_backup_account);
-        }else{
+            //   nav_email.setText(gdrive_backup_account);
+        } else {
             nav_email.setText("");
             nav_user.setText("Trip Mate");
         }
@@ -82,16 +82,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     boolean doubleBackToExitPressedOnce = false;
+
     public void onBackPressed() {
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }
-        else if (searchView.isSearchOpen()) {
+        } else if (searchView.isSearchOpen()) {
             searchView.closeSearch();
-        }
-        else {
+        } else {
 
             int count = getSupportFragmentManager().getBackStackEntryCount();
 
@@ -107,14 +106,14 @@ public class MainActivity extends AppCompatActivity
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        doubleBackToExitPressedOnce=false;
+                        doubleBackToExitPressedOnce = false;
                     }
                 }, 2000);
 
 
             } else {
                 getSupportFragmentManager().popBackStack();
-                int pos = Integer.parseInt(getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount()-2).getName());
+                int pos = Integer.parseInt(getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 2).getName());
 
                 Log.i("saikrishna", String.valueOf(pos));
 
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-      //  getMenuInflater().inflate(R.menu.menu_main_activity, menu);
+        //  getMenuInflater().inflate(R.menu.menu_main_activity, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -161,13 +160,13 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
         SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        String gdrive_backup_account = app_preferences.getString("gdrive_backup_account","no");
-       // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
+        String gdrive_backup_account = app_preferences.getString("gdrive_backup_account", "no");
+        // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
 
-        if(!gdrive_backup_account.equalsIgnoreCase("no")){
+        if (!gdrive_backup_account.equalsIgnoreCase("no")) {
             nav_user.setText(gdrive_backup_account);
-           // nav_email.setText(gdrive_backup_account);
-        }else{
+            // nav_email.setText(gdrive_backup_account);
+        } else {
             nav_email.setText("");
             nav_user.setText("Trip Mate");
         }
@@ -192,7 +191,7 @@ public class MainActivity extends AppCompatActivity
             fab.setVisibility(View.VISIBLE);
             searchView.setVisibility(View.VISIBLE);
 
-            if(prevId != id) {
+            if (prevId != id) {
                 AllTripsDisplayFragment allTripsFragment = new AllTripsDisplayFragment();
                 transaction.replace(R.id.fragment_container, allTripsFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -206,7 +205,7 @@ public class MainActivity extends AppCompatActivity
             fab.setVisibility(View.GONE);
             searchView.setVisibility(View.GONE);
 
-            if(prevId != id) {
+            if (prevId != id) {
                 HotelBookingSitesFragment hotelsFragment = new HotelBookingSitesFragment();
                 transaction.replace(R.id.fragment_container, hotelsFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -220,7 +219,7 @@ public class MainActivity extends AppCompatActivity
             fab.setVisibility(View.GONE);
             searchView.setVisibility(View.GONE);
 
-            if(prevId != id) {
+            if (prevId != id) {
                 TravelBookingSitesFragment travelFragment = new TravelBookingSitesFragment();
                 transaction.replace(R.id.fragment_container, travelFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -233,110 +232,19 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_share) {
 
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "Trip mate is an app which manages expenses in your trip and ensures a smooth and hassle free trip for you");
-                sendIntent.setType("text/plain");
-                startActivity(sendIntent);
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Trip mate is an app which manages expenses in your trip and ensures a smooth and hassle free trip for you");
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
 
         } else if (id == R.id.nav_settings) {
-
-                // restoreDriveBackup();
-                Intent intent = new Intent(MainActivity.this,SettingsActivity.class);
-                startActivity(intent);
-
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
         }
-
-
-
-         /*  mGoogleApiClient.connect();
-            if(mGoogleApiClient.isConnected()){
-                mGoogleApiClient.clearDefaultAccountAndReconnect();
-            }  */
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    //google drive sync methods
-
-/*
-    final private ResultCallback<DriveApi.DriveContentsResult> contentsCallback = new ResultCallback<DriveApi.DriveContentsResult>() {
-
-        @Override
-        public void onResult(DriveApi.DriveContentsResult result) {
-            if (!result.getStatus().isSuccess()) {
-                Log.v("DriveDbHandler", "Error while trying to create new file contents");
-                return;
-            }
-
-            String mimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType("db");
-            MetadataChangeSet changeSet = new MetadataChangeSet.Builder()
-                    .setTitle(DataBaseHelper.DATABASE_NAME) // Google Drive File name
-                    .setMimeType(mimeType)
-                    .setStarred(true).build();
-            // create a file on root folder
-            Drive.DriveApi.getRootFolder(mGoogleApiClient)
-                    .createFile(mGoogleApiClient, changeSet, result.getDriveContents())
-                    .setResultCallback(fileCallback);
-        }
-
-    };
-
-    final private ResultCallback<DriveFolder.DriveFileResult> fileCallback = new ResultCallback<DriveFolder.DriveFileResult>() {
-
-        @Override
-        public void onResult(DriveFolder.DriveFileResult result) {
-            if (!result.getStatus().isSuccess()) {
-                Log.v("DriveDbHandler", "Error while trying to create the file");
-                return;
-            }
-            mfile = result.getDriveFile();
-            mfile.open(mGoogleApiClient, DriveFile.MODE_WRITE_ONLY, null).setResultCallback(contentsOpenedCallback);
-        }
-    };
-
-    final private ResultCallback<DriveApi.DriveContentsResult> contentsOpenedCallback = new ResultCallback<DriveApi.DriveContentsResult>() {
-
-        @Override
-        public void onResult(DriveApi.DriveContentsResult result) {
-
-            if (!result.getStatus().isSuccess()) {
-                Log.v("DriveDbHandler", "Error opening file");
-                return;
-            }
-
-            try {
-                FileInputStream is = new FileInputStream(getDbPath());
-                BufferedInputStream in = new BufferedInputStream(is);
-                byte[] buffer = new byte[8 * 1024];
-                DriveContents content = result.getDriveContents();
-                BufferedOutputStream out = new BufferedOutputStream(content.getOutputStream());
-                int n = 0;
-                while( ( n = in.read(buffer) ) > 0 ) {
-                    out.write(buffer, 0, n);
-                }
-
-                in.close();
-
-            /*  mfile.commitAndCloseContents(mGoogleApiClient, content).setResultCallback(new ResultCallback<Status>() {
-                 @Override
-                 public void onResult(Status result) {
-                 // Handle the response status
-                 }
-                 });*/
-
-            /*    content.commit(mGoogleApiClient, null);
-                Log.i("sai","success");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    };
-*/
-
 }

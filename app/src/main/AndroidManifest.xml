@@ -29,6 +29,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            />
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -78,9 +79,25 @@
             android:name=".CheckListActivityNew"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".SettingsActivity"
+        <activity android:name=".SettingsActivity"
+            android:label="Settings"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar"
             />
+        <activity
+            android:name=".TripDetailsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AddTripNew"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AboutTripMateActivity"
+            android:label="About TripMate"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

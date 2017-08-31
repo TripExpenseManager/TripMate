@@ -7,11 +7,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-      <!--  <item name="android:actionBarStyle">@style/ActionBar</item> -->
+        <!--  <item name="android:actionBarStyle">@style/ActionBar</item> -->
 
     </style>
 
-   <!-- <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
+    <!-- <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:titleTextStyle">@style/ActionBar.Title</item>
         <item name="android:subtitleTextStyle">@style/ActionBar.Subtitle</item>
     </style>
@@ -51,14 +51,13 @@
 
     <style name="DialogAnimationUpDown">
         <item name="android:windowEnterAnimation">@anim/slide_down</item>
-        <item name="android:windowExitAnimation"> @anim/slide_up2</item>
+        <item name="android:windowExitAnimation">@anim/slide_up2</item>
     </style>
 
     <style name="DialogAnimationRightToLeft">
         <item name="android:windowEnterAnimation">@anim/side_in</item>
-        <item name="android:windowExitAnimation"> @anim/side_out</item>
+        <item name="android:windowExitAnimation">@anim/side_out</item>
     </style>
-
 
 
     <style name="DialogAnimationCentreInsta">
@@ -101,7 +100,6 @@
         <!-- Hint for edit text -->
         <item name="android:hint">@string/search_hint</item>
     </style>
-
 
 
 </resources>

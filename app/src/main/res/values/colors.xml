@@ -11,4 +11,6 @@
     <color name="red">#ea1511</color>
     <color name="defaultcolor">#FAFAFA</color>
 
+    <color name="tripDesc">#AA00FFFF</color>
+    <color name="tripPlaces">#CCFF0000</color>
 </resources>

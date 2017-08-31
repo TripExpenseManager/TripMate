@@ -1,32 +1,27 @@
 package com.tripmate;
 
 import android.app.models.AddExpenseByPersonModel;
+import android.app.models.ExpenseModel;
 import android.app.models.GraphItemModel;
 import android.app.models.NotesModel;
 import android.app.models.ParentExpenseItemModel;
+import android.app.models.PersonModel;
 import android.app.models.PersonWiseExpensesSummaryModel;
+import android.app.models.TripModel;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import android.app.models.ExpenseModel;
-import android.app.models.PersonModel;
-import android.app.models.TripModel;
-import android.util.Log;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -130,6 +125,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(TRIPS_COLUMN_IMAGE_URL,imageUrl);
         db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
     }
+
+    void updateTripPlaces(String trip_id,String places){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(TRIPS_COLUMN_TRIP_PLACES,places);
+        db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
+    }
+
+
+
 
     boolean addTrip(TripModel trip){
         SQLiteDatabase db = getWritableDatabase();
@@ -327,6 +334,31 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         cursor.close();
         return trip_array_list;
     }
+
+    public TripModel getTripData(String trip_id) {
+        ArrayList<TripModel> trip_array_list = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TRIPS_TABLE_NAME,null,ITEMS_COLUMN_TRIP_ID + "=?",new String[]{trip_id},null,null,null);
+
+        TripModel model = new TripModel();
+        if (cursor.moveToFirst()) {
+            do {
+                model.setTrip_name(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_NAME)));
+                model.setTrip_date(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DATE)));
+                model.setTrip_amount(cursor.getDouble(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT)));
+                model.setTrip_desc(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_DESC)));
+                model.setTrip_id(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID)));
+                model.setTrip_places(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_PLACES)));
+                model.setImageUrl(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_IMAGE_URL)));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return model;
+    }
+
+
 
     public String[] getTripNamesAsStringArray() {
 

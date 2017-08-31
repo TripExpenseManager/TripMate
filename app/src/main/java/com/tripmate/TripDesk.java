@@ -43,7 +43,7 @@ public class TripDesk extends AppCompatActivity {
     private ViewPager viewPager;
     ImageView header_image;
     
-    String trip_id,trip_name,trip_date,trip_url;
+    String trip_id = "",trip_name = "",trip_date = "",trip_url = "";
 
     FloatingActionButton fab;
     FloatingActionMenu fabMenu;
@@ -207,6 +207,7 @@ public class TripDesk extends AppCompatActivity {
             shortcutIntent.putExtra("trip_id",trip_id);
             shortcutIntent.putExtra("trip_name",trip_name);
             shortcutIntent.putExtra("trip_date",trip_date);
+            shortcutIntent.putExtra("trip_url",trip_url);
             shortcutIntent.setAction(Intent.ACTION_MAIN);
 
             Intent addIntent = new Intent();
@@ -335,7 +336,18 @@ public class TripDesk extends AppCompatActivity {
 
         }
         else if(item.getItemId() == R.id.action_trip_details){
-            //view trip details
+            //Showing Trip Details
+            Intent tripDetailsIntent = new Intent(getApplicationContext(),TripDetailsActivity.class);
+
+            //put Extra
+            tripDetailsIntent.putExtra("trip_id",trip_id);
+            tripDetailsIntent.putExtra("trip_name",trip_name);
+            tripDetailsIntent.putExtra("trip_date",trip_date);
+            tripDetailsIntent.putExtra("trip_url",trip_url);
+
+            startActivity(tripDetailsIntent);
+
+
         }
         else if(item.getItemId() == R.id.action_delete_trip){
 

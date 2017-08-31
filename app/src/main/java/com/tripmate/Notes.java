@@ -132,7 +132,9 @@ public class Notes extends Fragment {
     public void onResume() {
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-        notesModels = dataBaseHelper.getNotes(trip_id);
+
+        notesModels.clear();
+        notesModels.addAll(dataBaseHelper.getNotes(trip_id));
 
         if(notesModels.size() == 0){
             no_notes_RL.setVisibility(View.VISIBLE);
@@ -140,9 +142,7 @@ public class Notes extends Fragment {
             no_notes_RL.setVisibility(View.GONE);
         }
 
-        mAdapter = new NotesAdapter(notesModels);
         mAdapter.notifyDataSetChanged();
-        rvNotes.setAdapter(mAdapter);
 
         //hiding fab
         final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
@@ -321,7 +321,10 @@ public class Notes extends Fragment {
                             DataBaseHelper dataBaseHelper = new DataBaseHelper(getContext());
                             dataBaseHelper.deleteNotes(notesModels.get(position));
                             mAdapter.notifyItemRemoved(position);
-                            notesModels = dataBaseHelper.getNotes(trip_id);
+                            mAdapter.notifyItemRangeChanged(position,notesModels.size());
+
+                            notesModels.clear();
+                            notesModels.addAll(dataBaseHelper.getNotes(trip_id));
 
                             if(notesModels.size() == 0){
                                 no_notes_RL.setVisibility(View.VISIBLE);
@@ -329,7 +332,7 @@ public class Notes extends Fragment {
                                 no_notes_RL.setVisibility(View.GONE);
                             }
 
-                            Snackbar.make(getActivity().findViewById(R.id.fab), "Notes deleted Succesfully", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(getActivity().findViewById(R.id.fabMenu), "Notes deleted Succesfully", Snackbar.LENGTH_LONG).show();
                         }
                     });
                     deleteDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -401,7 +404,7 @@ public class Notes extends Fragment {
         }
 
         for(TodoModel todoModel : todoModels){
-            String specialCharacter = "#";
+            String specialCharacter = "\u2022";
             notesBody+=specialCharacter+" ";
             notesBody+=todoModel.getName();
             notesBody+="\n";
