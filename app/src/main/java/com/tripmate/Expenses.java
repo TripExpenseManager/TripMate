@@ -41,6 +41,8 @@ import com.bignerdranch.expandablerecyclerview.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.ParentViewHolder;
 
+import org.w3c.dom.Text;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,6 +73,7 @@ public class Expenses extends Fragment {
     String trip_id,tempPersons="";
 
     RelativeLayout no_expenses_RL;
+    TextView persons_deposit_spent;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,6 +84,7 @@ public class Expenses extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.expensesRecyclerView);
         expensesRL = (RelativeLayout) view.findViewById(R.id.expensesRL);
         no_expenses_RL = (RelativeLayout) view.findViewById(R.id.no_expenses_RL);
+        persons_deposit_spent = (TextView) view.findViewById(R.id.persons_deposit_spent);
 
         setHasOptionsMenu(true);
 
@@ -435,9 +439,18 @@ public class Expenses extends Fragment {
 
 
         if(list.size() == 0){
-            no_expenses_RL.setVisibility(View.VISIBLE);
+
+            if(allList.size()> 0){
+                no_expenses_RL.setVisibility(View.GONE);
+                persons_deposit_spent.setVisibility(View.VISIBLE);
+
+            }else{
+                no_expenses_RL.setVisibility(View.VISIBLE);
+                persons_deposit_spent.setVisibility(View.GONE);
+            }
         }else{
             no_expenses_RL.setVisibility(View.GONE);
+            persons_deposit_spent.setVisibility(View.GONE);
         }
 
     }
@@ -484,10 +497,17 @@ public class Expenses extends Fragment {
 
         mRecyclerView.setAdapter(mAdapter);
 
-        if(list.size() == 0){
+        if(spinnerPosition == 1 && allList.size()> 0 ){
+            no_expenses_RL.setVisibility(View.GONE);
+            persons_deposit_spent.setVisibility(View.VISIBLE);
+        }else if(list.size() == 0){
             no_expenses_RL.setVisibility(View.VISIBLE);
+            persons_deposit_spent.setVisibility(View.GONE);
+
         }else{
             no_expenses_RL.setVisibility(View.GONE);
+            persons_deposit_spent.setVisibility(View.GONE);
+
         }
 
     }

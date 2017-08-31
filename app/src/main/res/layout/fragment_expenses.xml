@@ -44,4 +44,16 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/persons_deposit_spent"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_margin="20dp"
+        android:visibility="gone"
+        android:textColor="@color/red"
+        android:text="Amount spent from deposit money will not be counted under any single person."
+        />
+
 </RelativeLayout>

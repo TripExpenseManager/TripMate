@@ -1,32 +1,27 @@
 package com.tripmate;
 
 import android.app.models.AddExpenseByPersonModel;
+import android.app.models.ExpenseModel;
 import android.app.models.GraphItemModel;
 import android.app.models.NotesModel;
 import android.app.models.ParentExpenseItemModel;
+import android.app.models.PersonModel;
 import android.app.models.PersonWiseExpensesSummaryModel;
+import android.app.models.TripModel;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import android.app.models.ExpenseModel;
-import android.app.models.PersonModel;
-import android.app.models.TripModel;
-import android.util.Log;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 

@@ -846,7 +846,6 @@ public class AllTripsDisplayFragment extends Fragment{
 
         Log.i("saikrishna","onresume Called");
 
-
         //refreshing the contents of gridview by retrieving data from backend
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
 
@@ -866,7 +865,6 @@ public class AllTripsDisplayFragment extends Fragment{
         int prevSelectedPosition = app_preferences.getInt("get_sort_position",0);
 
         if(prevSelectedPosition ==0){
-
             //sorting date wise
             Collections.sort(trip_array_list, new Comparator<TripModel>() {
                 @Override
@@ -886,10 +884,7 @@ public class AllTripsDisplayFragment extends Fragment{
 
                 }
             });
-
-
         }else if(prevSelectedPosition ==1){
-
             //sorting amount wise
             Collections.sort(trip_array_list, new Comparator<TripModel>() {
                 @Override
@@ -897,8 +892,6 @@ public class AllTripsDisplayFragment extends Fragment{
                     return o2.getTrip_amount().compareTo(o1.getTrip_amount());
                 }
             });
-
-
         }else if(prevSelectedPosition ==2){
             //sorting name wise
             Collections.sort(trip_array_list, new Comparator<TripModel>() {
@@ -907,13 +900,10 @@ public class AllTripsDisplayFragment extends Fragment{
                     return o1.getTrip_name().compareTo(o2.getTrip_name());
                 }
             });
-
         }
 
         grid_view_adapter.notifyDataSetChanged();
-
         new getImageUrlConnection().execute();
-
         super.onResume();
 
     }
