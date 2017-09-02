@@ -17,7 +17,13 @@ public class AppIntroActivity extends AppIntro {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         super.onCreate(savedInstanceState);
+
 
         from = getIntent().getStringExtra("from");
 
@@ -32,10 +38,10 @@ public class AppIntroActivity extends AppIntro {
 
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest.
-        addSlide(AppIntroFragment.newInstance("Trip Mate", "Enjoy the trip without any worries",R.drawable.image_no_trips, getResources().getColor(R.color.green)));
-        addSlide(AppIntroFragment.newInstance("Expense Manager", "Enjoy the trip without any worries",R.drawable.image_no_expenses, getResources().getColor(R.color.colorPrimary)));
-        addSlide(AppIntroFragment.newInstance("Trip Mate", "Enjoy the trip without any worries",R.drawable.image_no_trips, getResources().getColor(R.color.colorAccent)));
-        addSlide(AppIntroFragment.newInstance("Expense Manager", "Enjoy the trip without any worries",R.drawable.image_no_expenses, getResources().getColor(R.color.red)));
+        addSlide(AppIntroFragment.newInstance("Welcome!", "Enjoy the trip without any worries",R.drawable.image_no_trips, getResources().getColor(R.color.green)));
+        addSlide(AppIntroFragment.newInstance("Manage your Trip Expenses", "Get a glimpse of your expenses managed categorically, personally, ",R.drawable.image_no_expenses, getResources().getColor(R.color.colorPrimary)));
+        addSlide(AppIntroFragment.newInstance("Make a note of everything!", "Enjoy the notes and checklist feature for each trip separately",R.drawable.image_no_trips, getResources().getColor(R.color.colorAccent)));
+        addSlide(AppIntroFragment.newInstance("Keep your data safe and secure!", "We provide you backup and restore facility to keep your data safe",R.drawable.image_no_expenses, getResources().getColor(R.color.red)));
 
         // OPTIONAL METHODS
         // Override bar/separator color.

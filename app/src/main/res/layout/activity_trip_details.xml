@@ -131,7 +131,7 @@
                     android:id="@+id/rlTitleShowItems"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary">
+                    android:background="?attr/colorPrimary">
 
                     <TextView
                         android:id="@+id/tvTitleOfSelected"

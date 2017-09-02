@@ -497,17 +497,17 @@ public class Expenses extends Fragment {
 
         mRecyclerView.setAdapter(mAdapter);
 
-        if(spinnerPosition == 1 && allList.size()> 0 ){
-            no_expenses_RL.setVisibility(View.GONE);
-            persons_deposit_spent.setVisibility(View.VISIBLE);
-        }else if(list.size() == 0){
-            no_expenses_RL.setVisibility(View.VISIBLE);
-            persons_deposit_spent.setVisibility(View.GONE);
-
+        if(list.size() == 0){
+            if(spinnerPosition == 1 && allList.size()> 0 ){
+                no_expenses_RL.setVisibility(View.GONE);
+                persons_deposit_spent.setVisibility(View.VISIBLE);
+            }else{
+                no_expenses_RL.setVisibility(View.VISIBLE);
+                persons_deposit_spent.setVisibility(View.GONE);
+            }
         }else{
             no_expenses_RL.setVisibility(View.GONE);
             persons_deposit_spent.setVisibility(View.GONE);
-
         }
 
     }

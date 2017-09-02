@@ -3,9 +3,11 @@ package com.tripmate;
 import android.app.models.NotesModel;
 import android.app.models.TodoModel;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -63,6 +65,11 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         setContentView(R.layout.activity_check_list_new);
 
         etNotesTitle = (EditText) findViewById(R.id.etNotesTitle);

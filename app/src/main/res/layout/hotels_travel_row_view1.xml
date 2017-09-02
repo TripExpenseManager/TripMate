@@ -1,72 +1,222 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+<com.ramotion.foldingcell.FoldingCell android:id="@+id/folding_cell"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/hotelsCardView"
-    android:layout_marginLeft="5dp"
-    android:layout_marginRight="5dp"
-    android:layout_marginTop="2.5dp"
-    android:layout_marginBottom="2.5dp"
-    android:foreground="?android:attr/selectableItemBackground"
-    tools:ignore="UnusedAttribute">
+    folding-cell:additionalFlipsCount="2"
+    folding-cell:animationDuration="600"
+    folding-cell:backSideColor="@color/white"
+    folding-cell:cameraHeight="30"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:folding-cell="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
+    <FrameLayout
+        android:id="@+id/cell_content_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:visibility="gone"
         >
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:id="@id/imageView"
-            android:scaleType="centerCrop"
-            android:src="@drawable/image_placeholder"
-            />
-
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/imageView"
-            android:singleLine="true"
-            android:id="@+id/nameTv"
-            android:textSize="18dp"
-            android:layout_marginLeft="15dp"
+            android:orientation="vertical"
+            >
+
+            <android.support.v7.widget.CardView
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/hotelsCardView1"
+                android:foreground="?android:attr/selectableItemBackground"
+                tools:ignore="UnusedAttribute">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="160dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/image_placeholder"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="15dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="MakeMyTrip"
+                                android:textSize="20sp"
+                                android:textColor="@color/colorPrimary"
+                                android:textStyle="bold"
+                                />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Description"
+                                android:layout_marginTop="10dp"
+                                />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="5dp"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                app:srcCompat="@drawable/icon_website"
+                                android:layout_marginRight="4dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="www.makemytrip.com"
+                                android:autoLink="web"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="center_vertical"/>
+
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                app:srcCompat="@drawable/icon_get_app"
+                                android:layout_marginRight="4dp"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Get the App in PlayStore"
+                                android:textColor="@color/colorAccent"
+                                android:autoLink="web"
+                                android:layout_gravity="center_vertical"
+                               />
+
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/cell_title_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/hotelsCardView"
+            android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
-            android:text="Make My Trip"
-            />
+            android:layout_marginTop="2.5dp"
+            android:layout_marginBottom="2.5dp"
+            android:foreground="?android:attr/selectableItemBackground"
+            tools:ignore="UnusedAttribute">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/imageView"
-            android:layout_below="@+id/nameTv"
-            android:id="@+id/urlTv"
-            android:singleLine="true"
-            android:textColor="@color/colorPrimary"
-            android:layout_marginLeft="15dp"
-            android:text="www.makemytrip.com"
-            />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/imageView"
-            android:id="@+id/descTv"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:layout_below="@+id/urlTv"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="4dp"
-            android:text="Makemy trip is a website where you can book hotels, buses, trains and ensures a hassle free trip for you"
-            />
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:id="@id/imageView"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/image_placeholder"
+                    />
 
-    </RelativeLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/imageView"
+                    android:singleLine="true"
+                    android:id="@+id/nameTv"
+                    android:textSize="18dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    android:text="Make My Trip"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/imageView"
+                    android:layout_below="@+id/nameTv"
+                    android:id="@+id/urlTv"
+                    android:singleLine="true"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_marginLeft="15dp"
+                    android:text="www.makemytrip.com"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/imageView"
+                    android:id="@+id/descTv"
+                    android:ellipsize="end"
+                    android:maxLines="3"
+                    android:layout_below="@+id/urlTv"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="4dp"
+                    android:text="Makemy trip is a website where you can book hotels, buses, trains and ensures a hassle free trip for you"
+                    />
+
+            </RelativeLayout>
 
 
-</android.support.v7.widget.CardView>
+        </android.support.v7.widget.CardView>
+
+    </FrameLayout>
+
+</com.ramotion.foldingcell.FoldingCell>

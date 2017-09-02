@@ -45,7 +45,7 @@
                 android:textStyle="bold"
                 android:inputType="text"
                 android:hint="Title"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorPrimary"
                 android:background="@android:color/transparent"/>
 
                 <android.support.v7.widget.RecyclerView
@@ -62,7 +62,6 @@
                     android:layout_margin="5dp"
                     android:layout_marginRight="10dp"
                     android:text="     +   List Item"
-                    android:textColor="#45000000"
                     android:textStyle="bold" />
 
                 <View
@@ -95,7 +94,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="1 Ticked Item"
-                        android:textColor="#56000000"
                         android:textStyle="italic" />
                 </LinearLayout>
 

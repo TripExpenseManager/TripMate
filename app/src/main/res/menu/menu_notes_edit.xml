@@ -1,25 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <item
-        android:id="@+id/action_cancel"
-        app:showAsAction="always"
-        android:title="Save"
-        android:icon="@drawable/icon_cross_mark">
-    </item>
-
-    <item
-        android:id="@+id/action_edit"
-        app:showAsAction="always"
-        android:title="Edit"
-        android:icon="@drawable/icon_edit">
-    </item>
     <item
         android:id="@+id/action_save"
         app:showAsAction="always"
         android:title="Save"
-        android:icon="@drawable/icon_save">
+        android:icon="@drawable/icon_save"
+        android:orderInCategory="100">
     </item>
 
 </menu>

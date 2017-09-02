@@ -46,7 +46,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/person_name"
-                android:textColor="@color/black"
+                android:textColor="?attr/customTextColor"
                 android:textSize="16dp"
                 android:text="Saikrishna"
                 android:singleLine="true"
@@ -68,7 +68,6 @@
                     android:layout_marginTop="2dp"
                     android:singleLine="true"
                     android:layout_below="@+id/title"
-                    android:textColor="@color/grey"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -99,7 +98,7 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:text="&#8942;"
             android:layout_marginRight="5dp"
-            android:textColor="@color/black"
+            android:textColor="?attr/customTextColor"
             android:textAppearance="?android:textAppearanceLarge"
             android:layout_alignParentRight="true" />
 

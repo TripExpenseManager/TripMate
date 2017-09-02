@@ -27,7 +27,7 @@
             android:id="@+id/profile_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
+            android:background="?attr/colorPrimary"
             android:elevation="4dp"
             android:paddingBottom="24dp">
 
@@ -90,11 +90,10 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:textSize="16dp"
                         android:text="Group Details"
-                        />
+                        android:textColor="?attr/customTextColor"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
 
                     <View
                         android:layout_width="match_parent"
@@ -110,11 +109,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Deposit Amount Received"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/group_deposit_amount_received"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Deposit Amount Received"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -136,11 +135,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Deposit Amount Spent"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/group_deposit_amount_spent"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Deposit Amount Spent"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -162,11 +161,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Deposit Amount Remaining"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/group_deposit_amount_remaining"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Deposit Amount Remaining"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -198,11 +197,10 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:textSize="16dp"
                         android:text="Personal Details"
-                        />
+                        android:textColor="?attr/customTextColor"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
 
                     <View
                         android:layout_width="match_parent"
@@ -218,11 +216,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Deposit Amount Given"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/deposit_amount_given"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Deposit Amount Given"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -244,11 +242,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Deposit Amount Spent"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/deposit_amount_spent"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Deposit Amount Spent"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -270,11 +268,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Deposit Amount Remaining"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/deposit_amount_remaining"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Deposit Amount Remaining"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -296,11 +294,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Personal Amount Given"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/personal_amount_given"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Personal Amount Given"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -323,11 +321,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Personal Amount Spent"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/personal_amount_spent"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Personal Amount Spent"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -350,11 +348,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Total Amount Given"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/total_amount_given"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Total Amount Given"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -377,11 +375,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Total Amount Spent"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/total_amount_spent"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Total Amount Spent"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -404,11 +402,11 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            android:text="Total Amount Due/Refund"
+                            android:layout_alignParentLeft="true"
                             android:layout_toLeftOf="@+id/total_amount_remaining"
-                            android:textColor="@color/black"
-                            android:layout_alignParentLeft="true"/>
+                            android:text="Total Amount Due/Refund"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp" />
 
                         <TextView
                             android:layout_width="wrap_content"

@@ -7,10 +7,12 @@
 
         <Preference
             android:title="Theme"
+            android:icon="@drawable/icon_themes"
             android:key="pref_theme" />
 
         <Preference
             android:title="Backup"
+            android:icon="@drawable/icon_backup"
             android:key="pref_backup"
            >
         </Preference>
@@ -23,10 +25,12 @@
 
         <Preference
             android:title="Send Feedback"
+            android:icon="@drawable/icon_feedback"
             android:key="pref_send_feedback" />
 
         <Preference
             android:title="Like TripMate? Rate it!"
+            android:icon="@drawable/icon_like_rate"
             android:key="pref_rate_it" />
 
     </PreferenceCategory>
@@ -38,15 +42,13 @@
 
         <Preference
             android:title="About TripMate"
+            android:icon="@drawable/icon_info"
             android:key="pref_about_tripmate" />
 
         <Preference
             android:title="App Intro"
+            android:icon="@drawable/icon_app_intro"
             android:key="pref_app_intro" />
-
-        <Preference
-            android:title="Help"
-            android:key="pref_help" />
 
     </PreferenceCategory>
 

@@ -5,13 +5,17 @@ import android.app.models.NotesModel;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -27,12 +31,19 @@ public class NotesEditActivity extends AppCompatActivity {
     String tripId,notesId;
     String editOrAdd;
     Toolbar toolbar;
+    FloatingActionButton fabEdit;
 
-    boolean isEdited = false;
+    boolean isAdd = false;
+    boolean editable = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         setContentView(R.layout.activity_notes_edit);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -50,18 +61,22 @@ public class NotesEditActivity extends AppCompatActivity {
         etNotesTitle = (EditText) findViewById(R.id.etNotesTitle);
         etNotesBody = (EditText) findViewById(R.id.etNotesBody);
 
+        fabEdit = (FloatingActionButton) findViewById(R.id.fabEdit);
+
+
+
         tripId = getIntent().getStringExtra("tripId");
         editOrAdd = getIntent().getStringExtra("editOrAdd");
         if(editOrAdd.equals("add")){
             etNotesTitle.setText("");
             etNotesBody.setText("");
-
             etNotesTitle.setFocusableInTouchMode(true);
             etNotesBody.setFocusableInTouchMode(true);
             etNotesTitle.setClickable(true);
             etNotesBody.setClickable(true);
-
-            isEdited = true;
+            enableEditing();
+            editable = true;
+            isAdd = true;
 
         }else {
 
@@ -70,8 +85,11 @@ public class NotesEditActivity extends AppCompatActivity {
                 etNotesTitle.setClickable(false);
                 etNotesBody.setClickable(false);
                 etNotesBody.setFocusable(false);
+                disableEditing();
+                editable = false;
             }else{
-                isEdited = true;
+                enableEditing();
+                editable = true;
             }
             notesId = getIntent().getStringExtra("notesId");
             DataBaseHelper dataBaseHelper = new DataBaseHelper(NotesEditActivity.this);
@@ -82,17 +100,30 @@ public class NotesEditActivity extends AppCompatActivity {
 
         }
 
+        fabEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                enableEditing();
+            }
+        });
+
+
+
+
     }
+
 
 
 
 
     public void saveNotes(){
 
+
         Long datevalue = Calendar.getInstance().getTimeInMillis();
         String notesDate = String.valueOf(datevalue);
 
-        if(editOrAdd.equals("add")) {
+        if(editOrAdd.equals("add") && isAdd && !(etNotesBody.getText().toString().equalsIgnoreCase("")
+                && etNotesTitle.getText().toString().equalsIgnoreCase("")) ){
             NotesModel notesModel = new NotesModel();
             notesModel.setNote_TripId(tripId);
             String note_id = "Notes" + UUID.randomUUID().toString();
@@ -106,14 +137,21 @@ public class NotesEditActivity extends AppCompatActivity {
             DataBaseHelper dataBaseHelper = new DataBaseHelper(NotesEditActivity.this);
             dataBaseHelper.addNotes(notesModel);
 
-            Toast.makeText(getApplicationContext(),"Notes Added Successfully",Toast.LENGTH_SHORT).show();
+            notesId = note_id;
+            isAdd =false;
+
+            disableEditing();
+            invalidateOptionsMenu();
+
+
+           /* Toast.makeText(getApplicationContext(),"Notes Added Successfully",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(NotesEditActivity.this,NotesEditActivity.class);
             intent.putExtra("tripId",tripId);
             intent.putExtra("editOrAdd","view");
             intent.putExtra("notesId",note_id);
             intent.putExtra("anim","no");
             startActivity(intent);
-            finish();
+            finish();*/
         }else{
             NotesModel notesModel = new NotesModel();
             notesModel.setNote_TripId(tripId);
@@ -124,17 +162,31 @@ public class NotesEditActivity extends AppCompatActivity {
             notesModel.setNote_Date(notesDate);
             notesModel.setNote_ContentStatus("Notes");
 
-            DataBaseHelper dataBaseHelper = new DataBaseHelper(NotesEditActivity.this);
-            dataBaseHelper.updateNotes(notesModel);
+            if((etNotesBody.getText().toString().equalsIgnoreCase("")
+                    && etNotesTitle.getText().toString().equalsIgnoreCase(""))){
 
-            Toast.makeText(getApplicationContext(),"Notes Updated Successfully",Toast.LENGTH_SHORT).show();
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+                dataBaseHelper.deleteNotes(notesModel);
+                finish();
+
+            }else {
+
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(NotesEditActivity.this);
+                dataBaseHelper.updateNotes(notesModel);
+            }
+
+            disableEditing();
+            invalidateOptionsMenu();
+
+
+           /* Toast.makeText(getApplicationContext(),"Notes Updated Successfully",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(NotesEditActivity.this,NotesEditActivity.class);
             intent.putExtra("tripId",tripId);
             intent.putExtra("editOrAdd","view");
             intent.putExtra("notesId",notesId);
             intent.putExtra("anim","no");
             startActivity(intent);
-            finish();
+            finish();*/
         }
     }
 
@@ -146,75 +198,60 @@ public class NotesEditActivity extends AppCompatActivity {
     }
 
 
-    static Menu MenuTemp = null;
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_notes_edit,menu);
-        MenuTemp = menu;
+        getMenuInflater().inflate(R.menu.menu_notes_edit, menu);
 
-        if(editOrAdd != null){
-            if(editOrAdd.equals("add") || editOrAdd.equals("edit")){
-                menu.findItem(R.id.action_edit).setVisible(false);
-            }
-
-            if(!editOrAdd.equals("edit")){
-                menu.findItem(R.id.action_cancel).setVisible(false);
-            }
-
-            if(editOrAdd.equals("view")){
-                menu.findItem(R.id.action_save).setVisible(false);
-            }
-
-
-
-        }
-
+        if (editable)
+            menu.findItem(R.id.action_save).setVisible(true);
+        else
+            menu.findItem(R.id.action_save).setVisible(false);
         return  true;
+
     }
+
+    public void  enableEditing(){
+        editable = true;
+        invalidateOptionsMenu();
+        etNotesTitle.setFocusableInTouchMode(true);
+        etNotesBody.setFocusableInTouchMode(true);
+        etNotesTitle.setFocusable(true);
+        etNotesBody.setFocusable(true);
+        etNotesTitle.setClickable(true);
+        etNotesBody.setClickable(true);
+        fabEdit.setVisibility(View.GONE);
+        etNotesBody.requestFocus();
+        etNotesBody.setSelection(etNotesBody.getText().toString().length());
+
+    }
+    public void  disableEditing(){
+        editable = false;
+        invalidateOptionsMenu();
+        etNotesTitle.clearFocus();
+        etNotesBody.clearFocus();
+        etNotesTitle.setFocusableInTouchMode(false);
+        etNotesBody.setFocusableInTouchMode(false);
+        etNotesTitle.setFocusable(false);
+        etNotesBody.setFocusable(false);
+        etNotesTitle.setClickable(false);
+        etNotesBody.setClickable(false);
+        fabEdit.setVisibility(View.VISIBLE);
+
+
+        // hide keyboard
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(rlNotes.getWindowToken(), 0);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_save :
-                if(etNotesBody.getText().toString().equalsIgnoreCase("")){
-                    Snackbar.make(findViewById(android.R.id.content),"Please enter the content of the Note", Snackbar.LENGTH_LONG).show();
-                }else{
-                    saveNotes();
-                }
-                return true;
-            case R.id.action_edit :
-                editNotes();
-                isEdited = true;
-                if(MenuTemp != null){
-                    MenuTemp.findItem(R.id.action_cancel).setVisible(true);
-                    MenuTemp.findItem(R.id.action_save).setVisible(true);
-                }
-                item.setVisible(false);
-                return true;
-            case R.id.action_cancel :
-
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(rlNotes.getWindowToken(), 0);
-
-                isEdited = false;
-                if(notesId != null && tripId != null){
-                    DataBaseHelper dataBaseHelper = new DataBaseHelper(NotesEditActivity.this);
-                    NotesModel notesModel = dataBaseHelper.getNotes(tripId,notesId);
-                    etNotesTitle.setText(notesModel.getNote_Title());
-                    etNotesBody.setText(notesModel.getNote_Body());
-                }
-                item.setVisible(false);
-                if(MenuTemp != null){
-                    MenuTemp.findItem(R.id.action_save).setVisible(false);
-                    MenuTemp.findItem(R.id.action_edit).setVisible(true);
-                }
-                etNotesTitle.setFocusable(false);
-                etNotesBody.setFocusable(false);
-                etNotesTitle.setClickable(false);
-                etNotesBody.setClickable(false);
-
+            case R.id.action_save:
+                saveNotes();
+                disableEditing();
                 return true;
             default:
                 return true;
@@ -225,29 +262,14 @@ public class NotesEditActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-        if(isEdited){
-            final AlertDialog.Builder dialog = new AlertDialog.Builder(NotesEditActivity.this);
-
-            dialog.setMessage("Do you want to exit without saving the note?");
-            dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    finish();
-                    overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
-                }
-            });
-            dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }
-            });
-            dialog.show();
-        }else{
+        if (editable) {
+            saveNotes();
+            disableEditing();
+        } else {
             finish();
-            overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
+            overridePendingTransition(R.anim.activity_open_scale, R.anim.activity_close_translate);
+            super.onBackPressed();
         }
-
     }
+
 }
