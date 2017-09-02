@@ -22,7 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/rlTitleBar"
-            android:background="#00BFFF">
+            android:background="?attr/colorPrimary"
+          >
 
             <Spinner
                 android:layout_width="wrap_content"
@@ -41,7 +42,7 @@
                 android:id="@+id/tvTitle"
                 android:text="EXPENSES"
                 android:textColor="#FFFFFF"
-                android:background="#00BFFF"
+                android:background="?attr/colorPrimary"
                 android:gravity="center"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -64,7 +65,7 @@
             android:layout_height="48dp"
             android:weightSum="6"
             android:orientation="horizontal"
-            android:background="#5ce1ae"
+            android:background="?attr/colorPrimary"
             android:gravity="center">
 
             <TextView

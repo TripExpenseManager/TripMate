@@ -86,8 +86,8 @@
         android:layout_margin="@dimen/fab_margin"
         app:menu_fab_size="normal"
         android:visibility="gone"
-        app:menu_colorNormal="@color/colorAccent"
-        app:menu_colorPressed="@color/colorAccent"
+        app:menu_colorNormal="?attr/colorAccent"
+        app:menu_colorPressed="?attr/colorAccent"
         app:menu_colorRipple="#99ffffff"
         app:menu_animationDelayPerItem="50"
         app:menu_icon="@drawable/fab_add">
@@ -101,11 +101,11 @@
             android:layout_marginRight="8dp"
             app:fab_label="CheckList"
             android:src="@drawable/icon_checklist"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorPrimary"
-            app:fab_colorRipple="@color/colorAccent"
-            app:menu_labels_colorPressed="@color/colorPrimary"
-            app:menu_labels_colorRipple="@color/colorAccent"
+            app:fab_colorNormal="?attr/colorAccent"
+            app:fab_colorPressed="?attr/colorPrimary"
+            app:fab_colorRipple="?attr/colorAccent"
+            app:menu_labels_colorPressed="?attr/colorPrimary"
+            app:menu_labels_colorRipple="?attr/colorAccent"
             fab:ignore="VectorDrawableCompat" />
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fabNotes"
@@ -116,9 +116,9 @@
             android:layout_marginRight="8dp"
             app:fab_label="Notes"
             android:src="@drawable/icon_notes"
-            app:fab_colorNormal="@color/colorAccent"
-            app:fab_colorPressed="@color/colorPrimary"
-            app:fab_colorRipple="@color/colorAccent"
+            app:fab_colorNormal="?attr/colorAccent"
+            app:fab_colorPressed="?attr/colorPrimary"
+            app:fab_colorRipple="?attr/colorAccent"
             fab:ignore="VectorDrawableCompat" />
 
 

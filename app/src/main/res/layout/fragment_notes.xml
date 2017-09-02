@@ -36,7 +36,7 @@
             android:layout_marginTop="2dp"
             android:textSize="18dp"
             android:fontFamily="serif"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?attr/colorPrimary"
             android:layout_centerHorizontal="true"
             />
 

@@ -21,7 +21,7 @@
     android:id="@android:id/text1"
     style="?android:attr/dropDownItemStyle"
     android:textColor="@color/white"
-    android:background="#00BFFF"
+    android:background="?attr/colorPrimary"
     android:singleLine="true"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"

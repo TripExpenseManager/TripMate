@@ -71,7 +71,7 @@
                     <ImageView
                         android:layout_width="15dp"
                         android:layout_height="15dp"
-                        android:src="@drawable/icon_info"
+                        app:srcCompat="@drawable/icon_info"
                         android:tint="@color/black" />
 
                     <TextView
@@ -81,7 +81,6 @@
                         android:layout_marginLeft="5dp"
                         android:layout_marginStart="5dp"
                         android:text="Use comma(,) to seperate places"
-                        android:textColor="@color/black"
                         android:textSize="12dp" />
                 </LinearLayout>
 
@@ -134,7 +133,7 @@
                     android:layout_centerVertical="true"
                     android:layout_margin="10dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/icon_calendar" />
+                    app:srcCompat="@drawable/icon_calendar" />
 
             </RelativeLayout>
 

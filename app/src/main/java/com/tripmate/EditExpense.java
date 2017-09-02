@@ -5,6 +5,8 @@ import android.app.models.AddExpenseByPersonModel;
 import android.app.models.ExpenseModel;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -69,6 +71,11 @@ public class EditExpense extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         setContentView(R.layout.activity_edit_expense);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

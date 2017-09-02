@@ -46,10 +46,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
-                android:textColor="@color/black"
-                android:textSize="18dp"
                 android:text="TripMate 1.0"
-                />
+                android:textColor="?attr/customTextColor"
+                android:textSize="18dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -58,16 +57,17 @@
                 android:layout_marginTop="20dp"
                 android:textSize="16dp"
                 android:gravity="center"
-                android:text="Copyright 2017 TripMate\nAllrights reserved"
+                android:text="Copyright 2017 TripMate\nAll rights reserved"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Developers"
+                android:textStyle="bold"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
-                android:textColor="#1a0da9"
+                android:textColor="#02bc2e"
                 android:textSize="16dp"
                 android:gravity="center"
                 />
@@ -77,11 +77,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:textSize="16dp"
                 android:gravity="center"
-                android:textColor="@color/black"
                 android:text="Sai Krishna"
-                />
+                android:textColor="?attr/customTextColor"
+                android:textSize="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -96,11 +95,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
-                android:textSize="16dp"
                 android:gravity="center"
-                android:textColor="@color/black"
                 android:text="Vineeth Reddy"
-                />
+                android:textColor="?attr/customTextColor"
+                android:textSize="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"

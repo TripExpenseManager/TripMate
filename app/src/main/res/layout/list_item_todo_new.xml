@@ -14,7 +14,6 @@
             android:layout_marginRight="10dp"
             android:textStyle="bold"
             android:text="&#8942;&#8942;"
-            android:textColor="#45000000"
             android:textSize="24dp"/>
     <CheckBox
         android:id="@+id/cbTodo"

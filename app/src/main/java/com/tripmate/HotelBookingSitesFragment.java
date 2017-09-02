@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.app.models.HotelsTravelModel;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,12 +27,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.ramotion.foldingcell.FoldingCell;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
@@ -88,6 +92,8 @@ public class HotelBookingSitesFragment extends Fragment {
             pd.show();
             sendRequest();
         }
+
+
         return view;
     }
 
@@ -159,6 +165,7 @@ public class HotelBookingSitesFragment extends Fragment {
     class HotelsAdapter extends RecyclerView.Adapter<HotelsAdapter.HotelsViewHolder>{
 
         private ArrayList<HotelsTravelModel> hotelsModels = new ArrayList<>();
+        private HashSet<Integer> unfoldedIndexes = new HashSet<>();
 
         HotelsAdapter(ArrayList<HotelsTravelModel> hotelsModels) {
             this.hotelsModels = hotelsModels;
@@ -170,6 +177,7 @@ public class HotelBookingSitesFragment extends Fragment {
             TextView nameTv,urlTv,descTv;
             ImageView imageView;
             CardView hotelsCardView;
+            FoldingCell foldingCell;
 
             HotelsViewHolder(View itemView) {
                 super(itemView);
@@ -178,7 +186,7 @@ public class HotelBookingSitesFragment extends Fragment {
                 descTv = (TextView) itemView.findViewById(R.id.descTv);
                 imageView = (ImageView) itemView.findViewById(R.id.imageView);
                 hotelsCardView = (CardView) itemView.findViewById(R.id.hotelsCardView);
-
+                foldingCell = (FoldingCell) itemView.findViewById(R.id.folding_cell);
 
             }
         }
@@ -198,11 +206,11 @@ public class HotelBookingSitesFragment extends Fragment {
             holder.urlTv.setText(hotelModel.getUrl());
             holder.descTv.setText(hotelModel.getDesc());
 
-            holder.hotelsCardView.setOnClickListener(new View.OnClickListener() {
+            holder.foldingCell.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(hotelModel.getReferenseUrl()));
-                    startActivity(browserIntent);
+                    holder.foldingCell.toggle(false);
+                    registerToggle(holder.getAdapterPosition());
                 }
             });
 
@@ -214,6 +222,27 @@ public class HotelBookingSitesFragment extends Fragment {
                     .into(holder.imageView);  */
 
 
+            if (unfoldedIndexes.contains(holder.getAdapterPosition())) {
+                holder.foldingCell.unfold(true);
+            } else {
+                holder.foldingCell.fold(true);
+            }
+
+        }
+
+        public void registerToggle(int position) {
+            if (unfoldedIndexes.contains(position))
+                registerFold(position);
+            else
+                registerUnfold(position);
+        }
+
+        public void registerFold(int position) {
+            unfoldedIndexes.remove(position);
+        }
+
+        public void registerUnfold(int position) {
+            unfoldedIndexes.add(position);
         }
 
         @Override

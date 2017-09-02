@@ -32,16 +32,23 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     TextView nav_email, nav_user;
 
+    int prevThemeId = 1;
+
     int prevId = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        prevThemeId = tripmate_theme_id;
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         int should_display = app_preferences.getInt("should_display", 1);
 
         if (should_display == 1) {
@@ -143,11 +150,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         //  getMenuInflater().inflate(R.menu.menu_main_activity, menu);
@@ -161,6 +163,7 @@ public class MainActivity extends AppCompatActivity
 
         SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         String gdrive_backup_account = app_preferences.getString("gdrive_backup_account", "no");
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id", 1);
         // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
 
         if (!gdrive_backup_account.equalsIgnoreCase("no")) {
@@ -170,6 +173,12 @@ public class MainActivity extends AppCompatActivity
             nav_email.setText("");
             nav_user.setText("Trip Mate");
         }
+
+        if(prevThemeId != tripmate_theme_id){
+            finish();
+            startActivity(new Intent(this,MainActivity.class));
+        }
+
     }
 
     @Override

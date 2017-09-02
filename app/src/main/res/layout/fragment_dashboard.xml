@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="#5ce1ae"
+            android:background="?attr/colorPrimary"
             android:id="@+id/headerLL"
             android:orientation="horizontal"
             android:gravity="center">

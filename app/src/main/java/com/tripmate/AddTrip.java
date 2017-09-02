@@ -5,6 +5,8 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,11 +44,17 @@ public class AddTrip extends AppCompatActivity {
     RelativeLayout dateRL;
     ArrayList<PersonModel> tripPersonModels = new ArrayList<>();
 
+
     LinearLayout commaInfoLL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         setContentView(R.layout.activity_add_trip);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,6 +72,7 @@ public class AddTrip extends AppCompatActivity {
         ivDate = (ImageView) findViewById(R.id.ivDate);
         commaInfoLL = (LinearLayout) findViewById(R.id.commaInfoLL);
         dateRL = (RelativeLayout) findViewById(R.id.dateRL);
+
 
         tilTripPlaces.getEditText().addTextChangedListener(new TextWatcher() {
             @Override

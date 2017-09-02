@@ -516,10 +516,6 @@ public class CheckListActivity extends AppCompatActivity {
                 menu.findItem(R.id.action_edit).setVisible(false);
             }
 
-            if(!editOrAdd.equals("edit")){
-                menu.findItem(R.id.action_cancel).setVisible(false);
-            }
-
 
 
 
@@ -540,7 +536,7 @@ public class CheckListActivity extends AppCompatActivity {
                 }
                 return true;
 
-            case R.id.action_cancel :
+            case 1 : //cance;
 
                 if(notesId != null && tripId != null){
                     DataBaseHelper dataBaseHelper = new DataBaseHelper(CheckListActivity.this);

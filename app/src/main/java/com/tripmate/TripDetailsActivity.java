@@ -3,9 +3,11 @@ package com.tripmate;
 import android.app.models.TripModel;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
@@ -60,6 +62,11 @@ public class TripDetailsActivity extends AppCompatActivity implements OnStartDra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         setContentView(R.layout.activity_trip_details);
 
         Intent tripIdIntent = getIntent();

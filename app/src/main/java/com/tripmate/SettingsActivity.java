@@ -24,8 +24,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -46,6 +49,8 @@ import com.google.android.gms.drive.query.Filters;
 import com.google.android.gms.drive.query.Query;
 import com.google.android.gms.drive.query.SearchableField;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.PlusShare;
+import com.squareup.picasso.Picasso;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -76,6 +81,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
     static Activity  act ;
 
+    static boolean isChanged = false;
+
 
     static ProgressDialog pd;
 
@@ -93,10 +100,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
     public static final String PACKAGE_NAME = "com.tripmate";
     public static final String DATABASE_NAME = "TripExpenseManager.db";
 
-    /** Contains: /data/data/com.example.app/databases/example.db **/
-    private static final File DATA_DIRECTORY_DATABASE = new File(Environment.getDataDirectory() +
-                    "/data/" + PACKAGE_NAME +
-                    "/databases/" + DATABASE_NAME );
 
 
 
@@ -104,7 +107,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
+        setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
+
         super.onCreate(savedInstanceState);
+
+
+
         this.setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -247,7 +258,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
     public static class MainPreferenceFragment extends PreferenceFragment {
 
-        static Preference myPref_Backup,myPref_AppIntro,myPref_Feedback,myPref_RateIt,myPref_About,myPref_Help,myPref_Theme;
+        static Preference myPref_Backup,myPref_AppIntro,myPref_Feedback,myPref_RateIt,myPref_About,myPref_Theme;
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -261,8 +272,119 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
             myPref_Feedback = findPreference("pref_send_feedback");
             myPref_RateIt = findPreference("pref_rate_it");
             myPref_About = findPreference("pref_about_tripmate");
-            myPref_Help = findPreference("pref_help");
             myPref_Theme = findPreference("pref_theme");
+
+            myPref_Theme.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    // get prompts.xml view
+                    LayoutInflater li = LayoutInflater.from(getActivity());
+                    View promptsView = li.inflate(R.layout.theme_picker_layout, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                    alertDialogBuilder.setView(promptsView);
+
+
+
+                    ImageView light_violet = (ImageView) promptsView.findViewById(R.id.light_violet);
+                    ImageView dark_violet = (ImageView) promptsView.findViewById(R.id.dark_violet);
+                    ImageView darkest_violet = (ImageView) promptsView.findViewById(R.id.darkest_violet);
+                    ImageView light_red = (ImageView) promptsView.findViewById(R.id.light_red);
+                    ImageView dark_red = (ImageView) promptsView.findViewById(R.id.dark_red);
+                    ImageView darkest_red = (ImageView) promptsView.findViewById(R.id.darkest_red);
+                    ImageView light_blue = (ImageView) promptsView.findViewById(R.id.light_blue);
+                    ImageView dark_blue = (ImageView) promptsView.findViewById(R.id.dark_blue);
+                    ImageView darkest_blue = (ImageView) promptsView.findViewById(R.id.darkest_blue);
+                    ImageView light_playstore = (ImageView) promptsView.findViewById(R.id.light_playstore);
+                    ImageView dark_playstore = (ImageView) promptsView.findViewById(R.id.dark_playstore);
+                    ImageView darkest_playstore = (ImageView) promptsView.findViewById(R.id.darkest_playstore);
+                    ImageView light_green = (ImageView) promptsView.findViewById(R.id.light_green);
+                    ImageView dark_green = (ImageView) promptsView.findViewById(R.id.dark_green);
+                    ImageView darkest_green = (ImageView) promptsView.findViewById(R.id.darkest_green);
+                    ImageView light_pink = (ImageView) promptsView.findViewById(R.id.light_pink);
+                    ImageView dark_pink = (ImageView) promptsView.findViewById(R.id.dark_pink);
+                    ImageView darkest_pink = (ImageView) promptsView.findViewById(R.id.darkest_pink);
+
+                    ArrayList<ImageView> imageViewArrayList = new ArrayList<ImageView>();
+                    imageViewArrayList.add(light_violet);
+                    imageViewArrayList.add(light_red);
+                    imageViewArrayList.add(light_blue);
+                    imageViewArrayList.add(light_playstore);
+                    imageViewArrayList.add(light_green);
+                    imageViewArrayList.add(light_pink);
+
+                    imageViewArrayList.add(dark_violet);
+                    imageViewArrayList.add(dark_red);
+                    imageViewArrayList.add(dark_blue);
+                    imageViewArrayList.add(dark_playstore);
+                    imageViewArrayList.add(dark_green);
+                    imageViewArrayList.add(dark_pink);
+
+                    imageViewArrayList.add(darkest_violet);
+                    imageViewArrayList.add(darkest_red);
+                    imageViewArrayList.add(darkest_blue);
+                    imageViewArrayList.add(darkest_playstore);
+                    imageViewArrayList.add(darkest_green);
+                    imageViewArrayList.add(darkest_pink);
+
+
+                    alertDialogBuilder.setTitle("Select Theme").setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    alertDialogBuilder.setCancelable(true);
+                    final AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
+                    alertDialog.show();
+
+                    View.OnClickListener listener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            isChanged = true;
+                            SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            SharedPreferences.Editor editor = app_preferences.edit();
+                            editor.putInt("tripmate_theme_id", (Integer) v.getTag());
+                            editor.apply();
+                            act.finish();
+                            startActivity(new Intent(act,SettingsActivity.class));
+                            alertDialog.dismiss();
+                        }
+                    };
+
+                    ArrayList<Integer> imageDrawablesList = new ArrayList<Integer>();
+                    imageDrawablesList.add(R.drawable.img1);
+                    imageDrawablesList.add(R.drawable.img2);
+                    imageDrawablesList.add(R.drawable.img3);
+                    imageDrawablesList.add(R.drawable.img4);
+                    imageDrawablesList.add(R.drawable.img5);
+                    imageDrawablesList.add(R.drawable.img6);
+
+                    imageDrawablesList.add(R.drawable.img7);
+                    imageDrawablesList.add(R.drawable.img8);
+                    imageDrawablesList.add(R.drawable.img9);
+                    imageDrawablesList.add(R.drawable.img10);
+                    imageDrawablesList.add(R.drawable.img11);
+                    imageDrawablesList.add(R.drawable.img12);
+
+                    imageDrawablesList.add(R.drawable.img13);
+                    imageDrawablesList.add(R.drawable.img14);
+                    imageDrawablesList.add(R.drawable.img15);
+                    imageDrawablesList.add(R.drawable.img16);
+                    imageDrawablesList.add(R.drawable.img17);
+                    imageDrawablesList.add(R.drawable.img18);
+
+
+                    for(int i = 0;i<imageViewArrayList.size();i++){
+                        imageViewArrayList.get(i).setTag(i+1);
+                        imageViewArrayList.get(i).setOnClickListener(listener);
+                        Picasso.with(getActivity()).load(imageDrawablesList.get(i)).into(imageViewArrayList.get(i));
+                    }
+
+                    return false;
+                }
+            });
 
             myPref_About.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
@@ -449,8 +571,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                     AlertDialog dialog = builder.create();
                     dialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
                     dialog.show();
-
-
                     return false;
                 }
             });
@@ -472,8 +592,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                     return false;
                 }
             });
-
-
         }
 
         public static void connected(String email){
@@ -488,8 +606,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
             SharedPreferences.Editor editor = app_preferences.edit();
             editor.putString("gdrive_last_backup", date);
             editor.apply();
-
-
         }
 
         public static void localBackUpCompleted(String date){
@@ -498,8 +614,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
             SharedPreferences.Editor editor = app_preferences.edit();
             editor.putString("local_last_backup", date);
             editor.apply();
-
-
         }
 
     }
@@ -517,11 +631,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
         int count = getFragmentManager().getBackStackEntryCount();
         if(count ==1){
             finish();
+            super.onBackPressed();
         }else{
             getFragmentManager().popBackStack();
             this.setTitle("Settings");
         }
-
     }
 
     @Override

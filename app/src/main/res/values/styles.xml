@@ -2,37 +2,172 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
-        <!--  <item name="android:actionBarStyle">@style/ActionBar</item> -->
-
-    </style>
-
-    <!-- <style name="ActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:titleTextStyle">@style/ActionBar.Title</item>
-        <item name="android:subtitleTextStyle">@style/ActionBar.Subtitle</item>
-    </style>
-
-    <style name="ActionBar.Title" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="ActionBar.Subtitle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle">
-        <item name="android:textColor">@color/white</item>
-    </style>   -->
-
-    <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/black</item>
     </style>
 
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme2" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary2</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark2</item>
+        <item name="colorAccent">@color/colorAccent2</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme3" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary3</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark3</item>
+        <item name="colorAccent">@color/colorAccent3</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme4" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary4</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark4</item>
+        <item name="colorAccent">@color/colorAccent4</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme5" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary5</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark5</item>
+        <item name="colorAccent">@color/colorAccent5</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme6" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary6</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark6</item>
+        <item name="colorAccent">@color/colorAccent6</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme7" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+
+    </style>
+
+    <style name="AppTheme8" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary2</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark2</item>
+        <item name="colorAccent">@color/colorAccent2</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme9" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary3</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark3</item>
+        <item name="colorAccent">@color/colorAccent3</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme10" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary4</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark4</item>
+        <item name="colorAccent">@color/colorAccent4</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme11" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary5</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark5</item>
+        <item name="colorAccent">@color/colorAccent5</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme12" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/colorPrimary6</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark6</item>
+        <item name="colorAccent">@color/colorAccent6</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme13" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme14" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/colorAccent2</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme15" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/colorAccent3</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme16" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/colorAccent4</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme17" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/colorAccent5</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
+
+    <style name="AppTheme18" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/colorAccent6</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="customTextColor">@color/white</item>
+    </style>
 
     <style name="RadioButton">
         <item name="android:textColor">@drawable/button_text_color</item>

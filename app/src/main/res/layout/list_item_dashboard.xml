@@ -18,8 +18,8 @@
             android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:gravity="center"
-            android:textColor="@color/black"
             android:text="1"
+            android:textColor="?attr/customTextColor"
             android:textSize="18sp" />
 
         <TextView
@@ -27,10 +27,10 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="2dp"
-            android:textColor="@color/black"
             android:layout_weight="2.5"
             android:gravity="center_vertical"
             android:text="Name"
+            android:textColor="?attr/customTextColor"
             android:textSize="18sp" />
 
         <TextView
@@ -38,9 +38,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:textColor="@color/black"
             android:gravity="center"
             android:text="1000.00$"
+            android:textColor="?attr/customTextColor"
             android:textSize="18sp" />
 
         <TextView
@@ -48,11 +48,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:textColor="@color/black"
-            android:textStyle="bold"
             android:gravity="center"
             android:text="+330"
-            android:textSize="18sp" />
+            android:textColor="?attr/customTextColor"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
 
     </LinearLayout>

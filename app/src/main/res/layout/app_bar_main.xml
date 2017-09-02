@@ -26,7 +26,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        app:backgroundTint="@color/colorAccent"
         android:transitionName="@string/activity_image_trans2"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/icon_add"
