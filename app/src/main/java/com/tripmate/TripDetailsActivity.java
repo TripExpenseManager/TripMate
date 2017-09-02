@@ -38,7 +38,7 @@ import java.util.Collections;
 
 public class TripDetailsActivity extends AppCompatActivity implements OnStartDragListener{
 
-    String trip_id,trip_name,trip_date,trip_url,trip_places,trip_desc;
+    String trip_id,trip_name,trip_date,trip_url,trip_places;
     LinearLayout llTripDescription,llPlacesToVisit;
     LinearLayout llShowTripDescription,llShowPlacesToVisit ,llShowItems , llShowOrHide;
     RelativeLayout rlTitleShowItems;
@@ -133,10 +133,7 @@ public class TripDetailsActivity extends AppCompatActivity implements OnStartDra
         DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
         TripModel tripModel = dataBaseHelper.getTripData(trip_id);
 
-        trip_desc  = tripModel.getTrip_desc();
-
         tvDate.setText(trip_date);
-        etDescription.setText(trip_desc);
 
         ivEditDescription.setOnClickListener(new View.OnClickListener() {
             @Override

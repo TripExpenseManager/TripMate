@@ -743,8 +743,9 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         overridePendingTransition(R.anim.activity_open_scale,R.anim.activity_close_translate);
+        super.onBackPressed();
+
     }
 
     @Override

@@ -10,7 +10,6 @@ public class TripModel {
     private String trip_date;
     private Double trip_amount;
     private String trip_places;
-    private String trip_desc;
     private String trip_id;
     private boolean isImageLoaded = false;
     private  String imageUrl = "";
@@ -21,11 +20,10 @@ public class TripModel {
     }
 
 
-    public TripModel(String trip_name,String trip_places, String trip_desc, String trip_date) {
+    public TripModel(String trip_name,String trip_places, String trip_date) {
         this.trip_name = trip_name;
         this.trip_date = trip_date;
         this.trip_places = trip_places;
-        this.trip_desc = trip_desc;
     }
 
     public String getTrip_id() {
@@ -42,14 +40,6 @@ public class TripModel {
 
     public void setTrip_places(String trip_places) {
         this.trip_places = trip_places;
-    }
-
-    public String getTrip_desc() {
-        return trip_desc;
-    }
-
-    public void setTrip_desc(String trip_desc) {
-        this.trip_desc = trip_desc;
     }
 
 

@@ -1,16 +1,30 @@
 package com.tripmate;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,16 +47,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+
 public class TripInfo_AddTrip extends AppCompatActivity {
 
-    NonScrollListView lvPersonDetails,lvPlacesToVisit;
-    TextView tvDesc;
+    RecyclerView rvPersonDetails;
     ArrayList<String> tripPlaces;
     ArrayList<PersonModel> tripPersonModels = new ArrayList<>();
     FloatingActionButton fabAddPerson;
     TripModel trip;
 
-     BaseAdapter personsAdapter = null;
+    PersonsAdapter personsAdapter;
 
 
     @Override
@@ -65,7 +80,6 @@ public class TripInfo_AddTrip extends AppCompatActivity {
         trip = new TripModel();
         trip.setTrip_name(intent.getStringExtra("TripName"));
         trip.setTrip_places(intent.getStringExtra("TripPlaces"));
-        trip.setTrip_desc(intent.getStringExtra("TripDesc"));
         trip.setTrip_date(intent.getStringExtra("TripDate"));
         trip.setTrip_amount(0.0);
         tripPersonModels = getIntent().getParcelableArrayListExtra("PersonsList");
@@ -77,17 +91,15 @@ public class TripInfo_AddTrip extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        lvPersonDetails = (NonScrollListView) findViewById(R.id.lvPersonDetails);
-        lvPlacesToVisit = (NonScrollListView) findViewById(R.id.lvPlacesToVisit);
-        tvDesc = (TextView) findViewById(R.id.tvDesc);
+        rvPersonDetails = (RecyclerView) findViewById(R.id.rvPersonDetails);
         fabAddPerson = (FloatingActionButton) findViewById(R.id.fabAddPerson);
 
         // Persons
-        personsAdapter = new PersonsAdapter(this,tripPersonModels);
-        lvPersonDetails.setAdapter(personsAdapter);
+        rvPersonDetails.setLayoutManager(new LinearLayoutManager(this));
+        personsAdapter = new PersonsAdapter(this);
+        rvPersonDetails.setAdapter(personsAdapter);
 
-        // Desc
-        tvDesc.setText(trip.getTrip_desc());
+
 
         String placesArray[] = trip.getTrip_places().split(",");
         for(int i=0;i<placesArray.length;i++){
@@ -97,8 +109,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
 
         // Places
         tripPlaces = new ArrayList<>(Arrays.asList(placesArray));
-        ArrayAdapter<String> placesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tripPlaces);
-        lvPlacesToVisit.setAdapter(placesAdapter);
+
 
         // Add PersonModel
         fabAddPerson.setOnClickListener(new View.OnClickListener() {
@@ -279,34 +290,95 @@ public class TripInfo_AddTrip extends AppCompatActivity {
     }
 
 
-    public class PersonsAdapter extends BaseAdapter{
-        Context mContext;
-        ArrayList<PersonModel> personModels;
+    class PersonsAdapter extends RecyclerView.Adapter<PersonsAdapter.MyViewHolder> {
 
-        public PersonsAdapter(Context mContext, ArrayList<PersonModel> personModels) {
+
+        Context mContext;
+
+         PersonsAdapter(Context mContext) {
             this.mContext = mContext;
-            this.personModels = personModels;
+         }
+
+        class MyViewHolder extends RecyclerView.ViewHolder {
+
+            TextView tvPersonName,tvPhone,tvDeposit,tvEmail,textViewOptions;
+            ImageView imageView;
+            LinearLayout clickLL,llPhone,llDeposit,llEmail;
+
+            MyViewHolder(View view) {
+                super(view);
+                tvPersonName = (TextView) view.findViewById(R.id.tvPersonName);
+                tvPhone = (TextView) view.findViewById(R.id.tvPhone);
+                tvDeposit = (TextView) view.findViewById(R.id.tvDeposit);
+                tvEmail = (TextView) view.findViewById(R.id.tvEmail);
+                textViewOptions = (TextView) view.findViewById(R.id.textViewOptions);
+                imageView = (ImageView) view.findViewById(R.id.imageView);
+                clickLL = (LinearLayout) view.findViewById(R.id.clickLL);
+                llPhone = (LinearLayout) view.findViewById(R.id.llPhone);
+                llDeposit = (LinearLayout) view.findViewById(R.id.llDeposit);
+                llEmail = (LinearLayout) view.findViewById(R.id.llEmail);
+
+
+            }
         }
 
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-           View customView  = getLayoutInflater().inflate(R.layout.card_person,parent,false);
-            final TextView tvPersonName = (TextView) customView.findViewById(R.id.tvPersonName);
-            ImageView ivLeftImage = (ImageView) customView.findViewById(R.id.ivLeftImage);
-            LinearLayout personLL = (LinearLayout) customView.findViewById(R.id.personLL);
+        public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.list_item_person_add_trip, parent, false);
+
+            return new MyViewHolder(itemView);
+        }
+
+        @TargetApi(Build.VERSION_CODES.N)
+        @Override
+        public void onBindViewHolder(final MyViewHolder holder, int position) {
+            // Loading data to view holders
+            final PersonModel personModel = tripPersonModels.get(holder.getAdapterPosition());
+            if(personModel.getMobile().equalsIgnoreCase("")){
+                holder.llPhone.setVisibility(View.GONE);
+            }else{
+                holder.llPhone.setVisibility(View.VISIBLE);
+                holder.tvPhone.setText(personModel.getMobile());
+            }
+            if(personModel.getEmail().equalsIgnoreCase("")){
+                holder.llEmail.setVisibility(View.GONE);
+            }else{
+                holder.llEmail.setVisibility(View.VISIBLE);
+                holder.tvEmail.setText(personModel.getEmail());
+            }
+            if(personModel.getDeposit()==0.0){
+                holder.llDeposit.setVisibility(View.GONE);
+            }else{
+                holder.llDeposit.setVisibility(View.VISIBLE);
+                holder.tvDeposit.setText(personModel.getDeposit()+"");
+            }
+
+            ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
+            // generate color based on a key (same key returns the same color), useful for list/grid views
+            String personName = personModel.getName();
+            int color = generator.getColor(personName);
+            TextDrawable drawable = TextDrawable.builder().buildRound((personName.charAt(0)+"").toUpperCase(),color);
 
 
+            if(personModel.getAdmin() == 1){
+                holder.tvPersonName.setText(personName + " (Admin)");
+            }else{
+                holder.tvPersonName.setText(personName);
+            }
+
+            holder.imageView.setImageDrawable(drawable);
 
 
-            personLL.setOnClickListener(new View.OnClickListener() {
+            View.OnClickListener adminClickListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    tripPersonModels.get(position).setAdmin(1);
+                    tripPersonModels.get(holder.getAdapterPosition()).setAdmin(1);
 
-                    Snackbar.make(fabAddPerson,tripPersonModels.get(position).getName() + " is set as admin for the trip. He should look after all the money related matters.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(fabAddPerson,tripPersonModels.get(holder.getAdapterPosition()).getName() + " is set as admin for the trip. He should look after all the money related matters.", Snackbar.LENGTH_LONG).show();
 
                     for(int j=0;j<tripPersonModels.size();j++){
-                        if(j!=position){
+                        if(j!=holder.getAdapterPosition()){
                             tripPersonModels.get(j).setAdmin(0);
                         }
                     }
@@ -315,39 +387,138 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                     }
 
                 }
+            };
+
+
+            holder.clickLL.setOnClickListener(adminClickListener);
+            holder.imageView.setOnClickListener(adminClickListener);
+
+
+            //popup menu
+            holder.textViewOptions.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    //creating a popup menu
+                    PopupMenu popup = new PopupMenu(mContext, holder.textViewOptions);
+                    //inflating menu from xml resource
+                    popup.inflate(R.menu.menu_persons_add_trip);
+
+                    MenuItem edit = popup.getMenu().getItem(0);
+                    MenuItem delete = popup.getMenu().getItem(1);
+
+
+                    //adding click listener
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.edit:
+                                    editPerson(personModel,holder.getAdapterPosition());
+                                    break;
+                                case R.id.delete:
+
+                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(mContext);
+
+                                    TextView customTitleTextview = new TextView(mContext);
+                                    customTitleTextview.setTextSize(20);
+                                    customTitleTextview.setText("Are you sure?");
+                                    customTitleTextview.setTextColor(getResources().getColor(R.color.red));
+                                    customTitleTextview.setPadding(10,40,10,10);
+                                    customTitleTextview.setGravity(Gravity.CENTER);
+
+                                    builder1.setCustomTitle(customTitleTextview);
+
+                                    builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            tripPersonModels.remove(holder.getAdapterPosition());
+                                            personsAdapter.notifyItemRemoved(holder.getAdapterPosition());
+
+                                        }
+                                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.dismiss();
+                                        }
+                                    });
+                                    builder1.setMessage("You want to delete "+personModel.getName()+" from Trip?");
+                                    builder1.setCancelable(false);
+                                    AlertDialog dialog1 = builder1.create();
+                                    dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
+                                    dialog1.show();
+
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    popup.show();
+
+                }
             });
 
-            ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT
-            // generate color based on a key (same key returns the same color), useful for list/grid views
-            String personName = personModels.get(position).getName();
-            int color = generator.getColor(personName);
-            TextDrawable drawable = TextDrawable.builder().buildRound((personName.charAt(0)+"").toUpperCase(),color);
-
-
-            if(personModels.get(position).getAdmin() == 1){
-                tvPersonName.setText(personName + " (Admin)");
-            }else{
-                tvPersonName.setText(personName);
-            }
-
-            ivLeftImage.setImageDrawable(drawable);
-            return customView;
-        }
-        @Override
-        public int getCount() {
-            return personModels.size();
         }
 
         @Override
-        public Object getItem(int position) {
-            return personModels.get(position);
+        public int getItemCount() {
+            return tripPersonModels.size();
         }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-
     }
+
+    void editPerson(final PersonModel personModel , final int position){
+
+        final View view = getLayoutInflater().inflate(R.layout.layout_add_person, null);
+        final TextInputLayout tilPersonName, tilPersonDeposit, tilPersonMobile, tilPersonEmail;
+        tilPersonName = (TextInputLayout) view.findViewById(R.id.tilPersonName);
+        tilPersonDeposit = (TextInputLayout) view.findViewById(R.id.tilPersonDeposit);
+        tilPersonMobile = (TextInputLayout) view.findViewById(R.id.tilPersonMobile);
+        tilPersonEmail = (TextInputLayout) view.findViewById(R.id.tilPersonEmail);
+        final AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view).setTitle("Edit Person")
+                .setPositiveButton("OK",null)
+                .setNegativeButton("CANCEL", null)
+                .create();
+        alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
+        alertDialog.show();
+
+
+        tilPersonName.getEditText().setText(personModel.getName());
+        tilPersonDeposit.getEditText().setText(personModel.getDeposit()+"");
+        tilPersonMobile.getEditText().setText(personModel.getMobile());
+        tilPersonEmail.getEditText().setText(personModel.getEmail());
+
+
+
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                PersonModel personModel = new PersonModel();
+
+                String tempName = tilPersonName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilPersonName.getEditText().getText().toString().trim().substring(1);
+
+                if(tempName.equalsIgnoreCase("")){
+                    tilPersonName.setError("Please Enter Name");
+                }else {
+                    personModel.setName(tempName);
+                    if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
+                        personModel.setDeposit(0.0);
+                    }else{
+                        personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                    }
+                    personModel.setMobile(tilPersonMobile.getEditText().getText().toString());
+                    personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
+
+                    tripPersonModels.remove(position);
+                    tripPersonModels.add(position,personModel);
+                    personsAdapter.notifyDataSetChanged();
+                    alertDialog.dismiss();
+                }
+
+            }
+        });
+    }
+
 }
+

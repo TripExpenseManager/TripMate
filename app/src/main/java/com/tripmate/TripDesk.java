@@ -1,5 +1,6 @@
 package com.tripmate;
 
+import android.app.Activity;
 import android.app.models.PersonModel;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,6 +50,7 @@ public class TripDesk extends AppCompatActivity {
 
     FloatingActionButton fab;
     FloatingActionMenu fabMenu;
+    public static int TRIP_DETAILS_ACTIVITY = 1024;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,6 +187,24 @@ public class TripDesk extends AppCompatActivity {
         
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == TRIP_DETAILS_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                trip_date = data.getStringExtra("tripDate");
+                trip_name = data.getStringExtra("tripName");
+                if(getSupportActionBar()!=null){
+                    getSupportActionBar().setTitle(trip_name);
+                    getSupportActionBar().setSubtitle(trip_date);
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+
+            }
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -344,7 +364,7 @@ public class TripDesk extends AppCompatActivity {
         }
         else if(item.getItemId() == R.id.action_trip_details){
             //Showing Trip Details
-            Intent tripDetailsIntent = new Intent(getApplicationContext(),TripDetailsActivity.class);
+            Intent tripDetailsIntent = new Intent(getApplicationContext(),TripDetailsActivityNew.class);
 
             //put Extra
             tripDetailsIntent.putExtra("trip_id",trip_id);
@@ -352,7 +372,7 @@ public class TripDesk extends AppCompatActivity {
             tripDetailsIntent.putExtra("trip_date",trip_date);
             tripDetailsIntent.putExtra("trip_url",trip_url);
 
-            startActivity(tripDetailsIntent);
+            startActivityForResult(tripDetailsIntent,TRIP_DETAILS_ACTIVITY);
 
 
         }

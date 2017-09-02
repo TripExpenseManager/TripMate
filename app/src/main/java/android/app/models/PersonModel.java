@@ -8,9 +8,9 @@ import android.os.Parcelable;
  */
 
 public class PersonModel implements Parcelable {
-    private String name,mobile,email,trip_id;
-    private  Double deposit;
-    private int admin;
+    private String name,mobile="",email="",trip_id;
+    private  Double deposit=0.0;
+    private int admin=0;
 
     public void setTrip_id(String trip_id) {
         this.trip_id = trip_id;

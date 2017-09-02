@@ -37,10 +37,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddTrip"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".TripInfo_AddTrip"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
@@ -79,11 +75,11 @@
             android:name=".CheckListActivityNew"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
-        <activity android:name=".SettingsActivity"
-            android:label="Settings"
+        <activity
+            android:name=".SettingsActivity"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme"
-            />
+            android:label="Settings"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".TripDetailsActivity"
             android:configChanges="orientation|screenSize"
@@ -94,10 +90,10 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".AboutTripMateActivity"
-            android:label="About TripMate"
             android:configChanges="orientation|screenSize"
+            android:label="About TripMate"
             android:theme="@style/AppTheme" />
-
+        <activity android:name=".TripDetailsActivityNew"></activity>
     </application>
 
 </manifest>

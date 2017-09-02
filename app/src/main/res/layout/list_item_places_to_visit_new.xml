@@ -2,16 +2,13 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="0.5dp"
+    android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:background="@color/white"
-    android:layout_margin="5dp">
+    android:padding="3dp">
     <ImageView
         android:id="@+id/ivIconPlace"
-        android:layout_marginRight="5dp"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:padding="5dp"
@@ -27,6 +24,7 @@
         android:layout_weight="1"
         android:padding="5dp"
         android:inputType="text"
+        android:background="@android:color/transparent"
         />
 
     <ImageView

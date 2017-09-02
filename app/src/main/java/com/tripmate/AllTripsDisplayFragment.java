@@ -518,7 +518,7 @@ public class AllTripsDisplayFragment extends Fragment{
             @Override
             public void onClick(View view) {
 
-                Intent intent = new Intent(getActivity(),AddTrip.class);
+                Intent intent = new Intent(getActivity(),AddTripNew.class);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), fab, getString(R.string.activity_image_trans2));
