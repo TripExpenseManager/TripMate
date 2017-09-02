@@ -49,7 +49,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Description"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/customTextColor"
                         android:textSize="14dp"
                         android:textStyle="bold" />
 
@@ -67,11 +67,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textSize="14dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
                         android:text="Category"
-                        />
+                        android:textColor="?attr/customTextColor"
+                        android:textSize="14dp"
+                        android:textStyle="bold" />
 
                     <Spinner
                         android:layout_marginTop="8dp"
@@ -92,7 +91,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Date"
-                            android:textColor="@color/black"
+                            android:textColor="?attr/customTextColor"
                             android:textSize="14dp"
                             android:textStyle="bold" />
 
@@ -115,7 +114,8 @@
                             android:layout_marginBottom="10dp"
                             android:layout_marginLeft="10dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/icon_calendar" />
+                            app:srcCompat="@drawable/icon_calendar"
+                            android:tint="?attr/customTextColor"/>
 
                     </RelativeLayout>
 
@@ -147,16 +147,15 @@
                         />
 
                     <TextView
+                        android:id="@+id/sharingTempTV"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textSize="14dp"
-                        android:id="@+id/sharingTempTV"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        android:textColor="@color/black"
                         android:text="Select persons sharing the expense"
-                        />
+                        android:textColor="?attr/customTextColor"
+                        android:textSize="14dp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
 
 
                     <com.tripmate.MultiSelectionSpinner
@@ -203,11 +202,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:textSize="14dp"
-                            android:textStyle="bold"
-                            android:textColor="@color/black"
                             android:text="Enter amount"
-                            />
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="14dp"
+                            android:textStyle="bold" />
 
                         <EditText
                             android:layout_width="match_parent"
@@ -236,19 +234,18 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
-                                android:textSize="14dp"
                                 android:layout_toLeftOf="@+id/addExpImageView"
-                                android:textStyle="bold"
-                                android:textColor="@color/black"
                                 android:text="Expense by"
-                                />
+                                android:textColor="?attr/customTextColor"
+                                android:textSize="14dp"
+                                android:textStyle="bold" />
 
                             <ImageView
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
-                                android:src="@drawable/icon_add"
+                                app:srcCompat="@drawable/icon_add"
                                 android:id="@+id/addExpImageView"
-                                android:tint="@color/black"
+                                android:tint="?attr/customTextColor"
                                 android:layout_marginRight="8dp"
                                 android:layout_alignParentEnd="true"
                                 android:layout_alignParentRight="true" />

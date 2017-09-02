@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_marginBottom="0.5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        >
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/imageView"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imageView"
+            android:paddingTop="3dp"
+            android:layout_marginRight="25dp"
+            android:paddingLeft="15dp"
+            android:paddingBottom="3dp"
+            android:id="@+id/clickLL"
+            android:layout_toLeftOf="@+id/textViewOptions"
+            android:layout_toRightOf="@+id/imageView"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:id="@+id/tvPersonName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Saikrishna"
+                    android:textColor="?attr/customTextColor"
+                    android:textSize="16dp" />
+
+            </RelativeLayout>
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+
+              <LinearLayout
+                  android:id="@+id/llPhone"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginRight="10dp"
+                  android:layout_marginTop="3dp"
+                  android:gravity="center"
+                  android:orientation="horizontal">
+
+                  <ImageView
+                      android:layout_width="15dp"
+                      android:layout_height="15dp"
+                      android:layout_marginRight="5dp"
+                      app:srcCompat="@drawable/icon_call" />
+
+                  <TextView
+                      android:id="@+id/tvPhone"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center_vertical"
+                      android:ellipsize="end"
+                      android:maxLines="1"
+                      android:text="9533225565" />
+              </LinearLayout>
+
+              <LinearLayout
+                  android:id="@+id/llDeposit"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="3dp"
+                  android:gravity="center"
+                  android:orientation="horizontal">
+
+                  <ImageView
+                      android:layout_width="15dp"
+                      android:layout_height="15dp"
+                      android:layout_marginRight="5dp"
+                      app:srcCompat="@drawable/icon_money" />
+
+                  <TextView
+                      android:id="@+id/tvDeposit"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_gravity="center_vertical"
+                      android:ellipsize="end"
+                      android:maxLines="1"
+                      android:text="vineeth@gmail.com" />
+              </LinearLayout>
+
+
+          </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/llEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginRight="5dp"
+                    app:srcCompat="@drawable/icon_feedback" />
+
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="vineeth@gmail.com" />
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/textViewOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:text="&#8942;"
+            android:layout_marginRight="5dp"
+            android:textColor="?attr/customTextColor"
+            android:textAppearance="?android:textAppearanceLarge"
+            android:layout_alignParentRight="true" />
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

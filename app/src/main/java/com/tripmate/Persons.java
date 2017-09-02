@@ -113,7 +113,6 @@ public class Persons extends Fragment {
 
             TextView title_tv,expend_tv,due_tv,textViewOptions;
             ImageView imageView;
-            CardView stickiesCardView;
             LinearLayout clickLL;
 
             MyViewHolder(View view) {
@@ -123,7 +122,6 @@ public class Persons extends Fragment {
                 due_tv = (TextView) view.findViewById(R.id.amount_due);
                 textViewOptions = (TextView) view.findViewById(R.id.textViewOptions);
                 imageView = (ImageView) view.findViewById(R.id.imageView);
-                stickiesCardView = (CardView) view.findViewById(R.id.stickiesCardView);
                 clickLL = (LinearLayout) view.findViewById(R.id.clickLL);
 
             }
