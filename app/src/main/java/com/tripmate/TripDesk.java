@@ -5,6 +5,7 @@ import android.app.models.PersonModel;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,6 +33,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.github.clans.fab.FloatingActionMenu;
 import com.squareup.picasso.Picasso;
 
@@ -184,6 +187,48 @@ public class TripDesk extends AppCompatActivity {
 
             }
         });
+
+
+
+        TapTargetSequence tapTargetSequence = new TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(fab, "Add Expenses","You can add expenses covered in your trip from here. Better add expenses at the time of expending it, rather than adding them at the end of the trip!").cancelable(false)
+                                .descriptionTextColor(R.color.white)
+                                .titleTextColor(R.color.white)
+                                .transparentTarget(true)
+                                .textTypeface(Typeface.SANS_SERIF)
+                        )
+                .listener(new TapTargetSequence.Listener() {
+                    // This listener will tell us when interesting(tm) events happen in regards
+                    // to the sequence
+                    @Override
+                    public void onSequenceFinish() {
+                        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(TripDesk.this);
+                        SharedPreferences.Editor editor = app_preferences.edit();
+                        editor.putInt("should_display_tripdesk", 0);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(TripDesk.this);
+                        SharedPreferences.Editor editor = app_preferences.edit();
+                        editor.putInt("should_display_tripdesk", 0);
+                        editor.apply();
+                    }
+                });
+        tapTargetSequence.considerOuterCircleCanceled(false);
+
+        SharedPreferences app_preferences1 = PreferenceManager.getDefaultSharedPreferences(this);
+        int should_display_tripdesk = app_preferences1.getInt("should_display_tripdesk",1);
+        if(should_display_tripdesk == 1){
+            tapTargetSequence.start();
+        }
         
     }
 

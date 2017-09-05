@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.ramotion.foldingcell.FoldingCell;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -140,11 +142,12 @@ public class HotelBookingSitesFragment extends Fragment {
 
             HotelsTravelModel model = new HotelsTravelModel();
             model.setName(object.getString("name"));
-            model.setUrl(object.getString("url_display"));
-            model.setDesc(object.getString("description"));
-            model.setReferenseUrl(object.getString("reference_url"));
-            model.setIconUrl1(object.getString("icon_url1"));
-            model.setIconUrl2(object.getString("icon_url2"));
+            model.setUrl_display(object.getString("url_display"));
+            model.setApp_url(object.getString("app_url"));
+            model.setImg_url1(object.getString("img_url1"));
+            model.setImg_url2(object.getString("img_url2"));
+            model.setDescription(object.getString("description"));
+            model.setServices_offered(object.getString("services_offered"));
 
             hotelsModels.add(model);
         }
@@ -174,19 +177,26 @@ public class HotelBookingSitesFragment extends Fragment {
 
         class HotelsViewHolder extends RecyclerView.ViewHolder{
 
-            TextView nameTv,urlTv,descTv;
-            ImageView imageView;
-            CardView hotelsCardView;
+            TextView nameTv,urlTv,servicesOfferedTv,titleBig,servicesOfferedTvBig,descBig,urlDisplayBig,getAppBig;
+            ImageView smallImageView,bigImageView;
             FoldingCell foldingCell;
+            LinearLayout getAppLayout;
 
             HotelsViewHolder(View itemView) {
                 super(itemView);
                 nameTv = (TextView) itemView.findViewById(R.id.nameTv);
                 urlTv = (TextView) itemView.findViewById(R.id.urlTv);
-                descTv = (TextView) itemView.findViewById(R.id.descTv);
-                imageView = (ImageView) itemView.findViewById(R.id.imageView);
-                hotelsCardView = (CardView) itemView.findViewById(R.id.hotelsCardView);
+                servicesOfferedTv = (TextView) itemView.findViewById(R.id.servicesOfferedTv);
+                smallImageView = (ImageView) itemView.findViewById(R.id.smallImageView);
                 foldingCell = (FoldingCell) itemView.findViewById(R.id.folding_cell);
+
+                titleBig = (TextView) itemView.findViewById(R.id.titleBig);
+                bigImageView = (ImageView) itemView.findViewById(R.id.bigImageView);
+                servicesOfferedTvBig = (TextView) itemView.findViewById(R.id.servicesOfferedTvBig);
+                descBig = (TextView) itemView.findViewById(R.id.descBig);
+                urlDisplayBig = (TextView) itemView.findViewById(R.id.urlDisplayBig);
+                getAppBig = (TextView) itemView.findViewById(R.id.getAppBig);
+                getAppLayout = (LinearLayout) itemView.findViewById(R.id.getAppLayout);
 
             }
         }
@@ -203,24 +213,52 @@ public class HotelBookingSitesFragment extends Fragment {
             final HotelsTravelModel hotelModel = hotelsModels.get(position);
 
             holder.nameTv.setText(hotelModel.getName());
-            holder.urlTv.setText(hotelModel.getUrl());
-            holder.descTv.setText(hotelModel.getDesc());
+            holder.urlTv.setText(hotelModel.getUrl_display());
+            holder.servicesOfferedTv.setText(hotelModel.getServices_offered());
 
             holder.foldingCell.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     holder.foldingCell.toggle(false);
                     registerToggle(holder.getAdapterPosition());
                 }
             });
 
-           /* Picasso.with(getActivity())
-                    .load(hotelModel.getIconUrl1())
-                    .placeholder(R.drawable.image_placeholder)   // optional
-                    .error(R.drawable.image_placeholder)      // optional
-                    //  .resize(135, 135)                       // optional
-                    .into(holder.imageView);  */
 
+            Picasso.with(getActivity())
+                    .load(hotelModel.getImg_url1())
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .into(holder.smallImageView);
+
+            Picasso.with(getActivity())
+                    .load(hotelModel.getImg_url2())
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .into(holder.bigImageView);
+
+            holder.titleBig.setText(hotelModel.getName());
+            holder.servicesOfferedTvBig.setText(hotelModel.getServices_offered());
+            holder.descBig.setText(hotelModel.getDescription());
+            holder.urlDisplayBig.setText(hotelModel.getUrl_display());
+            if(hotelModel.getApp_url().equalsIgnoreCase("NULL")){
+                holder.getAppLayout.setVisibility(View.GONE);
+            }else{
+                holder.getAppLayout.setVisibility(View.VISIBLE);
+                holder.getAppLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        final String appPackageName = hotelModel.getApp_url(); // getPackageName() from Context or Activity object
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                        }
+                    }
+                });
+            }
 
             if (unfoldedIndexes.contains(holder.getAdapterPosition())) {
                 holder.foldingCell.unfold(true);
