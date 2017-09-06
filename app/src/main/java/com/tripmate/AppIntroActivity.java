@@ -29,19 +29,12 @@ public class AppIntroActivity extends AppIntro {
 
         // Note here that we DO NOT use setContentView();
 
-        // Add your slide fragments here.
-        // AppIntro will automatically generate the dots indicator and buttons.
-      /*  addSlide(firstFragment);
-        addSlide(secondFragment);
-        addSlide(thirdFragment);
-        addSlide(fourthFragment);*/
-
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest.
-        addSlide(AppIntroFragment.newInstance("Welcome!", "Enjoy the trip without any worries",R.drawable.image_no_trips, getResources().getColor(R.color.green)));
-        addSlide(AppIntroFragment.newInstance("Manage your Trip Expenses", "Get a glimpse of your expenses managed categorically, personally, ",R.drawable.image_no_expenses, getResources().getColor(R.color.colorPrimary)));
-        addSlide(AppIntroFragment.newInstance("Make a note of everything!", "Enjoy the notes and checklist feature for each trip separately",R.drawable.image_no_trips, getResources().getColor(R.color.colorAccent)));
-        addSlide(AppIntroFragment.newInstance("Keep your data safe and secure!", "We provide you backup and restore facility to keep your data safe",R.drawable.image_no_expenses, getResources().getColor(R.color.red)));
+        addSlide(AppIntroFragment.newInstance("Welcome!", "Worried about managing expenses in group travel?\nHere you go!",R.drawable.image_no_trips, getResources().getColor(R.color.intro1)));
+        addSlide(AppIntroFragment.newInstance("Manage your Trip Expenses", "Get a glimpse of \"everyone's\" expenses managed in realtime",R.drawable.intro_img2, getResources().getColor(R.color.intro2)));
+        addSlide(AppIntroFragment.newInstance("Make a note of everything!", "Weak in memory?\nDon't worry, note everything in every trip!",R.drawable.intro_img3, getResources().getColor(R.color.intro3)));
+        addSlide(AppIntroFragment.newInstance("Don't know where to book hotels and travel?", "Don't worry, we will provide you with all the details!",R.drawable.intro_img4, getResources().getColor(R.color.intro4)));
 
         // OPTIONAL METHODS
         // Override bar/separator color.
@@ -73,7 +66,7 @@ public class AppIntroActivity extends AppIntro {
             editor.putInt("should_display", 0);
             editor.apply();
 
-            Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
+            Intent intent = new Intent(AppIntroActivity.this,BackupActivity.class);
             startActivity(intent);
             finish();
         }else{
@@ -91,7 +84,7 @@ public class AppIntroActivity extends AppIntro {
             SharedPreferences.Editor editor = app_preferences.edit();
             editor.putInt("should_display", 0);
             editor.apply();
-            Intent intent = new Intent(AppIntroActivity.this,MainActivity.class);
+            Intent intent = new Intent(AppIntroActivity.this,BackupActivity.class);
             startActivity(intent);
             finish();
         }else{

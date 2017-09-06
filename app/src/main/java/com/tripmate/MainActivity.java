@@ -3,6 +3,7 @@ package com.tripmate;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -21,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 public class MainActivity extends AppCompatActivity
@@ -83,13 +86,56 @@ public class MainActivity extends AppCompatActivity
             //   nav_email.setText(gdrive_backup_account);
         } else {
             nav_email.setText("");
-            nav_user.setText("Trip Mate");
+            nav_user.setText("TripMate");
+        }
+
+
+
+
+        TapTargetSequence tapTargetSequence = new TapTargetSequence(this)
+                .targets(
+                        TapTarget.forView(fab, "Waiting for what?","Create a trip here")
+                                .cancelable(false)
+                                .descriptionTextColor(R.color.white)
+                                .titleTextColor(R.color.white)
+                                .transparentTarget(true)
+                                .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+                      )
+                .listener(new TapTargetSequence.Listener() {
+                    // This listener will tell us when interesting(tm) events happen in regards
+                    // to the sequence
+                    @Override
+                    public void onSequenceFinish() {
+                        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        SharedPreferences.Editor editor = app_preferences.edit();
+                        editor.putInt("should_display_mainactivity", 0);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                        SharedPreferences.Editor editor = app_preferences.edit();
+                        editor.putInt("should_display_mainactivity", 0);
+                        editor.apply();
+                    }
+                });
+        tapTargetSequence.considerOuterCircleCanceled(false);
+
+        SharedPreferences app_preferences1 = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        int should_display_mainactivity = app_preferences1.getInt("should_display_mainactivity",1);
+        if(should_display_mainactivity == 1){
+            tapTargetSequence.start();
         }
 
     }
 
     boolean doubleBackToExitPressedOnce = false;
-
     public void onBackPressed() {
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -171,7 +217,7 @@ public class MainActivity extends AppCompatActivity
             // nav_email.setText(gdrive_backup_account);
         } else {
             nav_email.setText("");
-            nav_user.setText("Trip Mate");
+            nav_user.setText("TripMate");
         }
 
         if(prevThemeId != tripmate_theme_id){
@@ -243,7 +289,7 @@ public class MainActivity extends AppCompatActivity
 
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "Trip mate is an app which manages expenses in your trip and ensures a smooth and hassle free trip for you");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "TripMate is an app which manages expenses in your trip and ensures a smooth and hassle free trip for you");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
 

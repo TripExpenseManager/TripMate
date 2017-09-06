@@ -26,7 +26,7 @@
             <android.support.v7.widget.CardView
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:id="@+id/hotelsCardView1"
                 android:foreground="?android:attr/selectableItemBackground"
                 tools:ignore="UnusedAttribute">
@@ -40,7 +40,8 @@
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="160dp"
-                        android:scaleType="centerCrop"
+                        android:scaleType="fitCenter"
+                        android:id="@+id/bigImageView"
                         android:src="@drawable/image_placeholder"
                         />
 
@@ -60,16 +61,39 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="MakeMyTrip"
+                                android:id="@+id/titleBig"
                                 android:textSize="20sp"
                                 android:textColor="?attr/colorPrimary"
                                 android:textStyle="bold"
                                 />
 
+
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:text="Services offered : "
+                                android:textColor="?attr/customTextColor"
+                                android:layout_marginTop="2dp"
+                                />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/servicesOfferedTvBig"
+                                android:textColor="?attr/customTextColor"
+                                android:text="Services offered will be placed here"
+                                android:layout_marginTop="2dp"
+                                />
+
+
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/descBig"
+                                android:textColor="?attr/colorAccent"
                                 android:text="Description"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="8dp"
                                 />
 
                         </LinearLayout>
@@ -93,6 +117,7 @@
                                 android:layout_height="match_parent"
                                 android:text="www.makemytrip.com"
                                 android:autoLink="web"
+                                android:id="@+id/urlDisplayBig"
                                 android:layout_gravity="center_vertical"
                                 android:gravity="center_vertical"/>
 
@@ -105,6 +130,7 @@
                             android:layout_height="30dp"
                             android:orientation="horizontal"
                             android:layout_marginTop="2dp"
+                            android:id="@+id/getAppLayout"
                             android:gravity="center_vertical"
                             android:layout_gravity="center_vertical">
 
@@ -116,14 +142,13 @@
 
                             <TextView
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:text="Get the App in PlayStore"
-                                android:textColor="@color/colorAccent"
+                                android:textColor="?attr/colorAccent"
+                                android:id="@+id/getAppBig"
                                 android:autoLink="web"
-                                android:layout_gravity="center_vertical"
+                                android:maxLines="1"
                                />
-
-
 
                         </LinearLayout>
 
@@ -167,7 +192,7 @@
                 <ImageView
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:id="@id/imageView"
+                    android:id="@+id/smallImageView"
                     android:scaleType="centerCrop"
                     android:src="@drawable/image_placeholder"
                     />
@@ -175,7 +200,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/imageView"
+                    android:layout_toRightOf="@+id/smallImageView"
                     android:singleLine="true"
                     android:id="@+id/nameTv"
                     android:textSize="18dp"
@@ -189,7 +214,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/imageView"
+                    android:layout_toRightOf="@+id/smallImageView"
                     android:layout_below="@+id/nameTv"
                     android:id="@+id/urlTv"
                     android:singleLine="true"
@@ -201,8 +226,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/imageView"
-                    android:id="@+id/descTv"
+                    android:layout_toRightOf="@+id/smallImageView"
+                    android:id="@+id/servicesOfferedTv"
                     android:ellipsize="end"
                     android:maxLines="3"
                     android:layout_below="@+id/urlTv"

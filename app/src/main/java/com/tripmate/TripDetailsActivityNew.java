@@ -605,7 +605,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
             returnIntent.putExtra("tripName",trip_name);
             setResult(Activity.RESULT_OK,returnIntent);
             finish();
-            overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
+            //overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
             super.onBackPressed();
 
         }else{
@@ -615,7 +615,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
             returnIntent.putExtra("tripName",trip_name);
             setResult(Activity.RESULT_OK,returnIntent);
             finish();
-            overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
+           // overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
             super.onBackPressed();
 
         }

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +26,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.ramotion.foldingcell.FoldingCell;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
@@ -139,11 +142,12 @@ public class TravelBookingSitesFragment extends Fragment {
 
             HotelsTravelModel model = new HotelsTravelModel();
             model.setName(object.getString("name"));
-            model.setUrl(object.getString("url_display"));
-            model.setDesc(object.getString("description"));
-            model.setReferenseUrl(object.getString("reference_url"));
-            model.setIconUrl1(object.getString("icon_url1"));
-            model.setIconUrl2(object.getString("icon_url2"));
+            model.setUrl_display(object.getString("url_display"));
+            model.setApp_url(object.getString("app_url"));
+            model.setImg_url1(object.getString("img_url1"));
+            model.setImg_url2(object.getString("img_url2"));
+            model.setDescription(object.getString("description"));
+            model.setServices_offered(object.getString("services_offered"));
 
             travelModels.add(model);
         }
@@ -165,68 +169,123 @@ public class TravelBookingSitesFragment extends Fragment {
 
     class TravelAdapter extends RecyclerView.Adapter<TravelAdapter.TravelViewHolder>{
 
-        private ArrayList<HotelsTravelModel> travelModels = new ArrayList<>();
+        private ArrayList<HotelsTravelModel> hotelsModels = new ArrayList<>();
+        private HashSet<Integer> unfoldedIndexes = new HashSet<>();
 
-        public TravelAdapter(ArrayList<HotelsTravelModel> travelModels) {
-            this.travelModels = travelModels;
+        TravelAdapter(ArrayList<HotelsTravelModel> hotelsModels) {
+            this.hotelsModels = hotelsModels;
         }
 
 
-        public  class TravelViewHolder extends RecyclerView.ViewHolder{
+        class TravelViewHolder extends RecyclerView.ViewHolder{
 
-            TextView nameTv,urlTv,descTv;
-            ImageView imageView;
-            CardView hotelsCardView;
+            TextView nameTv,urlTv,servicesOfferedTv,titleBig,servicesOfferedTvBig,descBig,urlDisplayBig,getAppBig;
+            ImageView smallImageView,bigImageView;
+            FoldingCell foldingCell;
+            LinearLayout getAppLayout;
 
-            public TravelViewHolder(View itemView) {
+            TravelViewHolder(View itemView) {
                 super(itemView);
                 nameTv = (TextView) itemView.findViewById(R.id.nameTv);
                 urlTv = (TextView) itemView.findViewById(R.id.urlTv);
-                descTv = (TextView) itemView.findViewById(R.id.descTv);
-                imageView = (ImageView) itemView.findViewById(R.id.imageView);
-                hotelsCardView = (CardView) itemView.findViewById(R.id.hotelsCardView);
+                servicesOfferedTv = (TextView) itemView.findViewById(R.id.servicesOfferedTv);
+                smallImageView = (ImageView) itemView.findViewById(R.id.smallImageView);
+                foldingCell = (FoldingCell) itemView.findViewById(R.id.folding_cell);
 
+                titleBig = (TextView) itemView.findViewById(R.id.titleBig);
+                bigImageView = (ImageView) itemView.findViewById(R.id.bigImageView);
+                servicesOfferedTvBig = (TextView) itemView.findViewById(R.id.servicesOfferedTvBig);
+                descBig = (TextView) itemView.findViewById(R.id.descBig);
+                urlDisplayBig = (TextView) itemView.findViewById(R.id.urlDisplayBig);
+                getAppBig = (TextView) itemView.findViewById(R.id.getAppBig);
+                getAppLayout = (LinearLayout) itemView.findViewById(R.id.getAppLayout);
 
             }
         }
 
         @Override
-        public TravelAdapter.TravelViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public TravelViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.hotels_travel_row_view1, parent, false);
             return new TravelViewHolder(itemView);
         }
 
         @Override
-        public void onBindViewHolder(final TravelAdapter.TravelViewHolder holder, int position) {
-            final HotelsTravelModel hotelModel = travelModels.get(position);
+        public void onBindViewHolder(final TravelViewHolder holder, int position) {
+            final HotelsTravelModel hotelModel = hotelsModels.get(position);
 
             holder.nameTv.setText(hotelModel.getName());
-            holder.urlTv.setText(hotelModel.getUrl());
-            holder.descTv.setText(hotelModel.getDesc());
+            holder.urlTv.setText(hotelModel.getUrl_display());
+            holder.servicesOfferedTv.setText(hotelModel.getServices_offered());
 
-            holder.hotelsCardView.setOnClickListener(new View.OnClickListener() {
+            holder.foldingCell.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(hotelModel.getReferenseUrl()));
-                    startActivity(browserIntent);
+                    holder.foldingCell.toggle(false);
+                    registerToggle(holder.getAdapterPosition());
                 }
             });
 
-           /* Picasso.with(getActivity())
-                    .load(hotelModel.getIconUrl1())
-                    .placeholder(R.drawable.image_placeholder)   // optional
-                    .error(R.drawable.image_placeholder)      // optional
-                    //  .resize(135, 135)                       // optional
-                    .into(holder.imageView);  */
 
+            Picasso.with(getActivity())
+                    .load(hotelModel.getImg_url1())
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .into(holder.smallImageView);
 
+            Picasso.with(getActivity())
+                    .load(hotelModel.getImg_url2())
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_placeholder)
+                    .into(holder.bigImageView);
+
+            holder.titleBig.setText(hotelModel.getName());
+            holder.servicesOfferedTvBig.setText(hotelModel.getServices_offered());
+            holder.descBig.setText(hotelModel.getDescription());
+            holder.urlDisplayBig.setText(hotelModel.getUrl_display());
+            if(hotelModel.getApp_url().equalsIgnoreCase("NULL")){
+                holder.getAppLayout.setVisibility(View.GONE);
+            }else{
+                holder.getAppLayout.setVisibility(View.VISIBLE);
+                holder.getAppLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String appPackageName = hotelModel.getApp_url(); // getPackageName() from Context or Activity object
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                        }
+                    }
+                });
+            }
+
+            if (unfoldedIndexes.contains(holder.getAdapterPosition())) {
+                holder.foldingCell.unfold(true);
+            } else {
+                holder.foldingCell.fold(true);
+            }
+
+        }
+
+        public void registerToggle(int position) {
+            if (unfoldedIndexes.contains(position))
+                registerFold(position);
+            else
+                registerUnfold(position);
+        }
+
+        public void registerFold(int position) {
+            unfoldedIndexes.remove(position);
+        }
+
+        public void registerUnfold(int position) {
+            unfoldedIndexes.add(position);
         }
 
         @Override
         public int getItemCount() {
-            return travelModels.size();
+            return hotelsModels.size();
         }
     }
-
 }

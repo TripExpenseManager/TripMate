@@ -26,13 +26,11 @@
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             />
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="com.google.android.voicesearch.SELF_NOTE" />
             </intent-filter>
         </activity>
@@ -93,7 +91,14 @@
             android:configChanges="orientation|screenSize"
             android:label="About TripMate"
             android:theme="@style/AppTheme" />
-        <activity android:name=".TripDetailsActivityNew"></activity>
+        <activity android:name=".TripDetailsActivityNew"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme"
+            />
+        <activity
+            android:name=".BackupActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

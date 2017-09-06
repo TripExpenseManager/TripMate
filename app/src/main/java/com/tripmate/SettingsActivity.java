@@ -97,12 +97,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
     protected static final File IMPORT_FILE =
             new File(DATABASE_DIRECTORY,"TripExpenseManager.db");
 
-    public static final String PACKAGE_NAME = "com.tripmate";
-    public static final String DATABASE_NAME = "TripExpenseManager.db";
-
-
-
-
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
