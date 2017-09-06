@@ -3,7 +3,6 @@ package android.app.models;
 import com.bignerdranch.expandablerecyclerview.model.Parent;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Sai Krishna on 6/24/2017.

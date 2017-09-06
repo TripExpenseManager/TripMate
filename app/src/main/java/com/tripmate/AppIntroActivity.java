@@ -60,7 +60,7 @@ public class AppIntroActivity extends AppIntro {
         super.onSkipPressed(currentFragment);
         // Do something when users tap on Skip button.
 
-        if(!from.equalsIgnoreCase("settings")){
+        if(!from.equalsIgnoreCase("help")){
             SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(AppIntroActivity.this);
             SharedPreferences.Editor editor = app_preferences.edit();
             editor.putInt("should_display", 0);
@@ -79,7 +79,7 @@ public class AppIntroActivity extends AppIntro {
         super.onDonePressed(currentFragment);
         // Do something when users tap on Done button.
 
-        if(!from.equalsIgnoreCase("settings")){
+        if(!from.equalsIgnoreCase("help")){
             SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(AppIntroActivity.this);
             SharedPreferences.Editor editor = app_preferences.edit();
             editor.putInt("should_display", 0);
