@@ -118,5 +118,33 @@ public class DashBoardFragment extends Fragment {
 
 
     }
+
+    public void shareDashBoard(){
+
+        String s="";
+        s+="#  Name       Amount  +/- \n";
+        for(int pos=0; pos<expensePersonArrayList.size();pos++){
+            PersonWiseExpensesSummaryModel model=expensePersonArrayList.get(pos);
+            s+=(pos+1)+"."+model.getName()+"  " + model.getTotalAmountGiven()+"  ";
+            if(model.getTotalAmountRemaining()>=0){
+                s+="+" + model.getTotalAmountRemaining();
+            }else{
+                s+=model.getTotalAmountRemaining()+"";
+            }
+            s+="\n";
+        }
+
+        s+="Note : Here \"Amount \" refers to total amount given (including deposit money given) and +/- refers to" +
+                "total amount due/refund ";
+
+        String shareBody = s;
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sharingIntent,"Share via"));
+
+    }
+
 }
 

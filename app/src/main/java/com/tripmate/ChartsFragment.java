@@ -1,6 +1,7 @@
 package com.tripmate;
 
 import android.app.models.GraphItemModel;
+import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -55,6 +56,9 @@ public class ChartsFragment extends Fragment{
     Double tripTotalAmount;
     String trip_id;
 
+    //
+    TextView tvPercent;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -62,6 +66,14 @@ public class ChartsFragment extends Fragment{
 
         Intent intent = getActivity().getIntent();
         trip_id = intent.getStringExtra("trip_id");
+
+        tvPercent = (TextView) customview.findViewById(R.id.tvPercent);
+        tvPercent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareStats();
+            }
+        });
 
         // Setting up Spinner
         spCategory = (Spinner) customview.findViewById(R.id.spCategory);
@@ -248,4 +260,34 @@ public class ChartsFragment extends Fragment{
     }
 
 
+    public void shareStats(){
+
+        String s="";
+        s+="#  Name       Amount  % \n";
+        for(int pos=0; pos<personGraphItems.size();pos++) {
+            GraphItemModel model = personGraphItems.get(pos);
+            s += (pos + 1) + "." + model.getName() + "  " + model.getAmount() + "  " + model.getPercentage() + "\n";
+        }
+            s+="\n";
+        for(int pos=0; pos<categoryGraphItems.size();pos++) {
+            GraphItemModel model = personGraphItems.get(pos);
+            s += (pos + 1) + "." + model.getName() + "  " + model.getAmount() + "  " + model.getPercentage() + "\n";
+        }
+        s+="\n";
+        for(int pos=0; pos<dateGraphItems.size();pos++) {
+            GraphItemModel model = personGraphItems.get(pos);
+            s += (pos + 1) + "." + model.getName() + "  " + model.getAmount() + "  " + model.getPercentage() + "\n";
+        }
+        s+="\n";
+
+        s+="Note : Here \"Amount \" refers to total amount spent (including deposit money spent)";
+
+        String shareBody = s;
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sharingIntent,"Share via"));
+
+    }
 }
