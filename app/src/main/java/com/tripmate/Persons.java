@@ -8,9 +8,11 @@ import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -41,7 +43,10 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
@@ -218,6 +223,8 @@ public class Persons extends Fragment {
                     TextDrawable drawable = TextDrawable.builder().buildRound(firstLetter, color);
                     user_first_letter.setImageDrawable(drawable);
 
+
+
                     if(model.getAdmin()==1){
                         user_profile_name.setText(model.getName()+" (Admin)");
                         group_details_cardview.setVisibility(View.VISIBLE);
@@ -305,14 +312,34 @@ public class Persons extends Fragment {
                     }
 
                     alertDialogBuilder.setCancelable(true);
-                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    final AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
                     alertDialog.show();
+
+
+                    user_first_letter.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            takeScreenshot(alertDialog.getWindow().getDecorView().getRootView());
+                        }
+                    });
                 }
             };
 
             holder.clickLL.setOnClickListener(listener);
-            holder.imageView.setOnClickListener(listener);
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   /* String shareBody = shareExpenseOfPerson(model);
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(sharingIntent, "Share via")); */
+
+                    // takeScreenshot();
+                }
+            });
 
             //popup menu
             holder.textViewOptions.setOnClickListener(new View.OnClickListener() {
@@ -446,6 +473,63 @@ public class Persons extends Fragment {
         public int getItemCount() {
             return personsList.size();
         }
+    }
+
+
+
+    String shareExpenseOfPerson(PersonWiseExpensesSummaryModel model){
+        String s="";
+        s+=(model.getName()+"\n");
+        s+="Expense Summary : \n";
+        s+=("Deposit Amount Given : \t" + model.getDepositAmountGiven() + "\n");
+        s+=("Deposit Amount Spent : \t" + model.getDepositAmountSpent() + "\n");
+        s+=("Deposit Amount Remaining : \t" + model.getDepositAmountRemaining() + "\n");
+        s+=("Personal Amount Given : \t" + model.getPersonalAmountGiven() + "\n");
+        s+=("Personal Amount Spent : \t" + model.getPersonalAmountSpent() + "\n");
+        s+=("Personal Amount Remaining : \t" + model.getPersonalAmountRemaining() + "\n");
+        s+=("Total Amount Given : \t" + model.getTotalAmountGiven() + "\n");
+        s+=("Total Amount Spent : \t" + model.getTotalAmountSpent() + "\n");
+        s+=("Total Amount Due/Refund : \t" + model.getTotalAmountRemaining() + "\n");
+
+        return s;
+    }
+
+    public void takeScreenshot(View view) {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg";
+
+            // create bitmap screen capture
+            View v1 =  view ;
+
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
+        }
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 
     void makeAdmin(final PersonWiseExpensesSummaryModel model){
