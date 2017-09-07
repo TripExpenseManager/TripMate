@@ -289,7 +289,6 @@ public class ChartsFragment extends Fragment{
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
         startActivity(Intent.createChooser(sharingIntent,"Share via"));
 
-        //fyfyyyygygggugyhhhy
-
+        
     }
 }
