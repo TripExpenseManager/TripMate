@@ -24,6 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:completionThreshold="1"
+                android:imeOptions="actionNext"
                 android:hint="Name"
                 android:inputType="textPersonName"
                 android:maxLines="1" />
@@ -39,6 +40,7 @@
                 android:id="@+id/actvPersonDeposit"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:imeOptions="actionNext"
                 android:completionThreshold="1"
                 android:hint="Deposit(Optional)"
                 android:inputType="numberDecimal"
@@ -56,6 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:completionThreshold="1"
+                android:imeOptions="actionNext"
                 android:hint="Mobile(Optional)"
                 android:inputType="phone"
                 android:maxLines="1" />
@@ -72,6 +75,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:completionThreshold="1"
+                android:imeOptions="actionNext"
                 android:hint="Email(Optional)"
                 android:inputType="textEmailAddress"
                 android:maxLines="1" />

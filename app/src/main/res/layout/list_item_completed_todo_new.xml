@@ -29,7 +29,7 @@
         android:layout_weight="1"
         android:paddingBottom="3dp"
         android:background="@android:color/transparent"
-        android:inputType="text"/>
+        android:inputType="textMultiLine"/>
 
     <ImageView
         android:id="@+id/ivCancelTodo"

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -40,14 +41,16 @@ import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
+
 import android.app.models.PersonModel;
 import android.app.models.TripModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
-
-import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
+import java.util.regex.Pattern;
 
 public class TripInfo_AddTrip extends AppCompatActivity {
 
@@ -215,10 +218,24 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                 });
             }
         });
+
+        if(tripPersonModels.size()==0){
+            TapTargetView.showFor(this,
+                    TapTarget.forView(findViewById(R.id.fabAddPerson), "Add persons", "Click on the plus(+) button to add persons.")
+                            .cancelable(false)
+                            .descriptionTextColor(R.color.white)
+                            .titleTextColor(R.color.white)
+                            .transparentTarget(true)
+                            .textTypeface(Typeface.SANS_SERIF),
+                new TapTargetView.Listener() {
+                    @Override
+                    public void onTargetClick(TapTargetView view) {
+                        super.onTargetClick(view);
+                    }
+                });
+        }
+
     }
-
-
-
 
 
     @Override
@@ -243,6 +260,7 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                         String trip_id = "TRIP"+UUID.randomUUID().toString();
 
                         trip.setTrip_id(trip_id);
+                        trip.setTotal_persons(tripPersonModels.size());
                         DataBaseHelper dataBaseHelper = new DataBaseHelper(getApplicationContext());
                         dataBaseHelper.addTrip(trip);
                         dataBaseHelper.addPersons(trip_id, tripPersonModels);
@@ -252,12 +270,12 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                         Toast.makeText(this, "Trip created successfully", Toast.LENGTH_SHORT).show();
                         finish();
                     }else{
-                        Snackbar.make(fabAddPerson, "Please select a person as admin", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(fabAddPerson, "Please select a person as admin (by clicking on the name of the person)", Snackbar.LENGTH_LONG).show();
                     }
 
                     return true;
                 }else{
-                    Snackbar.make(fabAddPerson, "Please icon_add atleast one person.", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(fabAddPerson, "Please add atleast one person.", Snackbar.LENGTH_LONG).show();
                     return true;
                 }
 
@@ -374,8 +392,12 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     tripPersonModels.get(holder.getAdapterPosition()).setAdmin(1);
+                    String adminName=tripPersonModels.get(holder.getAdapterPosition()).getName();
 
-                    Snackbar.make(fabAddPerson,tripPersonModels.get(holder.getAdapterPosition()).getName() + " is set as admin for the trip. He should look after all the money related matters.", Snackbar.LENGTH_LONG).show();
+                    if(adminName.length()>20){
+                        adminName = adminName.substring(0,17)+"...";
+                    }
+                    Snackbar.make(fabAddPerson,adminName+ " is set as admin for the trip. He should look after all the money related matters.", Snackbar.LENGTH_LONG).show();
 
                     for(int j=0;j<tripPersonModels.size();j++){
                         if(j!=holder.getAdapterPosition()){
@@ -497,18 +519,24 @@ public class TripInfo_AddTrip extends AppCompatActivity {
                 PersonModel personModel = new PersonModel();
 
                 String tempName = tilPersonName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilPersonName.getEditText().getText().toString().trim().substring(1);
+                String tempMobile = tilPersonMobile.getEditText().getText().toString();
+                String tempEmail = tilPersonEmail.getEditText().getText().toString();
 
                 if(tempName.equalsIgnoreCase("")){
                     tilPersonName.setError("Please Enter Name");
-                }else {
+                }else if(!tempMobile.equalsIgnoreCase("")  && !isValidMobile(tempMobile)){
+                    tilPersonMobile.setError("Please Enter a valid Mobile no.");
+                }else if(!tempEmail.equalsIgnoreCase("")  && !isValidEmailAddress(tempEmail)){
+                    tilPersonEmail.setError("Please Enter a valid email address");
+                }else{
                     personModel.setName(tempName);
                     if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
                         personModel.setDeposit(0.0);
                     }else{
                         personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
                     }
-                    personModel.setMobile(tilPersonMobile.getEditText().getText().toString());
-                    personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
+                    personModel.setMobile(tempMobile);
+                    personModel.setEmail(tempEmail);
 
                     tripPersonModels.remove(position);
                     tripPersonModels.add(position,personModel);
@@ -519,6 +547,24 @@ public class TripInfo_AddTrip extends AppCompatActivity {
             }
         });
     }
+
+
+    public boolean isValidEmailAddress(String email) {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
+    public boolean isValidMobile(String phone) {
+
+        boolean check;
+        check = !Pattern.matches("[a-zA-Z]+", phone) && !(phone.length() < 6 || phone.length() > 13);
+        return check;
+
+    }
+
+
 
 }
 

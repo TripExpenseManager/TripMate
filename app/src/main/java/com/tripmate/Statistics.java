@@ -1,6 +1,7 @@
 package com.tripmate;
 
 
+import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -149,6 +150,11 @@ public class Statistics extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.action_share){
+            shareDashBoard();
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -196,6 +202,39 @@ public class Statistics extends Fragment {
             return mFragmentTitleList.get(position);
         }
     }
+
+    public void shareDashBoard(){
+
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        ArrayList<PersonWiseExpensesSummaryModel> expensePersonArrayList
+                = dataBaseHelper.getPersonWiseExpensesSummaryForDashboard(trip_id);
+
+        String s="";
+        s+="S.No) Name\nAmt. given | Amt. spent | Amt. +/-\n\n";
+        for(int pos=0; pos<expensePersonArrayList.size();pos++){
+            PersonWiseExpensesSummaryModel model=expensePersonArrayList.get(pos);
+            s+=(pos+1)+". "+model.getName()+"\n";
+            s+=model.getTotalAmountGiven()+"    "+model.getTotalAmountSpent()+"    ";
+            if(model.getTotalAmountRemaining()>=0){
+                s+="+" + model.getTotalAmountRemaining();
+            }else{
+                s+=model.getTotalAmountRemaining()+"";
+            }
+            s+="\n\n";
+        }
+
+        s+="\nNote : Here \"Amount \" refers to total amount given (including deposit money given) and +/- refers to " +
+                "total amount due/refund ";
+
+        String shareBody = s;
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sharingIntent,"Share via"));
+
+    }
+
 
 }
 

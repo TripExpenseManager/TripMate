@@ -82,46 +82,9 @@ public class AllTripsDisplayFragment extends Fragment{
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_trips_display, container, false);
 
-        ((MainActivity) getActivity()).getSupportActionBar().setTitle("Trip Mate");
+        ((MainActivity) getActivity()).getSupportActionBar().setTitle("TripMate");
         
         setHasOptionsMenu(true);
-
-
-
-        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        int should_display1 = app_preferences.getInt("should_display1",1);
-
-     /*   if(should_display1 == 1){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                TapTargetView.showFor(getActivity(),                 // `this` is an Activity
-                        TapTarget.forView(getActivity().findViewById(R.id.addTripFab), "This is a target", "We have the best targets, believe me")
-                                // All options below are optional
-                                .outerCircleColor(R.color.red)      // Specify a color for the outer circle
-                                .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
-                                .targetCircleColor(R.color.white)   // Specify a color for the target circle
-                                .titleTextSize(20)                  // Specify the size (in sp) of the title text
-                                .titleTextColor(R.color.white)      // Specify the color of the title text
-                                .descriptionTextSize(10)            // Specify the size (in sp) of the description text
-                                .descriptionTextColor(R.color.red)  // Specify the color of the description text
-                                .textColor(R.color.colorPrimary)            // Specify a color for both the title and description text
-                                .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
-                                .drawShadow(true)                   // Whether to draw a drop shadow or not
-                                .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
-                                .tintTarget(true)                   // Whether to tint the target view's color
-                                .transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
-                                .icon(getActivity().getDrawable(R.drawable.icon_notes))                     // Specify a custom drawable to draw as the target
-                                .targetRadius(60),                  // Specify the target radius (in dp)
-                        new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
-                            @Override
-                            public void onTargetClick(TapTargetView view) {
-                                super.onTargetClick(view);      // This call is optional
-                            }
-                        });
-            }
-        }
-
-*/
 
         no_trips_RL = (RelativeLayout) view.findViewById(R.id.no_trips_RL);
         no_trips_found_searched_RL = (RelativeLayout) view.findViewById(R.id.no_trips_found_searched_RL);
@@ -839,8 +802,6 @@ public class AllTripsDisplayFragment extends Fragment{
         return super.onOptionsItemSelected(item);
     }
 
-
-
     @Override
     public void onResume() {
 
@@ -934,7 +895,7 @@ public class AllTripsDisplayFragment extends Fragment{
             TextView trip_name_tv = (TextView) v.findViewById(R.id.trip_name_tv);
             TextView trip_date_tv = (TextView) v.findViewById(R.id.trip_date_tv);
             TextView trip_amount_tv = (TextView) v.findViewById(R.id.trip_amount_tv);
-
+            TextView total_persons = (TextView) v.findViewById(R.id.total_persons);
 
             ImageView trip_image_view = (ImageView) v.findViewById(R.id.trip_image_view);
 
@@ -957,6 +918,7 @@ public class AllTripsDisplayFragment extends Fragment{
             trip_name_tv.setText(model.getTrip_name());
             trip_date_tv.setText(model.getTrip_date());
             trip_amount_tv.setText(model.getTrip_amount()+"");
+            total_persons.setText(Integer.toString(model.getTotal_persons()));
 
             return v;
         }

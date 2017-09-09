@@ -67,8 +67,7 @@ public class TravelBookingSitesFragment extends Fragment {
 
         pd = new ProgressDialog(getActivity());
         pd.setMessage("Please wait...");
-        pd.setCancelable(true);
-        pd.setCanceledOnTouchOutside(false);
+        pd.setCancelable(false);
 
 
         mWaveSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipetorefresh);

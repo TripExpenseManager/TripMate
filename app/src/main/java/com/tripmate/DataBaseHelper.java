@@ -41,6 +41,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String TRIPS_COLUMN_TRIP_PLACES = "key_trip_places";
     private static final String TRIPS_COLUMN_TRIP_TOTAL_AMOUNT = "key_trip_total_amt";
     private static final String TRIPS_COLUMN_IMAGE_URL = "key_trip_image_url";
+    private static final String TRIPS_COLUMN_TOTAL_PERSONS = "key_trip_total_persons";
 
 
     private static final String ITEMS_TABLE_NAME = "items";
@@ -84,7 +85,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String CREATE_TRIPS_TABLE = "CREATE TABLE " + TRIPS_TABLE_NAME + " ( "+ TRIPS_COLUMN_ID + " TEXT PRIMARY KEY, " + TRIPS_COLUMN_TRIP_NAME + " TEXT, "+ TRIPS_COLUMN_TRIP_DATE+" TEXT, "+TRIPS_COLUMN_TRIP_PLACES+" TEXT, "+TRIPS_COLUMN_TRIP_TOTAL_AMOUNT+" REAL , "+ TRIPS_COLUMN_IMAGE_URL +" TEXT )";
+        String CREATE_TRIPS_TABLE = "CREATE TABLE " + TRIPS_TABLE_NAME + " ( "+ TRIPS_COLUMN_ID + " TEXT PRIMARY KEY, " + TRIPS_COLUMN_TRIP_NAME + " TEXT, "+ TRIPS_COLUMN_TRIP_DATE+" TEXT, "+TRIPS_COLUMN_TRIP_PLACES+" TEXT, "+TRIPS_COLUMN_TRIP_TOTAL_AMOUNT+" REAL , "+ TRIPS_COLUMN_IMAGE_URL +" TEXT , "+TRIPS_COLUMN_TOTAL_PERSONS+" INTEGER )";
         String CREATE_ITEMS_TABLE = "CREATE TABLE " + ITEMS_TABLE_NAME + "("+ ITEMS_COLUMN_ITEM_ID + " TEXT PRIMARY KEY," + ITEMS_COLUMN_TRIP_ID + " TEXT,"+ ITEMS_COLUMN_ITEM_NAME + " TEXT, "+ITEMS_COLUMN_AMOUNT_TYPE+" INTEGER, "+ ITEMS_COLUMN_ITEM_AMOUNT+ " REAL, "+ITEMS_COLUMN_ITEM_EXP_BY+" TEXT, "+ITEMS_COLUMN_ITEM_CAT+" TEXT, "+ITEMS_COLUMN_ITEM_DATE+" TEXT, "+ITEMS_COLUMN_ITEM_SHARE_BY+" TEXT, "+ITEMS_COLUMN_ITEM_DATE_VALUE+" TEXT )";
         String CREATE_PERSONS_TABLE = "CREATE TABLE " + PERSONS_TABLE_NAME + "("+ PERSONS_COLUMN_TRIP_ID + " TEXT," + PERSONS_COLUMN_PERSON_NAME + " TEXT,"+ PERSONS_COLUMN_PERSON_MOBILE + " TEXT, "+PERSONS_COLUMN_PERSON_EMAIL+" TEXT,"+ PERSONS_COLUMN_PERSON_DEPOSIT+" REAL, "+PERSONS_COLUMN_PERSON_ADMIN+" INTEGER )";
         String CREATE_NOTES_TABLE = "CREATE TABLE " + NOTES_TABLE_NAME + "("+ NOTES_COLUMN_NOTE_ID + " TEXT PRIMARY KEY," + NOTES_COLUMN_TRIP_ID + " TEXT,"+ NOTES_COLUMN_NOTE_TITLE + " TEXT, " +NOTES_COLUMN_NOTE_CONTENT_TYPE+" INTEGER, "+NOTES_COLUMN_NOTE_CONTENT+" TEXT, "+ NOTES_COLUMN_NOTE_CONTENT_STATUS + " TEXT, "+NOTES_COLUMN_NOTE_DATE+" TEXT)";
@@ -141,6 +142,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
     }
+
     void updateTripDate(String trip_id,String tripDate){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -148,7 +150,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
     }
-
 
 
     boolean addTrip(TripModel trip){
@@ -161,8 +162,59 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(TRIPS_COLUMN_TRIP_DATE,trip.getTrip_date());
         values.put(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT,trip.getTrip_amount());
         values.put(TRIPS_COLUMN_IMAGE_URL,trip.getImageUrl());
+        values.put(TRIPS_COLUMN_TOTAL_PERSONS,trip.getTotal_persons());
 
         db.insert(TRIPS_TABLE_NAME,null,values);
+        return true;
+    }
+
+    boolean addPersonInMiddle(PersonModel model){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PERSONS_COLUMN_TRIP_ID,model.getTrip_id());
+        values.put(PERSONS_COLUMN_PERSON_NAME, model.getName());
+        values.put(PERSONS_COLUMN_PERSON_MOBILE, model.getMobile());
+        values.put(PERSONS_COLUMN_PERSON_EMAIL, model.getEmail());
+        values.put(PERSONS_COLUMN_PERSON_DEPOSIT, model.getDeposit());
+        values.put(PERSONS_COLUMN_PERSON_ADMIN, model.getAdmin());
+        db.insert(PERSONS_TABLE_NAME,null,values);
+
+
+        Cursor cursor = db.query(TRIPS_TABLE_NAME,new String[]{TRIPS_COLUMN_TOTAL_PERSONS},TRIPS_COLUMN_ID+"=?",new String[]{model.getTrip_id()},null,null,null);
+        int no_of_persons =0;
+        if(cursor.moveToFirst()){
+            no_of_persons = cursor.getInt(cursor.getColumnIndex(TRIPS_COLUMN_TOTAL_PERSONS));
+        }
+        cursor.close();
+
+        ContentValues valuesPersons = new ContentValues();
+        valuesPersons.put(TRIPS_COLUMN_TOTAL_PERSONS,(no_of_persons+1));
+
+        db.update(TRIPS_TABLE_NAME,valuesPersons,TRIPS_COLUMN_ID+ "=? ", new String[]{model.getTrip_id()});
+
+        return true;
+    }
+
+    boolean removePerson(PersonWiseExpensesSummaryModel model, String trip_id){
+
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.delete(PERSONS_TABLE_NAME, PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+ model.getName()+"\"" , null);
+
+        Cursor cursor = db.query(TRIPS_TABLE_NAME,new String[]{TRIPS_COLUMN_TOTAL_PERSONS},TRIPS_COLUMN_ID+"=?",new String[]{trip_id},null,null,null);
+        int no_of_persons =0;
+        if(cursor.moveToFirst()){
+            no_of_persons = cursor.getInt(cursor.getColumnIndex(TRIPS_COLUMN_TOTAL_PERSONS));
+        }
+        cursor.close();
+
+        ContentValues valuesPersons = new ContentValues();
+        valuesPersons.put(TRIPS_COLUMN_TOTAL_PERSONS,(no_of_persons-1));
+
+        db.update(TRIPS_TABLE_NAME,valuesPersons,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
+
         return true;
     }
 
@@ -171,7 +223,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor = db.query(CATEGORIES_TABLE_NAME,null,null,null,null,null,null);
         String[] catList = new String[cursor.getCount()];
-        if(cursor!=null && cursor.moveToFirst()){
+        if(cursor.moveToFirst()){
             int i=0;
             do{
                 catList[i] = cursor.getString(cursor.getColumnIndex(CATEGORIES_COLUMN_CAT_NAME));
@@ -212,7 +264,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<PersonModel> getPersons(String trip_id){
+    private ArrayList<PersonModel> getPersons(String trip_id){
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<PersonModel> personsList = new ArrayList<>();
 
@@ -237,18 +289,14 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
-    public void addToTotalAmount(String trip_id,Double amount){
+    private void addToTotalAmount(String trip_id, Double amount){
         SQLiteDatabase db = getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(TRIPS_COLUMN_TRIP_TOTAL_AMOUNT,amount);
-
         db.update(TRIPS_TABLE_NAME,values,TRIPS_COLUMN_ID+ "=? ", new String[]{trip_id});
-
-
     }
 
-    public ArrayList<PersonModel> getAllPersons(){
+    ArrayList<PersonModel> getAllPersons(){
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<PersonModel> personsList = new ArrayList<>();
 
@@ -273,7 +321,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  personsList;
     }
 
-    public boolean addExpense(String trip_id,String description,String category,String date,String expShareByPersonsSelected,int amount_type,ArrayList<AddExpenseByPersonModel> expenseByPersonList,Double fromDepositExpense,Long date_value){
+    boolean addExpense(String trip_id, String description, String category, String date, String expShareByPersonsSelected, int amount_type, ArrayList<AddExpenseByPersonModel> expenseByPersonList, Double fromDepositExpense, Long date_value){
         SQLiteDatabase db = getWritableDatabase();
 
         if(amount_type == 1){
@@ -322,7 +370,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public ArrayList<TripModel> getTripsData() {
+    ArrayList<TripModel> getTripsData() {
         ArrayList<TripModel> trip_array_list = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -337,6 +385,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 model.setTrip_id(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID)));
                 model.setTrip_places(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_PLACES)));
                 model.setImageUrl(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_IMAGE_URL)));
+                model.setTotal_persons(cursor.getInt(cursor.getColumnIndex(TRIPS_COLUMN_TOTAL_PERSONS)));
 
                 trip_array_list.add(model);
             } while (cursor.moveToNext());
@@ -346,8 +395,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return trip_array_list;
     }
 
-    public TripModel getTripData(String trip_id) {
-        ArrayList<TripModel> trip_array_list = new ArrayList<>();
+    TripModel getTripData(String trip_id) {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TRIPS_TABLE_NAME,null,ITEMS_COLUMN_TRIP_ID + "=?",new String[]{trip_id},null,null,null);
@@ -361,13 +409,13 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 model.setTrip_id(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_ID)));
                 model.setTrip_places(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_TRIP_PLACES)));
                 model.setImageUrl(cursor.getString(cursor.getColumnIndex(TRIPS_COLUMN_IMAGE_URL)));
+                model.setTotal_persons(cursor.getInt(cursor.getColumnIndex(TRIPS_COLUMN_TOTAL_PERSONS)));
             } while (cursor.moveToNext());
         }
 
         cursor.close();
         return model;
     }
-
 
 
     public String[] getTripNamesAsStringArray() {
@@ -389,7 +437,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return trip_name_array;
     }
 
-    public ArrayList<ExpenseModel> getAllExpenses(String trip_id){
+    private ArrayList<ExpenseModel> getAllExpenses(String trip_id){
         ArrayList<ExpenseModel> expenseModelArrayList = new ArrayList<>();
         SQLiteDatabase db= getReadableDatabase();
 
@@ -405,7 +453,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 expenseModel.setExpBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_EXP_BY)));
                 expenseModel.setCategory(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_CAT)));
                 expenseModel.setDate(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE)));
-                //expenseModel.setShareByType(cursor.getInt(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE)));
                 expenseModel.setShareBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY)));
                 expenseModel.setItemId(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_ID)));
                 expenseModel.setDateValue(cursor.getLong(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE_VALUE)));
@@ -423,7 +470,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummary(String trip_id){
+    private ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummary(String trip_id){
         SQLiteDatabase db = getReadableDatabase();
 
         ArrayList<PersonWiseExpensesSummaryModel> result = new ArrayList<>();
@@ -437,7 +484,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         String personsListAsString[] = new String[cursor.getCount()];
         int p=0;
 
-        if(cursor!=null && cursor.moveToFirst()){
+        if(cursor.moveToFirst()){
             do{
                 PersonWiseExpensesSummaryModel model = new PersonWiseExpensesSummaryModel();
                 model.setName(cursor.getString(cursor.getColumnIndex(PERSONS_COLUMN_PERSON_NAME)));
@@ -545,7 +592,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  result;
     }
 
-    public ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummaryForDashboard(String trip_id){
+    ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummaryForDashboard(String trip_id){
 
         ArrayList<PersonWiseExpensesSummaryModel> result = getPersonWiseExpensesSummary(trip_id);
 
@@ -560,7 +607,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  result;
     }
 
-    public ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummaryForPersonsFragment(String trip_id){
+    ArrayList<PersonWiseExpensesSummaryModel> getPersonWiseExpensesSummaryForPersonsFragment(String trip_id){
 
         ArrayList<PersonWiseExpensesSummaryModel> result = getPersonWiseExpensesSummary(trip_id);
 
@@ -602,7 +649,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  result;
     }
 
-    public ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphPersons(String trip_id){
+    ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphPersons(String trip_id){
 
         ArrayList<PersonWiseExpensesSummaryModel> list = getPersonWiseExpensesSummary(trip_id);
         ArrayList<GraphItemModel> result = new ArrayList<>();
@@ -638,7 +685,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  result;
     }
 
-    public ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphCategory(String trip_id){
+    ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphCategory(String trip_id){
 
         ArrayList<GraphItemModel> result = new ArrayList<>();
         ArrayList<ExpenseModel> list = getAllExpenses(trip_id);
@@ -680,7 +727,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  result;
     }
 
-    public ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphDate(String trip_id){
+    ArrayList<GraphItemModel> getPersonWiseExpensesSummaryForGraphDate(String trip_id){
 
         ArrayList<GraphItemModel> result = new ArrayList<>();
         ArrayList<ExpenseModel> list = getAllExpenses(trip_id);
@@ -722,7 +769,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  result;
     }
 
-    public Double getTotalExpensesAmount(String trip_id){
+    Double getTotalExpensesAmount(String trip_id){
 
         ArrayList<ExpenseModel> list = getAllExpenses(trip_id);
 
@@ -735,7 +782,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return  total_expenses;
     }
 
-    public void editPerson(String trip_id,PersonModel model){
+    void editPerson(String trip_id, PersonModel model){
         SQLiteDatabase db = getReadableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -746,7 +793,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.update(PERSONS_TABLE_NAME, cv,PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+model.getName()+"\"", null);
     }
 
-    public void addAsAdmin(String trip_id,String name,String pastAdmin){
+    void addAsAdmin(String trip_id, String name, String pastAdmin){
         SQLiteDatabase db = getReadableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -760,11 +807,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public Double RoundOff(Double d){
+    private Double RoundOff(Double d){
         return Math.round(d * 100.0) / 100.0;
     }
 
-    public ArrayList<ParentExpenseItemModel> getAllExpensesToDisplay(String trip_id){
+    ArrayList<ParentExpenseItemModel> getAllExpensesToDisplay(String trip_id){
         ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
 
         ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
@@ -851,7 +898,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public ArrayList<ParentExpenseItemModel> getExpensesPersonWiseToDisplay(String trip_id){
+    ArrayList<ParentExpenseItemModel> getExpensesPersonWiseToDisplay(String trip_id){
         ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
 
         ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
@@ -939,7 +986,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public ArrayList<ParentExpenseItemModel> getExpensesDateWiseToDisplay(String trip_id){
+    ArrayList<ParentExpenseItemModel> getExpensesDateWiseToDisplay(String trip_id){
         ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
 
         ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
@@ -1034,7 +1081,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public ArrayList<ParentExpenseItemModel> getExpensesCategoryWiseToDisplay(String trip_id){
+    ArrayList<ParentExpenseItemModel> getExpensesCategoryWiseToDisplay(String trip_id){
         ArrayList<ParentExpenseItemModel> result = new ArrayList<>();
 
         ArrayList<ExpenseModel> allExpList = getAllExpenses(trip_id);
@@ -1124,7 +1171,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public boolean deleteExpenseItem(ExpenseModel item){
+    boolean deleteExpenseItem(ExpenseModel item){
         SQLiteDatabase db = getWritableDatabase();
 
         db.delete(ITEMS_TABLE_NAME, ITEMS_COLUMN_TRIP_ID + " = \"" + item.getTripId()+"\" AND "+ITEMS_COLUMN_ITEM_ID+" = \""+ item.getItemId()+"\"" , null);
@@ -1132,7 +1179,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean isTripExists(String trip_id){
+    boolean isTripExists(String trip_id){
 
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TRIPS_TABLE_NAME,null,TRIPS_COLUMN_ID+"=?",new String[]{trip_id},
@@ -1148,23 +1195,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean addPersonInMiddle(PersonModel model){
-
-        SQLiteDatabase db = getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(PERSONS_COLUMN_TRIP_ID,model.getTrip_id());
-        values.put(PERSONS_COLUMN_PERSON_NAME, model.getName());
-        values.put(PERSONS_COLUMN_PERSON_MOBILE, model.getMobile());
-        values.put(PERSONS_COLUMN_PERSON_EMAIL, model.getEmail());
-        values.put(PERSONS_COLUMN_PERSON_DEPOSIT, model.getDeposit());
-        values.put(PERSONS_COLUMN_PERSON_ADMIN, model.getAdmin());
-        db.insert(PERSONS_TABLE_NAME,null,values);
-
-        return true;
-    }
-
-    public  Double getDepositMoneyRemaining(String trip_id){
+    Double getDepositMoneyRemaining(String trip_id){
 
         Double result = 0.0,total_deposit_money = 0.0;
 
@@ -1184,13 +1215,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return (total_deposit_money - result);
     }
 
-    public boolean removePerson(PersonWiseExpensesSummaryModel model,String trip_id){
-
-        SQLiteDatabase db = getWritableDatabase();
-        return db.delete(PERSONS_TABLE_NAME, PERSONS_COLUMN_TRIP_ID + " = \"" + trip_id+"\" AND "+PERSONS_COLUMN_PERSON_NAME+" = \""+ model.getName()+"\"" , null) > 0;
-    }
-
-    public boolean deleteTrip(String trip_id){
+    boolean deleteTrip(String trip_id){
 
         SQLiteDatabase db = getWritableDatabase();
 
@@ -1202,7 +1227,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean editExpense(String trip_id,String description,String category,String date,String expShareByPersonsSelected,int amount_type,ArrayList<AddExpenseByPersonModel> expenseByPersonList,Double fromDepositExpense,Long date_value,String item_id){
+    boolean editExpense(String trip_id, String description, String category, String date, String expShareByPersonsSelected, int amount_type, ArrayList<AddExpenseByPersonModel> expenseByPersonList, Double fromDepositExpense, Long date_value, String item_id){
         SQLiteDatabase db = getWritableDatabase();
 
         if(amount_type == 1){
@@ -1240,7 +1265,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public void addNotes(NotesModel notesModel){
+    void addNotes(NotesModel notesModel){
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -1257,7 +1282,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void updateNotes(NotesModel notesModel){
+    void updateNotes(NotesModel notesModel){
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -1272,7 +1297,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         db.update(NOTES_TABLE_NAME,values,NOTES_COLUMN_TRIP_ID+ "=? AND " + NOTES_COLUMN_NOTE_ID + "=?", new String[]{notesModel.getNote_TripId(),notesModel.getNote_Id()});
     }
 
-    public NotesModel getNotes(String tripId, String notesId){
+    NotesModel getNotes(String tripId, String notesId){
 
         SQLiteDatabase db = getReadableDatabase();
         NotesModel notesModel = null;
@@ -1298,7 +1323,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<NotesModel> getNotes(String trip_id){
+    ArrayList<NotesModel> getNotes(String trip_id){
 
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<NotesModel> notesList = new ArrayList<>();

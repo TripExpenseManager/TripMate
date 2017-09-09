@@ -56,15 +56,17 @@
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:orientation="horizontal">
+              android:orientation="horizontal"
+              android:weightSum="2">
 
               <LinearLayout
                   android:id="@+id/llPhone"
-                  android:layout_width="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center_vertical"
+                  android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:layout_marginRight="10dp"
                   android:layout_marginTop="3dp"
-                  android:gravity="center"
                   android:orientation="horizontal">
 
                   <ImageView
@@ -85,17 +87,18 @@
 
               <LinearLayout
                   android:id="@+id/llDeposit"
-                  android:layout_width="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center_vertical"
+                  android:layout_width="0dp"
                   android:layout_height="wrap_content"
                   android:layout_marginTop="3dp"
-                  android:gravity="center"
                   android:orientation="horizontal">
 
                   <ImageView
                       android:layout_width="15dp"
                       android:layout_height="15dp"
                       android:layout_marginRight="5dp"
-                      app:srcCompat="@drawable/icon_money" />
+                      app:srcCompat="@drawable/icon_wallet" />
 
                   <TextView
                       android:id="@+id/tvDeposit"
@@ -104,7 +107,7 @@
                       android:layout_gravity="center_vertical"
                       android:ellipsize="end"
                       android:maxLines="1"
-                      android:text="vineeth@gmail.com" />
+                      android:text="2435.29" />
               </LinearLayout>
 
 

@@ -9,7 +9,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            app:srcCompat="@drawable/icon_share"
+            android:tint="@color/white"
+            android:id="@+id/person_share"
+            android:elevation="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            />
 
         <ImageView
             android:id="@+id/user_first_letter"
@@ -36,34 +46,82 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_marginTop="95dp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="Sai Krishna"
                 android:textColor="#fff"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/user_mobile_no"
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/ll_user_mobile_no"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:layout_below="@+id/user_profile_name"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="8dp"
-                android:text="7280877060"
-                android:textColor="#fff"
-                android:textSize="14sp" />
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
 
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    app:srcCompat="@drawable/icon_call"
+                    android:layout_gravity="center_vertical"
+                    android:tint="@color/white"/>
 
-            <TextView
-                android:id="@+id/user_email_id"
+                <TextView
+                    android:id="@+id/user_mobile_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="4dp"
+                    android:maxLines="1"
+                    android:text="7280877060"
+                    android:textColor="#fff"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/user_mobile_no"
+                android:orientation="horizontal"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="5dp"
-                android:text="chsaikrishna@gmail.com"
-                android:textColor="#fff"
-                android:textSize="14sp" />
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/ll_user_email_id"
+                android:layout_below="@+id/ll_user_mobile_no"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp">
+
+                <ImageView
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    app:srcCompat="@drawable/icon_feedback"
+                    android:tint="@color/white"
+                    android:layout_gravity="center"
+                    />
+
+                <TextView
+                    android:id="@+id/user_email_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_gravity="center_vertical"
+                    android:text="chsaikrishna@gmail.com"
+                    android:textColor="#fff"
+                    android:maxLines="1"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
         </RelativeLayout>
 
 
@@ -426,5 +484,7 @@
 
 
         </LinearLayout>
+
+
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

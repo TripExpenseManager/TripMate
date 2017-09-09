@@ -29,6 +29,8 @@
             android:layout_marginLeft="2dp"
             android:layout_weight="2.5"
             android:gravity="center_vertical"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:text="Name"
             android:textColor="?attr/customTextColor"
             android:textSize="18sp" />

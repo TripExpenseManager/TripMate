@@ -1,6 +1,7 @@
 package com.tripmate;
 
 import android.app.models.GraphItemModel;
+import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -196,7 +196,7 @@ public class ChartsFragment extends Fragment{
         ArrayList<GraphItemModel> graphItemArrayList;
         String label;
 
-        public GraphItemAdapter(Context mcontext, ArrayList<GraphItemModel> graphItemArrayList,String label) {
+        GraphItemAdapter(Context mcontext, ArrayList<GraphItemModel> graphItemArrayList, String label) {
             Collections.sort(graphItemArrayList, new Comparator<GraphItemModel>() {
                 @Override
                 public int compare(GraphItemModel o1, GraphItemModel o2) {
@@ -208,11 +208,11 @@ public class ChartsFragment extends Fragment{
             this.label=label;
         }
 
-        public class GraphItemHolder extends  RecyclerView.ViewHolder{
+        class GraphItemHolder extends  RecyclerView.ViewHolder{
             TextView tvRanking,tvName,tvAmount,tvPercent;
 
 
-            public GraphItemHolder(View view){
+            GraphItemHolder(View view){
                 super(view);
                 tvRanking = (TextView) view.findViewById(R.id.tvRanking);
                 tvName = (TextView) view.findViewById(R.id.tvName);
@@ -246,6 +246,5 @@ public class ChartsFragment extends Fragment{
 
 
     }
-
 
 }

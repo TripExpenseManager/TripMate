@@ -8,9 +8,11 @@ import android.app.models.PersonWiseExpensesSummaryModel;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -41,7 +43,11 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.regex.Pattern;
 
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
@@ -183,7 +189,7 @@ public class Persons extends Fragment {
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                     alertDialogBuilder.setView(promptsView);
 
-
+                    final ImageView person_share = (ImageView) promptsView.findViewById(R.id.person_share);
                     final ImageView user_first_letter = (ImageView) promptsView.findViewById(R.id.user_first_letter);
                     final TextView user_profile_name = (TextView) promptsView.findViewById(R.id.user_profile_name);
                     final TextView user_email_id = (TextView) promptsView.findViewById(R.id.user_email_id);
@@ -203,6 +209,10 @@ public class Persons extends Fragment {
                     final TextView total_amount_spent = (TextView) promptsView.findViewById(R.id.total_amount_spent);
                     final TextView total_amount_remaining = (TextView) promptsView.findViewById(R.id.total_amount_remaining);
 
+                    final LinearLayout ll_user_email_id = (LinearLayout) promptsView.findViewById(R.id.ll_user_email_id);
+                    final LinearLayout ll_user_mobile_no = (LinearLayout) promptsView.findViewById(R.id.ll_user_mobile_no);
+
+
                     Double total_deposit_received = 0.0,total_deposit_spent = 0.0,total_deposit_remaining = 0.0;
 
                     for(int k = 0;k<personsList.size();k++){
@@ -217,6 +227,51 @@ public class Persons extends Fragment {
                     int color = generator.getColor(model.getName());
                     TextDrawable drawable = TextDrawable.builder().buildRound(firstLetter, color);
                     user_first_letter.setImageDrawable(drawable);
+
+                    final Double finalTotal_deposit_received = total_deposit_received;
+                    final Double finalTotal_deposit_spent = total_deposit_spent;
+                    final Double finalTotal_deposit_remaining = total_deposit_remaining;
+                    person_share.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+
+                            String s="";
+                            if(model.getAdmin() == 1){
+                                s+="Name : "+model.getName()+" (Admin)\n\n";
+
+                                s += "Group Details\n-------------------------------\n";
+                                s += "Deposit Amt. Received : "+ RoundOff(finalTotal_deposit_received)+"\n";
+                                s += "Deposit Amt. Spent : "+ RoundOff(finalTotal_deposit_spent)+"\n";
+                                s += "Deposit Amt. Rmng  : "+ RoundOff(finalTotal_deposit_remaining)+"\n\n";
+
+                            }else{
+                                s+="Name : "+model.getName()+"\n\n";
+                            }
+
+                            s+= "Personal Details\n-------------------------------\n";
+                            s+= "Deposit Amt. Given  : "+ model.getDepositAmountGiven()+"\n";
+                            s+= "Deposit Amt. Spent  : "+ model.getDepositAmountSpent()+"\n";
+                            s+= "Deposit Amt. Rmng   : "+ model.getDepositAmountRemaining()+"\n";
+                            s+= "Personal Amt. Given : "+ model.getPersonalAmountGiven()+"\n";
+                            s+= "Personal Amt. Spent : "+ model.getPersonalAmountSpent()+"\n";
+                            s+= "Total Amt. Given    : "+ model.getTotalAmountGiven()+"\n";
+                            s+= "Total Amt. Spent    : "+ model.getTotalAmountSpent()+"\n";
+                            s+= "Total Amt. Due/Refund : "+ model.getTotalAmountRemaining()+"\n\n";
+
+                            s+="\nNote : Here \"Rmng\" refers to \"Remaining\"";
+
+                            String shareBody = s;
+                            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                            sharingIntent.setType("text/plain");
+                            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+                            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                            startActivity(Intent.createChooser(sharingIntent,"Share via"));
+
+                        }
+                    });
+
+
 
                     if(model.getAdmin()==1){
                         user_profile_name.setText(model.getName()+" (Admin)");
@@ -235,11 +290,11 @@ public class Persons extends Fragment {
                     if(!model.getMobile().equalsIgnoreCase("")){
                         user_mobile_no.setText(model.getMobile());
                     }else{
-                        user_mobile_no.setVisibility(View.GONE);
+                        ll_user_mobile_no.setVisibility(View.GONE);
                     }
 
                     //calling the user on clicking the mobile number
-                    user_mobile_no.setOnClickListener(new View.OnClickListener() {
+                    ll_user_mobile_no.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (ActivityCompat.checkSelfPermission(getActivity(),Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
@@ -255,9 +310,28 @@ public class Persons extends Fragment {
                     if(!model.getEmail().equalsIgnoreCase("")){
                         user_email_id.setText(model.getEmail());
                     }else{
-                        user_email_id.setVisibility(View.GONE);
+                        ll_user_email_id.setVisibility(View.GONE);
                     }
 
+
+
+
+                    ll_user_email_id.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent i = new Intent(Intent.ACTION_SEND);
+                            i.setType("message/rfc822");
+                            i.putExtra(Intent.EXTRA_EMAIL  , new String[]{model.getEmail()});
+                            i.putExtra(Intent.EXTRA_SUBJECT, "Trip Expenses");
+                            i.putExtra(Intent.EXTRA_TEXT   , "");
+                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            try {
+                                startActivity(Intent.createChooser(i, "Send mail..."));
+                            } catch (android.content.ActivityNotFoundException ex) {
+                                Toast.makeText(getContext(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
                     deposit_amount_given.setText(model.getDepositAmountGiven()+"");
 
                     if(model.getDepositAmountSpent()>model.getDepositAmountGiven()){
@@ -305,14 +379,34 @@ public class Persons extends Fragment {
                     }
 
                     alertDialogBuilder.setCancelable(true);
-                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    final AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.getWindow().setWindowAnimations(R.style.DialogAnimationCentreInsta);
                     alertDialog.show();
+
+
+                    user_first_letter.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            takeScreenshot(alertDialog.getWindow().getDecorView().getRootView());
+                        }
+                    });
                 }
             };
 
             holder.clickLL.setOnClickListener(listener);
-            holder.imageView.setOnClickListener(listener);
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                   /* String shareBody = shareExpenseOfPerson(model);
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(sharingIntent, "Share via")); */
+
+                    // takeScreenshot();
+                }
+            });
 
             //popup menu
             holder.textViewOptions.setOnClickListener(new View.OnClickListener() {
@@ -343,11 +437,11 @@ public class Persons extends Fragment {
                         make_call.setVisible(true);
                     }
 
-                    if(model.getCanRemove()){
+                   /* if(model.getCanRemove()){
                         delete.setVisible(true);
                     }else{
                         delete.setVisible(false);
-                    }
+                    } */
 
 
                     //adding click listener
@@ -392,43 +486,76 @@ public class Persons extends Fragment {
                                     editPerson(model);
                                     break;
                                 case R.id.delete:
+                                    if(model.getCanRemove()){
 
-                                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
 
-                                    TextView customTitleTextview = new TextView(getActivity());
-                                    customTitleTextview.setTextSize(20);
-                                    customTitleTextview.setText("Are you sure?");
-                                    customTitleTextview.setTextColor(getResources().getColor(R.color.red));
-                                    customTitleTextview.setPadding(10,40,10,10);
-                                    customTitleTextview.setGravity(Gravity.CENTER);
+                                        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
 
-                                    builder1.setCustomTitle(customTitleTextview);
+                                        TextView customTitleTextview = new TextView(getActivity());
+                                        customTitleTextview.setTextSize(20);
+                                        customTitleTextview.setText("Are you sure?");
+                                        customTitleTextview.setTextColor(getResources().getColor(R.color.red));
+                                        customTitleTextview.setPadding(10,40,10,10);
+                                        customTitleTextview.setGravity(Gravity.CENTER);
 
-                                    builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
+                                        builder1.setCustomTitle(customTitleTextview);
 
-                                            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+                                        builder1.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
 
-                                            if(dataBaseHelper.removePerson(model,trip_id)){
-                                                Snackbar.make(getActivity().findViewById(R.id.fab),"Deleted "+model.getName()+" successfully", Snackbar.LENGTH_LONG).show();
-                                                onResume();
-                                            }else{
-                                                Snackbar.make(getActivity().findViewById(R.id.fab),"Unexpected error occurred!", Snackbar.LENGTH_LONG).show();
+                                                DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+                                                if(dataBaseHelper.removePerson(model,trip_id)){
+                                                    Snackbar.make(getActivity().findViewById(R.id.fab),"Deleted "+model.getName()+" successfully", Snackbar.LENGTH_LONG).show();
+                                                    onResume();
+                                                }else{
+                                                    Snackbar.make(getActivity().findViewById(R.id.fab),"Unexpected error occurred!", Snackbar.LENGTH_LONG).show();
+                                                }
+
                                             }
+                                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        });
+                                        builder1.setMessage("You want to delete "+model.getName()+" from Trip?");
+                                        builder1.setCancelable(false);
+                                        AlertDialog dialog1 = builder1.create();
+                                        dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
+                                        dialog1.show();
 
-                                        }
-                                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.dismiss();
-                                        }
-                                    });
-                                    builder1.setMessage("You want to delete "+model.getName()+" from Trip?");
-                                    builder1.setCancelable(false);
-                                    AlertDialog dialog1 = builder1.create();
-                                    dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
-                                    dialog1.show();
+                                    }else{
+
+                                        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+
+                                        TextView customTitleTextview = new TextView(getActivity());
+                                        customTitleTextview.setTextSize(20);
+                                        customTitleTextview.setText("Action denied!");
+                                        customTitleTextview.setTextColor(getResources().getColor(R.color.red));
+                                        customTitleTextview.setPadding(10,40,10,10);
+                                        customTitleTextview.setGravity(Gravity.CENTER);
+
+                                        builder1.setCustomTitle(customTitleTextview);
+
+                                        builder1.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                dialogInterface.dismiss();
+                                            }
+                                        });
+                                        String msg = "1. If a person's money were found spent anywhere in the trip, he cannot be removed" +
+                                                "(To remove him, expenses recorded needed to be modified so that his money will not " +
+                                                "be accounted for spending anywhere in the trip\n" +
+                                                "2. Admin cannot be removed from the trip(To remove admin, change the admin and try to delete)";
+                                        builder1.setMessage(msg);
+                                        builder1.setCancelable(true);
+                                        AlertDialog dialog1 = builder1.create();
+                                        dialog1.getWindow().setWindowAnimations(R.style.DialogAnimationCentreAlert);
+                                        dialog1.show();
+
+                                    }
 
                                     break;
                             }
@@ -446,6 +573,44 @@ public class Persons extends Fragment {
         public int getItemCount() {
             return personsList.size();
         }
+    }
+
+    public void takeScreenshot(View view) {
+        Date now = new Date();
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            String mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg";
+
+            // create bitmap screen capture
+            View v1 =  view ;
+
+            v1.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+            v1.setDrawingCacheEnabled(false);
+
+            File imageFile = new File(mPath);
+
+            FileOutputStream outputStream = new FileOutputStream(imageFile);
+            int quality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            outputStream.flush();
+            outputStream.close();
+
+            openScreenshot(imageFile);
+        } catch (Throwable e) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace();
+        }
+    }
+
+    private void openScreenshot(File imageFile) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(imageFile);
+        intent.setDataAndType(uri, "image/*");
+        startActivity(intent);
     }
 
     void makeAdmin(final PersonWiseExpensesSummaryModel model){
@@ -508,31 +673,59 @@ public class Persons extends Fragment {
                 String tempName = tilPersonName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilPersonName.getEditText().getText().toString().trim().substring(1);
                 personModel.setName(tempName);
 
-                if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
-                    personModel.setDeposit(0.0);
-                }else{
-                    personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                String tempMobile = tilPersonMobile.getEditText().getText().toString();
+                String tempEmail = tilPersonEmail.getEditText().getText().toString();
+
+                if(!tempMobile.equalsIgnoreCase("")  && !isValidMobile(tempMobile)){
+                    tilPersonMobile.setError("Please Enter a valid Mobile no.");
+                }else if(!tempEmail.equalsIgnoreCase("")  && !isValidEmailAddress(tempEmail)){
+                    tilPersonEmail.setError("Please Enter a valid email address");
+                }else
+                {
+                    if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
+                        personModel.setDeposit(0.0);
+                    }else{
+                        personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                    }
+                    personModel.setMobile(tilPersonMobile.getEditText().getText().toString());
+                    personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
+
+                    DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+                    dataBaseHelper.editPerson(trip_id,personModel);
+
+                    personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
+
+                    mAdapter = new PersonsAdapter(personsList);
+                    ScaleInAnimationAdapter adapter = new ScaleInAnimationAdapter(mAdapter);
+                    adapter.setDuration(100);
+                    persons_recyclerview.setAdapter(adapter);
+
+                    Snackbar.make(getActivity().findViewById(R.id.fab), "Person details edited successfully", Snackbar.LENGTH_LONG).show();
+
+                    alertDialog.dismiss();
                 }
-                personModel.setMobile(tilPersonMobile.getEditText().getText().toString());
-                personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
-
-                DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-
-                dataBaseHelper.editPerson(trip_id,personModel);
-
-                personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
-
-                mAdapter = new PersonsAdapter(personsList);
-                ScaleInAnimationAdapter adapter = new ScaleInAnimationAdapter(mAdapter);
-                adapter.setDuration(100);
-                persons_recyclerview.setAdapter(adapter);
-
-                Snackbar.make(getActivity().findViewById(R.id.fab), "Person details edited successfully", Snackbar.LENGTH_LONG).show();
-
-                alertDialog.dismiss();
             }
         });
     }
+
+
+    public boolean isValidEmailAddress(String email) {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
+    public boolean isValidMobile(String phone) {
+
+        boolean check;
+        check = !Pattern.matches("[a-zA-Z]+", phone) && !(phone.length() < 6 || phone.length() > 13);
+        return check;
+
+        // return android.util.Patterns.PHONE.matcher(phone).matches();
+    }
+
 
     public Double RoundOff(Double d){
         return Math.round(d * 100.0) / 100.0;
