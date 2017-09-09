@@ -27,13 +27,11 @@
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             />
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="com.google.android.voicesearch.SELF_NOTE" />
             </intent-filter>
         </activity>
@@ -48,7 +46,6 @@
             android:theme="@style/AppTheme">
             <intent-filter android:priority="999">
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
-
                 <data android:scheme="com.tripmate" />
             </intent-filter>
         </activity>
@@ -65,10 +62,6 @@
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".CheckListActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".AppIntroActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
@@ -80,10 +73,6 @@
             android:name=".SettingsActivity"
             android:configChanges="orientation|screenSize"
             android:label="Settings"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".TripDetailsActivity"
-            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".AddTripNew"
@@ -106,8 +95,13 @@
             android:name=".HelpActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme" />
-        <activity android:name=".FAQsActivity" />
-        <activity android:name=".GettingStartedActivity"></activity>
+        <activity android:name=".FAQsActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme"/>
+        <activity
+            android:name=".GettingStartedActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

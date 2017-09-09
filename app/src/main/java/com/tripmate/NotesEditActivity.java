@@ -53,7 +53,7 @@ public class NotesEditActivity extends AppCompatActivity {
             overridePendingTransition(R.anim.activity_open_translate,R.anim.activity_close_scale);
         }
 
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle("Notes");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 

@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -320,7 +321,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
 
         @Override
         public boolean isItemViewSwipeEnabled() {
-            return true;
+            return false;
         }
 
         @Override
@@ -386,7 +387,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
             this.mDragStartListener = mDragStartListener;
         }
 
-        @Override
+      /*  @Override
         public void onItemDismiss(int position) {
             placesToVisitArrayList.remove(position);
             notifyItemRemoved(position);
@@ -394,7 +395,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
                 llAddPlacesToVisit.setVisibility(View.VISIBLE);
             }
             posOfFocus = position;
-        }
+        }*/
 
         @Override
         public boolean onItemMove(int fromPosition, int toPosition) {
@@ -413,6 +414,10 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
             return true;
         }
 
+        @Override
+        public void onItemDismiss(int position) {
+            return;
+        }
 
 
         class PlacesToVisitViewHolder extends  RecyclerView.ViewHolder implements ItemTouchHelperViewHolder{
@@ -446,6 +451,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
 
         @Override
         public void onBindViewHolder(final PlacesToVisitViewHolder holder, int position) {
+            holder.ivCancelPlace.setVisibility(View.GONE);
             holder.etPlaceToVisit.setText(placesToVisitList.get(position));
 
             if(posOfFocus!= -1 && posOfFocus==position && posOfFocus>0 && posOfFocus<placesToVisitArrayList.size()){
@@ -473,6 +479,11 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
                 }
 
             }
+
+            holder.etPlaceToVisit.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            holder.etPlaceToVisit.setHorizontallyScrolling(false);
+            holder.etPlaceToVisit.setMaxLines(Integer.MAX_VALUE);
+
             holder.ivIconPlace.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {

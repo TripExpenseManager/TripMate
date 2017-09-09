@@ -68,16 +68,16 @@ public class DashBoardFragment extends Fragment {
         Context mcontext;
         ArrayList<PersonWiseExpensesSummaryModel> expensePersonArrayList;
 
-        public DashBoardAdapter(Context mcontext, ArrayList<PersonWiseExpensesSummaryModel> expensePersonArrayList) {
+        DashBoardAdapter(Context mcontext, ArrayList<PersonWiseExpensesSummaryModel> expensePersonArrayList) {
             this.mcontext = mcontext;
             this.expensePersonArrayList = expensePersonArrayList;
         }
 
-        public class PersonHolder extends  RecyclerView.ViewHolder{
+        class PersonHolder extends  RecyclerView.ViewHolder{
             TextView tvRanking,tvName,tvAmount,tvDue;
 
 
-            public PersonHolder(View view){
+            PersonHolder(View view){
                 super(view);
                 tvRanking = (TextView) view.findViewById(R.id.tvRanking);
                 tvName = (TextView) view.findViewById(R.id.tvName);
@@ -122,19 +122,20 @@ public class DashBoardFragment extends Fragment {
     public void shareDashBoard(){
 
         String s="";
-        s+="#  Name       Amount  +/- \n";
+        s+="S.No) Name\nAmt. given | Amt. spent | Amt. +/-\n";
         for(int pos=0; pos<expensePersonArrayList.size();pos++){
             PersonWiseExpensesSummaryModel model=expensePersonArrayList.get(pos);
-            s+=(pos+1)+"."+model.getName()+"  " + model.getTotalAmountGiven()+"  ";
+            s+=(pos+1)+". "+model.getName()+"\n";
+            s+=model.getTotalAmountGiven()+"  "+model.getTotalAmountSpent()+"  ";
             if(model.getTotalAmountRemaining()>=0){
                 s+="+" + model.getTotalAmountRemaining();
             }else{
                 s+=model.getTotalAmountRemaining()+"";
             }
-            s+="\n";
+            s+="\n\n";
         }
 
-        s+="Note : Here \"Amount \" refers to total amount given (including deposit money given) and +/- refers to" +
+        s+="\nNote : Here \"Amount \" refers to total amount given (including deposit money given) and +/- refers to" +
                 "total amount due/refund ";
 
         String shareBody = s;

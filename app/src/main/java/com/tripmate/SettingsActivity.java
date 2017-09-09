@@ -252,7 +252,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
     public static class MainPreferenceFragment extends PreferenceFragment {
 
-        static Preference myPref_Backup,myPref_AppIntro,myPref_Feedback,myPref_RateIt,myPref_About,myPref_Theme;
+        static Preference myPref_Backup,myPref_Eula,myPref_Feedback,myPref_RateIt,myPref_About,myPref_Theme;
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -262,7 +262,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
             // feedback preference click listener
             myPref_Backup = findPreference("pref_backup");
-            myPref_AppIntro = findPreference("pref_app_intro");
+            myPref_Eula = findPreference("pref_eula");
             myPref_Feedback = findPreference("pref_send_feedback");
             myPref_RateIt = findPreference("pref_rate_it");
             myPref_About = findPreference("pref_about_tripmate");
@@ -397,10 +397,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                 }
             });
 
-            myPref_AppIntro.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            myPref_Eula.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(context,AppIntroActivity.class);
+                    Intent intent = new Intent(context,GettingStartedActivity.class);
                     intent.putExtra("from","settings");
                     startActivity(intent);
                     return false;

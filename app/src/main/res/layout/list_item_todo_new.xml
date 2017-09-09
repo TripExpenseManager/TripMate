@@ -29,6 +29,7 @@
         android:paddingBottom="5dp"
         android:background="@android:color/transparent"
         android:inputType="text"/>
+
     <ImageView
         android:id="@+id/ivCancelTodo"
         android:layout_margin="5dp"
@@ -36,7 +37,5 @@
         android:layout_height="24dp"
         app:srcCompat="@drawable/icon_cancel_checklist"
         android:visibility="gone"/>
-
-
 
 </LinearLayout>

@@ -24,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -61,6 +62,7 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
     boolean isSaved = false;
 
     ItemTouchHelper mItemTouchHelper;
+    int posOfFocus = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +91,7 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
         }
 
         if(getSupportActionBar()!= null){
-            getSupportActionBar().setTitle("");
+            getSupportActionBar().setTitle("CheckList");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -166,7 +168,9 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
                     TodoModel todoModel = new TodoModel();
                     unCompletedTodosArrayList.add(todoModel);
                     todosAdapter.notifyItemInserted(unCompletedTodosArrayList.size() - 1);
+                    posOfFocus= unCompletedTodosArrayList.size() - 1;
                     tvAddTodo.setVisibility(View.GONE);
+
                 }
             }
         });
@@ -332,7 +336,7 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
 
         @Override
         public boolean isItemViewSwipeEnabled() {
-            return true;
+            return false;
         }
 
         @Override
@@ -387,11 +391,11 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
     class TodosAdapter extends RecyclerView.Adapter<TodosAdapter.TodoViewHolder> implements ItemTouchHelperAdapter{
         Context context;
         ArrayList<TodoModel> todosList = new ArrayList<>();
-        int posOfFocus = -1;
+
         OnStartDragListener mDragStartListener;
 
 
-        @Override
+        /*@Override
         public void onItemDismiss(int position) {
             unCompletedTodosArrayList.remove(position);
             notifyItemRemoved(position);
@@ -399,7 +403,7 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
                 tvAddTodo.setVisibility(View.VISIBLE);
             }
             posOfFocus = position;
-        }
+        }*/
 
         @Override
         public boolean onItemMove(int fromPosition, int toPosition) {
@@ -416,8 +420,12 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
             return true;
         }
 
+        @Override
+        public void onItemDismiss(int position) {
+        }
 
-        public TodosAdapter(Context context, ArrayList<TodoModel> todosList, OnStartDragListener mDragStartListener) {
+
+        TodosAdapter(Context context, ArrayList<TodoModel> todosList, OnStartDragListener mDragStartListener) {
             this.context = context;
             this.todosList = todosList;
             this.mDragStartListener = mDragStartListener;
@@ -470,6 +478,10 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
                 });
                 posOfFocus = -1;
             }
+
+            holder.etTodo.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            holder.etTodo.setHorizontallyScrolling(false);
+            holder.etTodo.setMaxLines(Integer.MAX_VALUE);
 
             holder.tvTodoDragger.setOnTouchListener(new View.OnTouchListener() {
                 @Override

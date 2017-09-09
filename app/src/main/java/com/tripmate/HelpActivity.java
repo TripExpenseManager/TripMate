@@ -29,11 +29,13 @@ public class HelpActivity extends AppCompatActivity {
         gettingStartedLL = (LinearLayout) findViewById(R.id.gettingStartedLL);
         faqLL = (LinearLayout) findViewById(R.id.faqLL);
         initialTourLL = (LinearLayout) findViewById(R.id.initialTourLL);
+        gettingStartedLL.setVisibility(View.GONE);
 
         gettingStartedLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HelpActivity.this,GettingStartedActivity.class);
+                intent.putExtra("from","help");
                 startActivity(intent);
             }
         });

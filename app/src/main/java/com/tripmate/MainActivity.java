@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity
     MaterialSearchView searchView;
 
     NavigationView navigationView;
-    TextView nav_email, nav_user;
+    TextView  nav_user;
 
     int prevThemeId = 1;
 
@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity
 
         View hView = navigationView.getHeaderView(0);
         nav_user = (TextView) hView.findViewById(R.id.username);
-        nav_email = (TextView) hView.findViewById(R.id.useremail);
 
         String gdrive_backup_account = app_preferences.getString("gdrive_backup_account", "no");
         // String gdrive_backup_account_username = app_preferences.getString("gdrive_backup_account_username","no");
@@ -85,7 +84,6 @@ public class MainActivity extends AppCompatActivity
             nav_user.setText(gdrive_backup_account);
             //   nav_email.setText(gdrive_backup_account);
         } else {
-            nav_email.setText("");
             nav_user.setText("TripMate");
         }
 
@@ -216,7 +214,6 @@ public class MainActivity extends AppCompatActivity
             nav_user.setText(gdrive_backup_account);
             // nav_email.setText(gdrive_backup_account);
         } else {
-            nav_email.setText("");
             nav_user.setText("TripMate");
         }
 

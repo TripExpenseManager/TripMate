@@ -4,20 +4,17 @@ import android.app.ProgressDialog;
 import android.app.models.HotelsTravelModel;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -46,6 +43,8 @@ import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
  */
 public class HotelBookingSitesFragment extends Fragment {
 
+    RequestQueue requestQueue;
+
     RecyclerView hotelBookingRV;
 
     HotelsAdapter mAdapter;
@@ -68,8 +67,7 @@ public class HotelBookingSitesFragment extends Fragment {
 
         pd = new ProgressDialog(getActivity());
         pd.setMessage("Please wait...");
-        pd.setCancelable(true);
-        pd.setCanceledOnTouchOutside(false);
+        pd.setCancelable(false);
 
 
         mWaveSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipetorefresh);
@@ -130,9 +128,34 @@ public class HotelBookingSitesFragment extends Fragment {
                     }
                 });
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        requestQueue = Volley.newRequestQueue(getActivity());
         requestQueue.add(stringRequest);
+
     }
+
+    //onbackpressed in fragment
+/*
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    // handle back button's click listener
+                    return true;
+                }
+                return false;
+            }
+        });
+    }*/
 
     private void showJSON(String json) throws JSONException {
         hotelsModels.clear();

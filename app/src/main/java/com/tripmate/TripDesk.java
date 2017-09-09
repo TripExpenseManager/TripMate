@@ -41,6 +41,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class TripDesk extends AppCompatActivity {
@@ -362,7 +363,7 @@ public class TripDesk extends AppCompatActivity {
                 @Override
                 public void onClick(View v)
                 {
-                    if (tilPersonName.getEditText().getText().toString().equals("")) {
+                if (tilPersonName.getEditText().getText().toString().equals("")) {
                     tilPersonName.setError("Enter Name");
 
                 }
@@ -379,27 +380,36 @@ public class TripDesk extends AppCompatActivity {
                     }
                     if(res==0){
 
-                        PersonModel personModel = new PersonModel();
+                        String tempMobile = tilPersonMobile.getEditText().getText().toString();
+                        String tempEmail = tilPersonEmail.getEditText().getText().toString();
 
-                        String tempName = tilPersonName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilPersonName.getEditText().getText().toString().trim().substring(1);
-                        personModel.setName(tempName);
-
-                        personModel.setTrip_id(trip_id);
-
-                        if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
-                            personModel.setDeposit(0.0);
+                        if(!tempMobile.equalsIgnoreCase("")  && !isValidMobile(tempMobile)){
+                            tilPersonMobile.setError("Please Enter a valid Mobile no.");
+                        }else if(!tempEmail.equalsIgnoreCase("")  && !isValidEmailAddress(tempEmail)){
+                            tilPersonEmail.setError("Please Enter a valid email address");
                         }else{
-                            personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                            PersonModel personModel = new PersonModel();
+
+                            String tempName = tilPersonName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilPersonName.getEditText().getText().toString().trim().substring(1);
+                            personModel.setName(tempName);
+
+                            personModel.setTrip_id(trip_id);
+
+                            if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
+                                personModel.setDeposit(0.0);
+                            }else{
+                                personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                            }
+                            personModel.setMobile(tempMobile);
+                            personModel.setEmail(tempEmail);
+                            personModel.setAdmin(0);
+
+                            dbHelper.addPersonInMiddle(personModel);
+
+                            setupViewPager();
+
+                            alertDialog.dismiss();
                         }
-                        personModel.setMobile(tilPersonMobile.getEditText().getText().toString());
-                        personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
-                        personModel.setAdmin(0);
-
-                        dbHelper.addPersonInMiddle(personModel);
-
-                        setupViewPager();
-
-                        alertDialog.dismiss();
                     }
                 }
                 }
@@ -464,6 +474,23 @@ public class TripDesk extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public boolean isValidEmailAddress(String email) {
+        String ePattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
+        java.util.regex.Matcher m = p.matcher(email);
+        return m.matches();
+    }
+
+    public boolean isValidMobile(String phone) {
+
+        boolean check;
+        check = !Pattern.matches("[a-zA-Z]+", phone) && !(phone.length() < 6 || phone.length() > 13);
+        return check;
+
+        //return android.util.Patterns.PHONE.matcher(phone).matches();
+    }
+
+
     private void setupViewPager() {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new Persons(), "Persons");
@@ -473,11 +500,11 @@ public class TripDesk extends AppCompatActivity {
         viewPager.setAdapter(adapter);
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
+        ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
 
@@ -491,7 +518,7 @@ public class TripDesk extends AppCompatActivity {
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }

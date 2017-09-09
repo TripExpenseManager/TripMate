@@ -6,8 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.webkit.WebView;
 
 public class GettingStartedActivity extends AppCompatActivity {
+
+    WebView wvGettingStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +23,16 @@ public class GettingStartedActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Getting Started");
+
+        wvGettingStarted = (WebView) findViewById(R.id.wvGettingStarted);
+        wvGettingStarted.getSettings().setJavaScriptEnabled(true);
+
+        if(getIntent().getStringExtra("from")!=null && getIntent().getStringExtra("from").equalsIgnoreCase("settings")){
+            getSupportActionBar().setTitle("EULA");
+            wvGettingStarted.loadUrl("file:///android_asset/eula.html");
+        }else{
+            getSupportActionBar().setTitle("Getting Started");
+        }
 
     }
 

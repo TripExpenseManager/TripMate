@@ -18,47 +18,23 @@
         android:orientation="vertical"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <Spinner
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/rlTitleBar"
-            android:background="?attr/colorPrimary"
-          >
+            android:layout_gravity="end"
+            android:gravity="center_vertical"
+            android:dropDownSelector="@color/white"
+            android:id="@+id/spCategory">
 
-            <Spinner
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:dropDownSelector="@color/white"
-                android:id="@+id/spCategory"
-                android:layout_alignParentRight="true">
-
-            </Spinner>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tvTitle"
-                android:text="EXPENSES"
-                android:textColor="#FFFFFF"
-                android:background="?attr/colorPrimary"
-                android:gravity="center"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:padding="12dp"
-                android:layout_alignParentLeft="true"
-                android:layout_toLeftOf="@id/spCategory"/>
-
-        </RelativeLayout>
+        </Spinner>
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pieChart"
             android:layout_width="match_parent"
-            android:layout_margin="15dp"
-            android:layout_height="300dp">
-
-        </com.github.mikephil.charting.charts.PieChart>
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_height="300dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

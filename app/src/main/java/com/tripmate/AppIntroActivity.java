@@ -32,9 +32,9 @@ public class AppIntroActivity extends AppIntro {
         // Instead of fragments, you can also use our default slide
         // Just set a title, description, background and image. AppIntro will do the rest.
         addSlide(AppIntroFragment.newInstance("Welcome!", "Worried about managing expenses in group travel?\nHere you go!",R.drawable.image_no_trips, getResources().getColor(R.color.intro1)));
-        addSlide(AppIntroFragment.newInstance("Manage your Trip Expenses", "Get a glimpse of \"everyone's\" expenses managed in realtime",R.drawable.intro_img2, getResources().getColor(R.color.intro2)));
+        addSlide(AppIntroFragment.newInstance("Manage your Trip Expenses", "Get a glimpse of \"everyone's\" expenses managed in realtime",R.drawable.intro_img2, getResources().getColor(R.color.intro4)));
         addSlide(AppIntroFragment.newInstance("Make a note of everything!", "Weak in memory?\nDon't worry, note everything in every trip!",R.drawable.intro_img3, getResources().getColor(R.color.intro3)));
-        addSlide(AppIntroFragment.newInstance("Don't know where to book hotels and travel?", "Don't worry, we will provide you with all the details!",R.drawable.intro_img4, getResources().getColor(R.color.intro4)));
+        addSlide(AppIntroFragment.newInstance("Don't know where to book hotels and travel?", "Don't worry, we will provide you with all the details!",R.drawable.intro_img4, getResources().getColor(R.color.intro2)));
 
         // OPTIONAL METHODS
         // Override bar/separator color.

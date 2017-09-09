@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,9 +55,6 @@ public class ChartsFragment extends Fragment{
     Double tripTotalAmount;
     String trip_id;
 
-    //
-    TextView tvPercent;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,14 +62,6 @@ public class ChartsFragment extends Fragment{
 
         Intent intent = getActivity().getIntent();
         trip_id = intent.getStringExtra("trip_id");
-
-        tvPercent = (TextView) customview.findViewById(R.id.tvPercent);
-        tvPercent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareStats();
-            }
-        });
 
         // Setting up Spinner
         spCategory = (Spinner) customview.findViewById(R.id.spCategory);
@@ -208,7 +196,7 @@ public class ChartsFragment extends Fragment{
         ArrayList<GraphItemModel> graphItemArrayList;
         String label;
 
-        public GraphItemAdapter(Context mcontext, ArrayList<GraphItemModel> graphItemArrayList,String label) {
+        GraphItemAdapter(Context mcontext, ArrayList<GraphItemModel> graphItemArrayList, String label) {
             Collections.sort(graphItemArrayList, new Comparator<GraphItemModel>() {
                 @Override
                 public int compare(GraphItemModel o1, GraphItemModel o2) {
@@ -220,11 +208,11 @@ public class ChartsFragment extends Fragment{
             this.label=label;
         }
 
-        public class GraphItemHolder extends  RecyclerView.ViewHolder{
+        class GraphItemHolder extends  RecyclerView.ViewHolder{
             TextView tvRanking,tvName,tvAmount,tvPercent;
 
 
-            public GraphItemHolder(View view){
+            GraphItemHolder(View view){
                 super(view);
                 tvRanking = (TextView) view.findViewById(R.id.tvRanking);
                 tvName = (TextView) view.findViewById(R.id.tvName);
@@ -259,36 +247,4 @@ public class ChartsFragment extends Fragment{
 
     }
 
-
-    public void shareStats(){
-
-        String s="";
-        s+="#  Name       Amount  % \n";
-        for(int pos=0; pos<personGraphItems.size();pos++) {
-            GraphItemModel model = personGraphItems.get(pos);
-            s += (pos + 1) + "." + model.getName() + "  " + model.getAmount() + "  " + model.getPercentage() + "\n";
-        }
-            s+="\n";
-        for(int pos=0; pos<categoryGraphItems.size();pos++) {
-            GraphItemModel model = personGraphItems.get(pos);
-            s += (pos + 1) + "." + model.getName() + "  " + model.getAmount() + "  " + model.getPercentage() + "\n";
-        }
-        s+="\n";
-        for(int pos=0; pos<dateGraphItems.size();pos++) {
-            GraphItemModel model = personGraphItems.get(pos);
-            s += (pos + 1) + "." + model.getName() + "  " + model.getAmount() + "  " + model.getPercentage() + "\n";
-        }
-        s+="\n";
-
-        s+="Note : Here \"Amount \" refers to total amount spent (including deposit money spent)";
-
-        String shareBody = s;
-        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-        sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-        startActivity(Intent.createChooser(sharingIntent,"Share via"));
-
-        
-    }
 }

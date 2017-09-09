@@ -5,14 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
     android:padding="3dp">
     <ImageView
         android:id="@+id/ivIconPlace"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:padding="5dp"
-        android:layout_gravity="center_vertical"
         app:srcCompat="@drawable/ic_places"
         android:tint="@color/grey"
         />
@@ -29,9 +27,9 @@
 
     <ImageView
         android:id="@+id/ivCancelPlace"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_margin="5dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:padding="5dp"
         android:tint="@color/grey"
         app:srcCompat="@drawable/icon_cancel_checklist" />
 

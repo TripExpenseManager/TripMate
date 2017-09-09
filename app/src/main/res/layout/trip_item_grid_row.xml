@@ -30,29 +30,104 @@
             android:layout_marginTop="8dp"
             android:textColor="?attr/customTextColor"
             android:id="@+id/trip_name_tv"
+            android:ellipsize="end"
+            android:maxLines="1"
             />
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trip date"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="5dp"
-            android:id="@+id/trip_date_tv"
+            android:weightSum="3"
+            android:orientation="horizontal"
+            >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center_vertical"
+                >
+
+                <ImageView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    app:srcCompat="@drawable/icon_calendar"
+                    android:tint="?attr/customGrayColor"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="Trip date"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:id="@+id/trip_date_tv"
+                    />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                >
+
+                <ImageView
+                    android:layout_width="13dp"
+                    android:layout_height="13dp"
+                    app:srcCompat="@drawable/ic_people"
+                    android:tint="?attr/customGrayColor"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:layout_marginLeft="5dp"
+                    android:id="@+id/total_persons"
+                    />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="5dp"
+        >
+
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            app:srcCompat="@drawable/icon_wallet"
+            android:tint="?attr/customGrayColor"
             />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Trip Total amount"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="7dp"
-            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginLeft="5dp"
             android:id="@+id/trip_amount_tv"
             />
 
+    </LinearLayout>
 
     </LinearLayout>
 
