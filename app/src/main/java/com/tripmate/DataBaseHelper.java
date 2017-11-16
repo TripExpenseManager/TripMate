@@ -117,6 +117,33 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    double minDepositThatShouldBeAdded(PersonModel personModel){
+
+        Double dep_money_spent = 0.0,total_deposit_money = 0.0;
+
+        ArrayList<ExpenseModel> expenseList = getAllExpenses(personModel.getTrip_id());
+        for(int i=0;i<expenseList.size();i++){
+            ExpenseModel model = expenseList.get(i);
+            if(model.getAmountType() == 1){
+                dep_money_spent += model.getAmount();
+            }
+        }
+
+        ArrayList<PersonModel> personsList = getPersons(personModel.getTrip_id());
+        Double prev_deposit_money = 0.0;
+        for(int i=0;i<personsList.size();i++){
+            total_deposit_money += personsList.get(i).getDeposit();
+            if(personsList.get(i).getName().equalsIgnoreCase(personModel.getName())){
+                prev_deposit_money = personsList.get(i).getDeposit();
+            }
+        }
+
+        total_deposit_money -= prev_deposit_money;
+
+        return  dep_money_spent - total_deposit_money;
+
+    }
+
     void updateTripImageUrl(String trip_id,String imageUrl){
 
         SQLiteDatabase db = getWritableDatabase();
@@ -529,9 +556,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     int no_of_share_by_deposit = persons.length;
                     Double sharedDepositAmount = expenseModel.getAmount()/no_of_share_by_deposit;
 
-                    for(int j=0;j<no_of_share_by_deposit;j++){
-                        Double itemToBeAdded = depositAmountShareByPerson.get(persons[j].trim())+ sharedDepositAmount;
-                        depositAmountShareByPerson.put(persons[j].trim(),itemToBeAdded);
+                    for (String person : persons) {
+                        Double itemToBeAdded = depositAmountShareByPerson.get(person.trim()) + sharedDepositAmount;
+                        depositAmountShareByPerson.put(person.trim(), itemToBeAdded);
                     }
 
                 }
@@ -549,9 +576,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                     int no_of_share_by_personal_amount = persons.length;
                     Double sharedPersonalAmount = expenseModel.getAmount()/no_of_share_by_personal_amount;
 
-                    for(int j=0;j<no_of_share_by_personal_amount;j++){
-                        Double itemToBeAdded = personalAmountShareByPerson.get(persons[j].trim())+ sharedPersonalAmount;
-                        personalAmountShareByPerson.put(persons[j].trim(),itemToBeAdded);
+                    for (String person : persons) {
+                        Double itemToBeAdded = personalAmountShareByPerson.get(person.trim()) + sharedPersonalAmount;
+                        personalAmountShareByPerson.put(person.trim(), itemToBeAdded);
                     }
 
 

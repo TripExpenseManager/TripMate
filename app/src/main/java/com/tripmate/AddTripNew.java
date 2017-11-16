@@ -153,7 +153,7 @@ public class AddTripNew extends AppCompatActivity implements OnStartDragListener
 
 
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddTripNew.this,dateSetListener,mYear,mMonth,mDay);
-                datePickerDialog.getDatePicker().setMinDate(finalTodaysOnlyDateValue);
+               // datePickerDialog.getDatePicker().setMinDate(finalTodaysOnlyDateValue);
                 datePickerDialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
                 datePickerDialog.show();
             }
@@ -249,13 +249,12 @@ public class AddTripNew extends AppCompatActivity implements OnStartDragListener
 
     public void encryptPlaces(){
         String places = "";
-        for(String s : placesToVisitArrayList){
-            if(s.length()!=0 ){
-                places+=s.substring(0,1).toUpperCase()+s.substring(1)+",";
+        for(String s : placesToVisitArrayList) {
+            if (s.length() != 0) {
+                places += s.substring(0, 1).toUpperCase() + s.substring(1) + ",";
             }
         }
-        if(places.length()>=2)
-            trip_places =  places.substring(0,places.length()-2);
+            trip_places =  places;
     }
 
     public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {

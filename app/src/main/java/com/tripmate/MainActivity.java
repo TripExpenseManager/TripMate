@@ -15,6 +15,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -29,6 +30,10 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    static {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+
     FloatingActionButton fab;
     MaterialSearchView searchView;
 
@@ -38,6 +43,8 @@ public class MainActivity extends AppCompatActivity
     int prevThemeId = 1;
 
     int prevId = 0;
+
+    int navItem = 0;  // 0 - trips 1- hotels & travel
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,9 +150,8 @@ public class MainActivity extends AppCompatActivity
             searchView.closeSearch();
         } else {
 
-            int count = getSupportFragmentManager().getBackStackEntryCount();
 
-            if (count == 1) {
+            if (navItem == 0) {
                 if (doubleBackToExitPressedOnce) {
                     super.onBackPressed();
                     finish();
@@ -163,7 +169,21 @@ public class MainActivity extends AppCompatActivity
 
 
             } else {
-                getSupportFragmentManager().popBackStack();
+
+                android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                AllTripsDisplayFragment allTripsFragment = new AllTripsDisplayFragment();
+                transaction.replace(R.id.fragment_container, allTripsFragment);
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+                navItem=0;
+                transaction.commit();
+
+                fab.setVisibility(View.VISIBLE);
+                searchView.setVisibility(View.VISIBLE);
+                navigationView.setCheckedItem(R.id.nav_trips);
+                prevId = R.id.nav_trips;
+
+
+                /*getSupportFragmentManager().popBackStack();
                 int pos = Integer.parseInt(getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 2).getName());
 
                 Log.i("saikrishna", String.valueOf(pos));
@@ -187,7 +207,7 @@ public class MainActivity extends AppCompatActivity
                         navigationView.setCheckedItem(R.id.nav_travel);
                         prevId = R.id.nav_travel;
                         break;
-                }
+                }*/
             }
         }
 
@@ -247,9 +267,9 @@ public class MainActivity extends AppCompatActivity
                 AllTripsDisplayFragment allTripsFragment = new AllTripsDisplayFragment();
                 transaction.replace(R.id.fragment_container, allTripsFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.addToBackStack("0");
                 transaction.commit();
                 prevId = id;
+                navItem=0;
             }
 
         } else if (id == R.id.nav_hotels) {
@@ -261,9 +281,9 @@ public class MainActivity extends AppCompatActivity
                 HotelBookingSitesFragment hotelsFragment = new HotelBookingSitesFragment();
                 transaction.replace(R.id.fragment_container, hotelsFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.addToBackStack("1");
                 transaction.commit();
                 prevId = id;
+                navItem=1;
             }
 
         } else if (id == R.id.nav_travel) {
@@ -275,9 +295,9 @@ public class MainActivity extends AppCompatActivity
                 TravelBookingSitesFragment travelFragment = new TravelBookingSitesFragment();
                 transaction.replace(R.id.fragment_container, travelFragment);
                 transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-                transaction.addToBackStack("2");
                 transaction.commit();
                 prevId = id;
+                navItem=1;
             }
 
         }
@@ -286,7 +306,8 @@ public class MainActivity extends AppCompatActivity
 
             Intent sendIntent = new Intent();
             sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "TripMate is an app which manages expenses in your trip and ensures a smooth and hassle free trip for you");
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "TripMate is an app which manages expenses in your trip and ensures a smooth and hassle free trip for you." +
+                    "\nDownload it here : https://play.google.com/store/apps/details?id=com.tripmate");
             sendIntent.setType("text/plain");
             startActivity(sendIntent);
 
