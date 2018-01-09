@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -380,6 +381,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                 }
             });
 
+            myPref_RateIt.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    final String appPackageName = "com.tripmate"; // getPackageName() from Context or Activity object
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                    } catch (android.content.ActivityNotFoundException anfe) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                    }
+
+                    return true;
+                }
+            });
+
             myPref_About.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 public boolean onPreferenceClick(Preference preference) {
 
@@ -414,7 +430,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
                    Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("message/rfc822");
-                    i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"chsaikrishna105@gmail.com,vineethreddy.gudimetla@gmail.com"});
+                    i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"tripmatedevelopers@gmail.com"});
                     i.putExtra(Intent.EXTRA_SUBJECT, "Feedback of TripMate");
                     i.putExtra(Intent.EXTRA_TEXT   , "");
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

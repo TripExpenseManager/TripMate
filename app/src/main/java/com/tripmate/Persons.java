@@ -672,25 +672,32 @@ public class Persons extends Fragment {
 
                 String tempName = tilPersonName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilPersonName.getEditText().getText().toString().trim().substring(1);
                 personModel.setName(tempName);
+                personModel.setTrip_id(trip_id);
 
                 String tempMobile = tilPersonMobile.getEditText().getText().toString();
                 String tempEmail = tilPersonEmail.getEditText().getText().toString();
+
+                if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
+                    personModel.setDeposit(0.0);
+                }else{
+                    personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                }
+
+                DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+                Double minDepThatShouldBeAdded  = dataBaseHelper.minDepositThatShouldBeAdded(personModel);
 
                 if(!tempMobile.equalsIgnoreCase("")  && !isValidMobile(tempMobile)){
                     tilPersonMobile.setError("Please Enter a valid Mobile no.");
                 }else if(!tempEmail.equalsIgnoreCase("")  && !isValidEmailAddress(tempEmail)){
                     tilPersonEmail.setError("Please Enter a valid email address");
-                }else
-                {
-                    if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
-                        personModel.setDeposit(0.0);
-                    }else{
-                        personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
-                    }
+                }
+                else if(minDepThatShouldBeAdded > personModel.getDeposit()){
+                    tilPersonDeposit.setError("Deposit money must be >= "+minDepThatShouldBeAdded);
+                }
+                else{
+
                     personModel.setMobile(tilPersonMobile.getEditText().getText().toString());
                     personModel.setEmail(tilPersonEmail.getEditText().getText().toString());
-
-                    DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
 
                     dataBaseHelper.editPerson(trip_id,personModel);
 

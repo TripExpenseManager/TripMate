@@ -286,7 +286,7 @@ public class TripDesk extends AppCompatActivity {
             Intent addIntent = new Intent();
             addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
             addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, trip_name);
-            addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(),R.drawable.icon_info));
+            addIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(getApplicationContext(),R.drawable.icon_shortcut));
 
             addIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
             getApplicationContext().sendBroadcast(addIntent);

@@ -181,7 +181,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
 
 
                 DatePickerDialog datePickerDialog = new DatePickerDialog(TripDetailsActivityNew.this,dateSetListener,mYear,mMonth,mDay);
-                datePickerDialog.getDatePicker().setMinDate(finalTodaysOnlyDateValue);
+                //datePickerDialog.getDatePicker().setMinDate(finalTodaysOnlyDateValue);
                 datePickerDialog.getWindow().setWindowAnimations(R.style.DialogAnimationUpDown);
                 datePickerDialog.show();
             }
@@ -300,17 +300,19 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
                 places+=s.substring(0,1).toUpperCase()+s.substring(1)+",";
             }
         }
-        if(places.length()>=2)
+        trip_places = places;
+
+       /* if(places.length()>=2)
             trip_places =  places.substring(0,places.length()-2);
         else
-            trip_places = places;
+            trip_places = places; */
     }
 
-    public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
+    private class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
         private final ItemTouchHelperAdapter mAdapter;
 
-        public SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
+        SimpleItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
             mAdapter = adapter;
         }
 
