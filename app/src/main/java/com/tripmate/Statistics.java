@@ -96,8 +96,6 @@ public class Statistics extends Fragment {
         });
 
 
-
-        Log.d("Tab Number Statistics",((TabLayout)getActivity().findViewById(R.id.tabs)).getSelectedTabPosition()+"");
         return customview;
     }
 
@@ -177,7 +175,7 @@ public class Statistics extends Fragment {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public StatsPagerAdapter(FragmentManager fm) {
+         StatsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -191,7 +189,7 @@ public class Statistics extends Fragment {
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+         void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }

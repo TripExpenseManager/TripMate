@@ -43,6 +43,8 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ import java.util.regex.Pattern;
 
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
+import okhttp3.internal.Util;
 
 
 /**
@@ -64,6 +67,7 @@ public class Persons extends Fragment {
     String trip_id;
 
     PersonsAdapter mAdapter = null;
+    TextView tvCurrencyNotice;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,8 +81,10 @@ public class Persons extends Fragment {
         trip_id = intent.getStringExtra("trip_id");
 
         persons_recyclerview = (RecyclerView) view.findViewById(R.id.persons_recyclerview);
+        tvCurrencyNotice = (TextView) view.findViewById(R.id.tvCurrencyNotice);
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        tvCurrencyNotice.setText("*all the above values are in "+  Utils.getCorrespondingCurrencyName(dataBaseHelper.getTripData(trip_id).getTripcurrency())+" - "+ dataBaseHelper.getTripData(trip_id).getTripcurrency());
         personsList = dataBaseHelper.getPersonWiseExpensesSummaryForPersonsFragment(trip_id);
         mAdapter = new PersonsAdapter(personsList);
 
@@ -642,10 +648,13 @@ public class Persons extends Fragment {
 
         final View view = getActivity().getLayoutInflater().inflate(R.layout.layout_add_person, null);
         final TextInputLayout tilPersonName, tilPersonDeposit, tilPersonMobile, tilPersonEmail;
+        TextView tvDepositMoneyCurrencyNotice = (TextView) view.findViewById(R.id.tvDepositMoneyCurrencyNotice);
         tilPersonName = (TextInputLayout) view.findViewById(R.id.tilPersonName);
         tilPersonDeposit = (TextInputLayout) view.findViewById(R.id.tilPersonDeposit);
         tilPersonMobile = (TextInputLayout) view.findViewById(R.id.tilPersonMobile);
         tilPersonEmail = (TextInputLayout) view.findViewById(R.id.tilPersonEmail);
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+        tvDepositMoneyCurrencyNotice.setText("*Deposit money is in "+ Utils.getCorrespondingCurrencyName(dataBaseHelper.getTripData(trip_id).getTripcurrency())+" - "+dataBaseHelper.getTripData(trip_id).getTripcurrency());
         final AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).setView(view).setTitle("Edit Person")
                 .setPositiveButton("OK",null)
                 .setNegativeButton("CANCEL", null)

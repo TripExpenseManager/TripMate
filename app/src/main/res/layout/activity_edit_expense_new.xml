@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:transitionName="@string/activity_image_trans1"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:animateLayoutChanges="true">
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="5dp"
+                android:layout_margin="7dp"
+                app:cardCornerRadius="5dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/ic_description"
+                            android:tint="?attr/customGrayColor" />
+
+                        <EditText
+                            android:id="@+id/etDesc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="10dp"
+                            android:background="@android:color/transparent"
+                            android:hint="Description"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            android:textColor="?attr/customGrayColor"
+                            android:textSize="17sp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="?attr/customGrayColor" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="5dp"
+                        android:weightSum="10">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/icon_wallet"
+                            android:tint="?attr/customGrayColor" />
+
+                        <EditText
+                            android:id="@+id/etAmountSpent"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="10dp"
+                            android:layout_weight="4"
+                            android:background="@android:color/transparent"
+                            android:hint="Amount spent"
+                            android:inputType="numberDecimal"
+                            android:textColor="?attr/customTextColor"
+                            android:textSize="17sp" />
+
+                        <TextView
+                            android:id="@+id/tvCurrentCurrency"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:text="INR"
+                            android:textColor="?attr/customGrayColor" />
+
+                        <TextView
+                            android:id="@+id/tvDefaultCurrency"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="5"
+                            android:textSize="16sp"
+                            android:text=":       1000 CAD"
+                            android:textColor="?attr/colorAccent"
+                            android:visibility="gone" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="?attr/customGrayColor" />
+
+                    <LinearLayout
+                        android:id="@+id/llDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/icon_calendar"
+                            android:tint="?attr/customGrayColor" />
+
+                        <TextView
+                            android:id="@+id/tvDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="10dp"
+                            android:background="@android:color/transparent"
+                            android:text="Mon, 29th Jan, 11:45"
+                            android:textColor="?attr/customGrayColor"
+                            android:textSize="16sp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="?attr/customGrayColor" />
+
+                    <LinearLayout
+                        android:id="@+id/llCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:src="@drawable/icon_categories"
+                            android:tint="?attr/customGrayColor" />
+
+                        <TextView
+                            android:id="@+id/tvCategory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_margin="10dp"
+                            android:layout_weight="1"
+                            android:background="@android:color/transparent"
+                            android:text="Category"
+                            android:textColor="?attr/customGrayColor"
+                            android:textSize="16sp" />
+
+                        <ImageView
+                            android:id="@+id/ivCategory"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginTop="4dp"
+                            android:src="@drawable/cat_drinks" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="?attr/customGrayColor" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/llCurrency"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="20dp"
+                            android:orientation="horizontal"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:paddingTop="5dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/icon_currency"
+                                android:tint="?attr/customGrayColor" />
+
+                            <TextView
+                                android:id="@+id/tvCurrencyName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@android:color/transparent"
+                                android:text="Currency"
+                                android:textColor="?attr/customGrayColor"
+                                android:textSize="16sp" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/icon_arrow_down"
+                                android:tint="?attr/customGrayColor" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/llCurrencyConversionRate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="25dp"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvConversionCurrentCurrency"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="1 INR = "
+                                    android:textColor="?attr/customGrayColor" />
+
+                                <EditText
+                                    android:id="@+id/etConversionRate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:inputType="numberDecimal"
+                                    android:textColor="?attr/customGrayColor" />
+
+                                <TextView
+                                    android:id="@+id/tvConversionDefaultCurrency"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="CAD"
+                                    android:textColor="?attr/customGrayColor" />
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="*Please enter conversion rate"
+                                android:textColor="?attr/colorAccent"
+                                android:textSize="10sp"
+                                android:textStyle="italic" />
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="9dp"
+                        android:background="?attr/customGrayColor" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/icon_shared_by"
+                                android:tint="?attr/customGrayColor" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@android:color/transparent"
+                                android:text="Expense shared by"
+                                android:textColor="?attr/customGrayColor"
+                                android:textSize="16sp" />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="5dp"
+                            android:orientation="horizontal">
+
+                            <Spinner
+                                android:id="@+id/spSharedBy"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="38dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:entries="@array/shared_by_spinner"
+                                android:text="Shared equally"
+                                android:textColor="?attr/customGrayColor" />
+
+                            <LinearLayout
+                                android:layout_width="60dp"
+                                android:layout_height="30dp"
+                                android:gravity="center"
+                                android:id="@+id/llShowOrHideESB">
+
+                                <ImageView
+                                    android:id="@+id/ivShowOrHideESB"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginRight="20dp"
+                                    android:layout_marginLeft="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/icon_show"
+                                    android:tint="?attr/customGrayColor" />
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:id="@+id/llESBEqually"
+                            android:layout_marginLeft="40dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:id="@+id/tvESBEquallyMsg1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:gravity="center"
+                                android:textColor="?attr/colorAccent"
+                                android:text="Select the persons involved" />
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rvESBEqually"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"/>
+
+
+                            <TextView
+                                android:id="@+id/tvESBEquallyMsg2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:textSize="18sp"
+                                android:text="20 CCur / person"
+                                android:textColor="@color/green"/>
+
+                            <TextView
+                                android:id="@+id/tvESBEquallyMsg3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textColor="@color/colorAccent"/>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:id="@+id/llESBUnequally"
+                            android:layout_marginLeft="40dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:id="@+id/tvESBUnequallyMsg1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:gravity="center"
+                                android:textColor="?attr/colorAccent"
+                                android:text="Enter each person's share" />
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rvESBUnequally"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"/>
+
+
+                            <TextView
+                                android:id="@+id/tvESBUnequallyMsg2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:textSize="16sp"
+                                android:text="20 CCur / person"
+                                android:textColor="@color/green"/>
+
+                            <TextView
+                                android:id="@+id/tvESBUnequallyMsg3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone"
+                                android:gravity="center"
+                                android:text="25 rupees left"
+                                android:textColor="@color/colorAccent"/>
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            android:id="@+id/llESBShares"
+                            android:layout_marginLeft="40dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:id="@+id/tvESBSharesMsg1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="10dp"
+                                android:gravity="center"
+                                android:textColor="?attr/colorAccent"
+                                android:text="Enter each person's share" />
+
+                            <android.support.v7.widget.RecyclerView
+                                android:id="@+id/rvESBShares"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"/>
+
+                            <TextView
+                                android:id="@+id/tvESBSharesMsg2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="3dp"
+                                android:textSize="18sp"
+                                android:text="20 CCur / person"
+                                android:textColor="@color/green"/>
+
+                            <TextView
+                                android:id="@+id/tvESBSharesMsg3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="25 rupees left"
+                                android:visibility="gone"
+                                android:textColor="@color/colorAccent"/>
+
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.3dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="?attr/customGrayColor" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="5dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="10dp"
+                                android:src="@drawable/icon_paid_by"
+                                android:tint="?attr/customGrayColor" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@android:color/transparent"
+                                android:text="Expense paid by"
+                                android:textColor="?attr/customGrayColor"
+                                android:textSize="16sp" />
+
+
+                        </LinearLayout>
+
+                        <CheckBox
+                            android:id="@+id/cbExpFromDepMoney"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="40dp"
+                            android:layout_marginBottom="5dp"
+                            android:checked="true"
+                            android:text="Expense from deposit money"
+                            android:textColor="?attr/customGrayColor" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:id="@+id/llExpByDetail"
+                            android:visibility="gone">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_gravity="center"
+                                android:paddingRight="5dp"
+                                android:paddingTop="5dp">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:paddingRight="5dp"
+                                    android:paddingTop="5dp"
+                                    android:paddingLeft="5dp"
+                                    android:paddingBottom="5dp"
+                                    android:layout_marginLeft="40dp"
+                                    android:layout_marginRight="10dp"
+                                    android:text="Expended by"
+                                    android:textStyle="bold"
+                                    android:gravity="center_vertical"
+                                    android:textColor="?attr/colorAccent"
+                                    android:visibility="visible" />
+                                <ImageView
+                                    android:id="@+id/ivEditExpBy"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginRight="15dp"
+                                    android:padding="5dp"
+                                    android:src="@drawable/icon_edit"
+                                    android:tint="?attr/customGrayColor"/>
+
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvExpPaidByMessage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:paddingBottom="10dp"
+                                android:paddingLeft="5dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="10dp"
+                                android:text=""
+                                android:textColor="?attr/customGrayColor"
+                                android:visibility="visible" />
+
+                        </LinearLayout>
+
+
+
+
+
+
+                    </LinearLayout>
+
+                    <!--   <View
+                           android:layout_width="match_parent"
+                           android:layout_height="0.3dp"
+                           android:layout_marginBottom="4dp"
+                           android:layout_marginTop="4dp"
+                           android:background="?attr/customGrayColor" />-->
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

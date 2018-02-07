@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class TripDetailsActivityNew extends AppCompatActivity implements  OnStartDragListener{
 
@@ -65,10 +66,9 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
 
     ItemTouchHelper mItemTouchHelper;
 
-    FloatingActionButton fabForward;
-
     String trip_id,trip_name,trip_date,trip_url,trip_places;
 
+    TextView tvCurrencyName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
         int tripmate_theme_id = app_preferences.getInt("tripmate_theme_id",1);
         setTheme(Utils.getThemesHashMap().get(tripmate_theme_id));
 
-        setContentView(R.layout.activity_add_trip_new);
+        setContentView(R.layout.activity_trip_details_new);
 
         Intent tripIdIntent = getIntent();
         trip_id = tripIdIntent.getStringExtra("trip_id");
@@ -97,11 +97,11 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
 
         tilTripName = (TextInputLayout) findViewById(R.id.tilTripName);
         tvDate = (TextView)findViewById(R.id.tvDate);
+        tvCurrencyName = (TextView)findViewById(R.id.tvCurrencyName);
         ivDate = (ImageView) findViewById(R.id.ivDate);
         llDate = (LinearLayout) findViewById(R.id.llDate);
         rvPlacesToVisit = (RecyclerView) findViewById(R.id.rvPlacesToVisit);
         llAddPlacesToVisit = (LinearLayout) findViewById(R.id.llAddPlacesToVisit);
-        fabForward  = (FloatingActionButton) findViewById(R.id.fabForward);
 
 
         // set Trip Name
@@ -127,10 +127,11 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
              }
          });
 
-        fabForward.setVisibility(View.GONE);
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
         TripModel tripModel = dataBaseHelper.getTripData(trip_id);
+
+        tvCurrencyName.setText(Utils.getCorrespondingCurrencyName(tripModel.getTripcurrency())+" - "+tripModel.getTripcurrency());
 
         // Getting Current Date and Time
         final Calendar c = Calendar.getInstance();
@@ -191,7 +192,7 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
         trip_places = tripModel.getTrip_places();
 
 
-        String placesArray[] = tripModel.getTrip_places().split(",");
+        String placesArray[] = tripModel.getTrip_places().split(Pattern.quote(Utils.DELIMITER_FOR_PLACES_TO_VISIT));
         Log.d("places",placesArray[0]);
         for(int i=0;i<placesArray.length;i++){
             placesArray[i] = placesArray[i].trim();
@@ -228,45 +229,6 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
                 }
             }
         });
-
-
-    }
-
-
-
-
-    public void addTrip(){
-        try {
-            if(!tilTripName.getEditText().getText().toString().equalsIgnoreCase("")){
-                trip_name = tilTripName.getEditText().getText().toString().trim().substring(0, 1).toUpperCase() + tilTripName.getEditText().getText().toString().trim().substring(1);
-            }else{
-                trip_name = "";
-            }
-            encryptPlaces();
-        }catch (Exception e){
-            return;
-        }
-
-
-        trip_date = tvDate.getText().toString();
-        if(!validate(trip_name) ){
-            tilTripName.setError("Please Enter Trip Name");
-        }else if(!validate(trip_places)){
-            tilTripName.setErrorEnabled(false);
-            Snackbar.make(findViewById(android.R.id.content),"Please Enter Places to Visit", Snackbar.LENGTH_LONG).show();
-        }
-        else{
-            TripModel trip = new TripModel(trip_name,trip_places,trip_date);
-            Intent intent = new Intent(TripDetailsActivityNew.this,TripInfo_AddTrip.class);
-            intent.putExtra("TripName",trip.getTrip_name());
-            intent.putExtra("TripPlaces",trip.getTrip_places());
-            intent.putExtra("TripDate",trip.getTrip_date());
-            intent.putExtra("PersonsList",tripPersonModels);
-
-            startActivityForResult(intent,200);
-
-        }
-
     }
 
     public boolean validate(String textField){
@@ -295,17 +257,15 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
 
     public void encryptPlaces(){
         String places = "";
-        for(String s : placesToVisitArrayList){
-            if(s.length()!=0 ){
-                places+=s.substring(0,1).toUpperCase()+s.substring(1)+",";
+        int i;
+        for(i=0;i< placesToVisitArrayList.size()-1;i++) {
+            String s = placesToVisitArrayList.get(i);
+            if (s.length() != 0) {
+                places += s.substring(0, 1).toUpperCase() + s.substring(1) + Utils.DELIMITER_FOR_PLACES_TO_VISIT;
             }
         }
-        trip_places = places;
-
-       /* if(places.length()>=2)
-            trip_places =  places.substring(0,places.length()-2);
-        else
-            trip_places = places; */
+        String s = placesToVisitArrayList.get(i);
+        trip_places =  places + s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
     private class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
@@ -511,9 +471,6 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
                         llAddPlacesToVisit.setVisibility(View.VISIBLE);
                     }
 
-                    encryptPlaces();
-                    DataBaseHelper db = new DataBaseHelper(context);
-                    db.updateTripPlaces(trip_id,trip_places);
                 }
             });
 
@@ -535,9 +492,6 @@ public class TripDetailsActivityNew extends AppCompatActivity implements  OnStar
                     }else {
                         placesToVisitArrayList.set(holder.getAdapterPosition(),holder.etPlaceToVisit.getText().toString());
                         llAddPlacesToVisit.setVisibility(View.VISIBLE);
-                        encryptPlaces();
-                        DataBaseHelper db = new DataBaseHelper(context);
-                        db.updateTripPlaces(trip_id,trip_places);
                     }
                 }
             });

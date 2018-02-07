@@ -27,6 +27,8 @@ public class DashBoardFragment extends Fragment {
     String trip_id;
     RecyclerView rvDashBoard;
 
+    TextView tvCurrencyNotice;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -36,6 +38,10 @@ public class DashBoardFragment extends Fragment {
         trip_id = intent.getStringExtra("trip_id");
 
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+        tvCurrencyNotice = (TextView) customview.findViewById(R.id.tvCurrencyNotice);
+        tvCurrencyNotice.setText("*all the above values are in "+  Utils.getCorrespondingCurrencyName(dataBaseHelper.getTripData(trip_id).getTripcurrency())+" - "+ dataBaseHelper.getTripData(trip_id).getTripcurrency());
+
         expensePersonArrayList = dataBaseHelper.getPersonWiseExpensesSummaryForDashboard(trip_id);
 
         // DashBoard

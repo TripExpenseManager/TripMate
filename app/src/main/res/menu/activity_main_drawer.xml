@@ -18,10 +18,32 @@
 
     <item android:title="Others">
         <menu>
+
+            <item
+                android:id="@+id/nav_contribute"
+                android:icon="@drawable/icon_donate"
+                android:title="Contribute" />
+
+
+            <item
+                android:id="@+id/nav_rate_us"
+                android:icon="@drawable/icon_rate_us"
+                android:title="Rate us" />
+
+            <item
+                android:id="@+id/nav_request_feature"
+                android:icon="@drawable/icon_request_feature"
+                android:title="Request a feature" />
+
+            <item
+                android:id="@+id/nav_report_bug"
+                android:icon="@drawable/icon_report_bug"
+                android:title="Report a Bug" />
+
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/icon_share"
-                android:title="Share" />
+                android:title="Share App" />
 
             <item
                 android:id="@+id/nav_settings"
@@ -31,7 +53,7 @@
             <item
                 android:id="@+id/nav_help"
                 android:icon="@drawable/icon_help"
-                android:title="Help" />
+                android:title="FAQ" />
 
 
         </menu>

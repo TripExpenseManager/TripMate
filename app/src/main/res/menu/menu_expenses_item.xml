@@ -3,11 +3,15 @@
 
     <item
         android:id="@+id/edit"
-        android:title="Edit expense" />
+        android:title="Edit" />
 
     <item
         android:id="@+id/delete"
-        android:title="Delete expense" />
+        android:title="Delete" />
+
+    <item
+        android:id="@+id/share"
+        android:title="Share" />
 
 
 </menu>

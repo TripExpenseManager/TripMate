@@ -48,8 +48,8 @@ public class Notes extends Fragment {
 
     ArrayList<NotesModel> notesModels = new ArrayList<>();
 
-    public static String DELIMETER_FOR_TODOS ="$*^";
-    public static String DELIMETER_FOR_A_TODO ="@+&";
+    ArrayList<TodoModel> completedTodosArrayList = new ArrayList<>();
+    ArrayList<TodoModel> unCompletedTodosArrayList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -153,6 +153,38 @@ public class Notes extends Fragment {
 
     }
 
+    public ArrayList<TodoModel>  decryptTodos(String noteContent){
+        String[] todosModelsasStrings = noteContent.split(Pattern.quote(Utils.DELIMETER_FOR_TODOS));
+        ArrayList<TodoModel> todoModels = new ArrayList<>();
+
+        for(String s : todosModelsasStrings) {
+            TodoModel todoModel = new TodoModel();
+            String[] todo = s.split(Pattern.quote(Utils.DELIMETER_FOR_A_TODO));
+            todoModel.setName(todo[0].trim());
+            if(todo[1].trim().equalsIgnoreCase("t"))
+                todoModel.setCompleted(true);
+            else
+                todoModel.setCompleted(false);
+            todoModels.add(todoModel);
+        }
+        return  todoModels;
+    }
+
+    public void seperateTodosBasedOnStatus(String noteContent){
+        ArrayList<TodoModel> todoModelArrayList = decryptTodos(noteContent);
+
+        completedTodosArrayList = new ArrayList<>();
+        unCompletedTodosArrayList = new ArrayList<>();
+
+        for(TodoModel todoModel : todoModelArrayList){
+            if(todoModel.isCompleted())
+                completedTodosArrayList.add(todoModel);
+            else{
+                unCompletedTodosArrayList.add(todoModel);
+            }
+        }
+    }
+
 
     class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NotesViewHolder>{
 
@@ -224,6 +256,8 @@ public class Notes extends Fragment {
                 holder.tvNotesType.setText("Checklist");
             }
 
+
+
             holder.tvNotesMenu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -236,12 +270,58 @@ public class Notes extends Fragment {
                     popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
+
                             switch (item.getItemId()) {
                                 case R.id.edit:
                                     holder.ivEditNotes.performClick();
                                     break;
                                 case R.id.delete:
                                     holder.ivDeleteNotes.performClick();
+                                    break;
+                                case R.id.share:
+
+                                    String notesContent = "";
+                                    if(notesModel.getNote_ContentType() == 1){
+                                        notesContent += notesModel.getNote_Title() + "\n\n";
+                                        notesContent += notesModel.getNote_Body();
+                                    }else {
+
+                                        notesContent += notesModel.getNote_Title() + "\n\n";
+                                        String checklistContent = notesModel.getNote_Body();
+                                        if (!checklistContent.trim().equals(""))
+                                            seperateTodosBasedOnStatus(checklistContent);
+
+                                        if (unCompletedTodosArrayList.size() != 0) {
+                                            int i = 1;
+                                            for (TodoModel todoModel : unCompletedTodosArrayList) {
+                                                // Name of todos
+                                                if (todoModel.getName() != null)
+                                                    notesContent += i + ". " + todoModel.getName().trim() + "\n";
+                                                i++;
+                                            }
+                                        }
+
+                                        if (completedTodosArrayList.size() != 0) {
+                                            int i = 1;
+                                            notesContent += "\n Completed Items : \n";
+                                            for (TodoModel todoModel : completedTodosArrayList) {
+                                                // Name of todos
+                                                if (todoModel.getName() != null)
+                                                    notesContent +=  i + ". " + todoModel.getName().trim() + "\n";
+
+                                                i++;
+                                            }
+                                        }
+                                    }
+
+
+                                    Intent sendIntent = new Intent();
+                                    sendIntent.setAction(Intent.ACTION_SEND);
+                                    sendIntent.putExtra(Intent.EXTRA_TEXT, notesContent);
+                                    sendIntent.setType("text/plain");
+                                    startActivity(sendIntent);
+
+
                                     break;
                             }
                             return false;
@@ -385,13 +465,13 @@ public class Notes extends Fragment {
     }
 
     public String decryptUnCompletedTodosasLinesOfText(String noteContent) {
-        String[] todosModelsasStrings = noteContent.split(Pattern.quote(DELIMETER_FOR_TODOS));
+        String[] todosModelsasStrings = noteContent.split(Pattern.quote(Utils.DELIMETER_FOR_TODOS));
         ArrayList<TodoModel> todoModels = new ArrayList<>();
         String notesBody = "";
 
         for (String s : todosModelsasStrings) {
             TodoModel todoModel = new TodoModel();
-            String[] todo = s.split(Pattern.quote(DELIMETER_FOR_A_TODO));
+            String[] todo = s.split(Pattern.quote(Utils.DELIMETER_FOR_A_TODO));
             todoModel.setName(todo[0].trim());
             if (todo[1].trim().equalsIgnoreCase("t"))
                 todoModel.setCompleted(true);

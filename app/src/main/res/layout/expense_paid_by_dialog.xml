@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Paid by"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textColor="?attr/colorAccent"/>
+
+    <info.hoang8f.android.segmented.SegmentedGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/segmentedGroup"
+        android:padding="5dp"
+        android:weightSum="2"
+        android:background="@android:color/transparent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        segmentedgroup:sc_tint_color="?attr/colorPrimary"
+        segmentedgroup:sc_checked_text_color="#FFFFFF"
+        segmentedgroup:sc_border_width="2dp"
+        segmentedgroup:sc_corner_radius="10dp"
+        android:gravity="center">
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/rbSingle"
+            android:text="SINGLE"
+            android:layout_weight="1"
+            style="@style/RadioButton"/>
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/rbMultiple"
+            android:layout_weight="1"
+            android:text="MULTIPLE"
+            style="@style/RadioButton"/>
+
+    </info.hoang8f.android.segmented.SegmentedGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llExpPaidBySingle">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorPrimary"
+            android:padding="5dp"
+            android:text="Select the person who paid"
+            android:gravity="center"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rvExpPaidBySingle"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llExpPaidByMultiple">
+        <TextView
+            android:id="@+id/tvTitleExpPaidByMultiple"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorPrimary"
+            android:padding="5dp"
+            android:text="Enter each person's expense"
+            android:gravity="center"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rvExpPaidByMultiple"/>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

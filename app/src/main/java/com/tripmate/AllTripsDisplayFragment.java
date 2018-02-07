@@ -8,11 +8,14 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.speech.RecognizerIntent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -66,7 +69,7 @@ public class AllTripsDisplayFragment extends Fragment{
 
     ArrayList<TripModel> trip_array_list = new ArrayList<>();
 
-
+    DataBaseHelper dataBaseHelper;
 
     TripAdapter grid_view_adapter;
 
@@ -76,9 +79,30 @@ public class AllTripsDisplayFragment extends Fragment{
 
     RelativeLayout no_trips_RL,no_trips_found_searched_RL;
 
+    AlertDialog alertDialogDBUpdating;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        final SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int isAppUpdatedJustNow = app_preferences.getInt("isAppUpdatedJustNow",1);
+
+        dataBaseHelper = new DataBaseHelper(getActivity());
+
+        if(isAppUpdatedJustNow == 1){
+            trip_array_list = dataBaseHelper.getTripsDataForTheFirstTime();
+
+            SharedPreferences.Editor editor = app_preferences.edit();
+            editor.putInt("isAppUpdatedJustNow", 0);
+            editor.apply();
+
+        }else{
+            trip_array_list = dataBaseHelper.getTripsData();
+        }
+
+
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_trips_display, container, false);
 
@@ -496,9 +520,6 @@ public class AllTripsDisplayFragment extends Fragment{
 
         trip_grid_view = (GridView) view.findViewById(R.id.trip_grid_view);
 
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-        trip_array_list = dataBaseHelper.getTripsData();
-
         grid_view_adapter  = new TripAdapter(getActivity(), trip_array_list);
 
         trip_grid_view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -559,7 +580,6 @@ public class AllTripsDisplayFragment extends Fragment{
 
         return view;
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -805,13 +825,16 @@ public class AllTripsDisplayFragment extends Fragment{
     @Override
     public void onResume() {
 
-        Log.i("saikrishna","onresume Called");
+        dataBaseHelper = new DataBaseHelper(getActivity());
 
-        //refreshing the contents of gridview by retrieving data from backend
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-
-        trip_array_list.clear();
-        trip_array_list.addAll(dataBaseHelper.getTripsData());
+        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        int isAppUpdatedJustNow = app_preferences.getInt("isAppUpdatedJustNow",1);
+        if(isAppUpdatedJustNow == 1){
+            getActivity().recreate();
+        }else{
+            trip_array_list.clear();
+            trip_array_list.addAll(dataBaseHelper.getTripsData());
+        }
 
         if(trip_array_list.size() == 0){
             no_trips_found_searched_RL.setVisibility(View.GONE);
@@ -822,7 +845,6 @@ public class AllTripsDisplayFragment extends Fragment{
         }
 
         //retrieves the last selected icon_sort-by position, which is saved in sharedpreferencse and display the corresponding result
-        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         int prevSelectedPosition = app_preferences.getInt("get_sort_position",0);
 
         if(prevSelectedPosition ==0){
@@ -917,7 +939,10 @@ public class AllTripsDisplayFragment extends Fragment{
 
             trip_name_tv.setText(model.getTrip_name());
             trip_date_tv.setText(model.getTrip_date());
+            if(model.getTripcurrency() == null)
             trip_amount_tv.setText(model.getTrip_amount()+"");
+            else
+                trip_amount_tv.setText(model.getTrip_amount()+" "+model.getTripcurrency());
             total_persons.setText(Integer.toString(model.getTotal_persons()));
 
             return v;
@@ -971,7 +996,6 @@ public class AllTripsDisplayFragment extends Fragment{
                                     //    if (jSONObject.getInt("ow") > 500) {
                                             String imageUrl = jSONObject.getString("ou");
                                             tripModel.setImageUrl(imageUrl);
-                                            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
                                             dataBaseHelper.updateTripImageUrl(tripModel.getTrip_id(),imageUrl);
                                             grid_view_adapter.notifyDataSetChanged();
                                             break;

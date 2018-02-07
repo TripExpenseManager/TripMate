@@ -55,6 +55,8 @@ public class ChartsFragment extends Fragment{
     Double tripTotalAmount;
     String trip_id;
 
+    TextView tvCurrencyNotice;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -73,6 +75,11 @@ public class ChartsFragment extends Fragment{
 
         //getting data of for all the items in spinner
         DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+        tvCurrencyNotice = (TextView) customview.findViewById(R.id.tvCurrencyNotice);
+        tvCurrencyNotice.setText("*all the above values are in "+  Utils.getCorrespondingCurrencyName(dataBaseHelper.getTripData(trip_id).getTripcurrency())+" - "+ dataBaseHelper.getTripData(trip_id).getTripcurrency());
+
+
         personGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphPersons(trip_id);
         categoryGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphCategory(trip_id);
         dateGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphDate(trip_id);

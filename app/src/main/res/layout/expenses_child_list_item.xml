@@ -170,19 +170,6 @@
         </RelativeLayout>
 
 
-
-        <TextView
-            android:id="@+id/textViewOptions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:text="&#8942;"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="3dp"
-            android:textColor="?attr/customTextColor"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:layout_alignParentRight="true" />
-
     </RelativeLayout>
 
 

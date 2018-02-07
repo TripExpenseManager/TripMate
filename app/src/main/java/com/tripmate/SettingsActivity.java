@@ -253,7 +253,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
 
     public static class MainPreferenceFragment extends PreferenceFragment {
 
-        static Preference myPref_Backup,myPref_Eula,myPref_Feedback,myPref_RateIt,myPref_About,myPref_Theme;
+        static Preference myPref_Backup,myPref_Eula,myPref_About,myPref_Theme,myPref_Initial_Tour,myPref_Edit_Categories;
+       // static Preference myPref_Feedback,myPref_RateIt;
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -264,10 +265,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
             // feedback preference click listener
             myPref_Backup = findPreference("pref_backup");
             myPref_Eula = findPreference("pref_eula");
-            myPref_Feedback = findPreference("pref_send_feedback");
-            myPref_RateIt = findPreference("pref_rate_it");
+           // myPref_Feedback = findPreference("pref_send_feedback");
+           // myPref_RateIt = findPreference("pref_rate_it");
+            myPref_Initial_Tour = findPreference("pref_initial_tour");
             myPref_About = findPreference("pref_about_tripmate");
             myPref_Theme = findPreference("pref_theme");
+            myPref_Edit_Categories = findPreference("pref_categories");
+
 
             myPref_Theme.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
@@ -381,7 +385,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                 }
             });
 
-            myPref_RateIt.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+       /*     myPref_RateIt.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
 
@@ -391,6 +395,29 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                     } catch (android.content.ActivityNotFoundException anfe) {
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
                     }
+
+                    return true;
+                }
+            });*/
+
+            myPref_Initial_Tour.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    Intent intent = new Intent(getActivity(),AppIntroActivity.class);
+                    intent.putExtra("from","help");
+                    startActivity(intent);
+
+                    return true;
+                }
+            });
+
+            myPref_Edit_Categories.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    Intent intent = new Intent(getActivity(),CategoriesEdit.class);
+                    startActivity(intent);
 
                     return true;
                 }
@@ -423,7 +450,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                 }
             });
 
-            myPref_Feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+  /*          myPref_Feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
 
@@ -441,7 +468,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                     }
                     return false;
                 }
-            });
+            });*/
 
         }
 
@@ -807,6 +834,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                     //  mToast(act.getResources().getString(R.string.restoreComplete));
                     //   DialogFragment_Sync.dismissDialog();
                     Log.i("saikrishna","restore completed");
+                    SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.context);
+                    SharedPreferences.Editor editor = app_preferences.edit();
+                    editor.putInt("isAppUpdatedJustNow", 1);
+                    editor.apply();
                     pd.dismiss();
                     showMessage("Restore completed!");
                     contents.discard(mGoogleApiClient);
@@ -904,6 +935,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
                     //  DialogFragment_Sync.dismissDialog();
                     pd.dismiss();
                     showMessage("Backup completed!");
+                    SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.context);
+                    SharedPreferences.Editor editor = app_preferences.edit();
+                    editor.putInt("isAppUpdatedJustNow", 1);
                     String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
                     BackupPreferenceFragment.gdBackUpCompleted(currentDateTimeString);
                 }

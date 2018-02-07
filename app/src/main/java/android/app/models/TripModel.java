@@ -13,6 +13,7 @@ public class TripModel {
     private String trip_id;
     private  String imageUrl = "";
     private int total_persons;
+    private String tripcurrency;
 
 
 
@@ -81,5 +82,14 @@ public class TripModel {
 
     public void setTotal_persons(int total_persons) {
         this.total_persons = total_persons;
+    }
+
+
+    public String getTripcurrency() {
+        return tripcurrency;
+    }
+
+    public void setTripcurrency(String tripcurrency) {
+        this.tripcurrency = tripcurrency;
     }
 }

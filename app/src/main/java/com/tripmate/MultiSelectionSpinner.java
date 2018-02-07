@@ -182,7 +182,7 @@ public class MultiSelectionSpinner extends android.support.v7.widget.AppCompatSp
         for (int i = 0; i < _items.length; ++i) {
             if (mSelection[i]) {
                 if (foundOne) {
-                    sb.append(", ");
+                    sb.append(Utils.DELIMITER_FOR_EXP_PERSONS);
                 }
                 foundOne = true;
                 sb.append(_items[i]);

@@ -2,6 +2,7 @@ package com.tripmate;
 
 import android.app.AlertDialog;
 import android.app.models.NotesModel;
+import android.app.models.TodoModel;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -253,6 +254,31 @@ public class NotesEditActivity extends AppCompatActivity {
                 saveNotes();
                 disableEditing();
                 return true;
+            case R.id.action_share:
+                String notesContent = "";
+
+                if(!etNotesTitle.getText().toString().equalsIgnoreCase("") ||
+                        !etNotesBody.getText().toString().equalsIgnoreCase("")){
+
+                    if(!etNotesTitle.getText().toString().equalsIgnoreCase("")){
+                        notesContent += etNotesTitle.getText().toString() + "\n\n";
+                    }
+                    if(!etNotesBody.getText().toString().equalsIgnoreCase("")) {
+                        notesContent += etNotesBody.getText().toString() ;
+                    }
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, notesContent);
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                    return true;
+                }else{
+                    Toast.makeText(NotesEditActivity.this,"Sorry, there is no data to share",Toast.LENGTH_SHORT).show();
+                }
+
+
+
             default:
                 return true;
         }

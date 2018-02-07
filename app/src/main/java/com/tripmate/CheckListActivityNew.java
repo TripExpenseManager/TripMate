@@ -3,6 +3,7 @@ package com.tripmate;
 import android.app.models.NotesModel;
 import android.app.models.TodoModel;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -19,6 +20,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,6 +34,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,8 +59,6 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
     String editOrAdd;
     Toolbar toolbar;
     String notesContent = "";
-    public static String DELIMETER_FOR_TODOS ="$*^";
-    public static String DELIMETER_FOR_A_TODO ="@+&";
     Boolean showCompleted=true;
     boolean isSaved = false;
 
@@ -287,7 +288,7 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
             // Name of todos
             if(todoModel.getName()!=null)
             noteContent+=todoModel.getName().trim();
-            noteContent+=DELIMETER_FOR_A_TODO;
+            noteContent+=Utils.DELIMETER_FOR_A_TODO;
             // Status of the todos
             if(todoModel.isCompleted())
                 noteContent+="T";
@@ -295,7 +296,7 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
                 noteContent+="F";
 
             // Delimiter after a todo is completed
-            noteContent+=DELIMETER_FOR_TODOS;
+            noteContent+=Utils.DELIMETER_FOR_TODOS;
 
         }
 
@@ -303,12 +304,12 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
     }
 
     public ArrayList<TodoModel>  decryptTodos(String noteContent){
-        String[] todosModelsasStrings = noteContent.split(Pattern.quote(DELIMETER_FOR_TODOS));
+        String[] todosModelsasStrings = noteContent.split(Pattern.quote(Utils.DELIMETER_FOR_TODOS));
         ArrayList<TodoModel> todoModels = new ArrayList<>();
 
         for(String s : todosModelsasStrings) {
             TodoModel todoModel = new TodoModel();
-            String[] todo = s.split(Pattern.quote(DELIMETER_FOR_A_TODO));
+            String[] todo = s.split(Pattern.quote(Utils.DELIMETER_FOR_A_TODO));
             todoModel.setName(todo[0].trim());
             if(todo[1].trim().equalsIgnoreCase("t"))
                 todoModel.setCompleted(true);
@@ -774,10 +775,70 @@ public class CheckListActivityNew extends AppCompatActivity implements OnStartDr
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_notes_edit, menu);
+        menu.findItem(R.id.action_save).setVisible(false);
+        return  true;
+
+    }
+
+
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home){
-            onBackPressed();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_share:
+                String notesContent = "";
+                if(unCompletedTodosArrayList.size() != 0 || completedTodosArrayList.size() != 0 ||
+                        !etNotesTitle.getText().toString().equalsIgnoreCase("")){
+
+                    notesContent += etNotesTitle.getText().toString() + "\n\n";
+
+                    if (unCompletedTodosArrayList.size() != 0) {
+                        int i = 1;
+                        for (TodoModel todoModel : unCompletedTodosArrayList) {
+                            // Name of todos
+                            if (todoModel.getName() != null)
+                                notesContent += i + ". " + todoModel.getName().trim() + "\n";
+                            i++;
+                        }
+                    }
+
+                    if (completedTodosArrayList.size() != 0) {
+                        int i = 1;
+                        notesContent += "\n Completed Items : \n";
+                        for (TodoModel todoModel : completedTodosArrayList) {
+                            // Name of todos
+                            if (todoModel.getName() != null)
+                                notesContent +=  i + ". " + todoModel.getName().trim() + "\n";
+
+                            i++;
+                        }
+                    }
+
+
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, notesContent);
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }
+                else{
+                    Toast.makeText(CheckListActivityNew.this,"Sorry, there is no data to share",Toast.LENGTH_SHORT).show();
+                }
+
+
+
+
+
+
+
+
+
+            default:
+                return true;
         }
-        return super.onOptionsItemSelected(item);
     }
 }

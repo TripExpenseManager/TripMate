@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="2">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:gravity="center_vertical"
+        android:layout_weight="1.2"
+        >
+        <TextView
+            android:id="@+id/tvPersonNameESBShares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sai Vineeth"
+            android:textColor="?attr/customGrayColor"
+            android:textSize="16sp"
+            android:paddingBottom="3dp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_weight="0.8">
+        <EditText
+            android:id="@+id/etExpByPersonESBShares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="5dp"
+            android:inputType="numberSigned"
+            android:hint="0"/>
+        <TextView
+            android:id="@+id/tvCurrentCurrencyCodeESBShares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="shares"
+            android:layout_marginRight="10dp"
+            android:textColor="?attr/customGrayColor"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

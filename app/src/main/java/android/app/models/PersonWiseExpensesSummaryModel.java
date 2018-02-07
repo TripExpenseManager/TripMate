@@ -7,9 +7,11 @@ package android.app.models;
 public class PersonWiseExpensesSummaryModel {
 
     private String name,mobile,email;
-    private  Double depositAmountGiven,depositAmountSpent,depositAmountRemaining,personalAmountGiven,personalAmountSpent,personalAmountRemaining,totalAmountGiven,totalAmountSpent,totalAmountRemaining;
+    private  Double depositAmountGiven,depositAmountSpent,depositAmountRemaining,
+            personalAmountGiven,personalAmountSpent,personalAmountRemaining,totalAmountGiven,
+            totalAmountSpent,totalAmountRemaining;
     private int admin;
-    boolean canRemove;
+    private boolean canRemove;
 
 
     public boolean getCanRemove() {

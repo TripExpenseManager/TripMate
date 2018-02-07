@@ -106,8 +106,23 @@
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="5dp"
+            android:textStyle="italic"
+            android:textSize="14sp"
             android:text="*here 'Amount' refers to the total amount spent (including deposit amount spent)."
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvCurrencyNotice"
+            android:text="*all the above values are in Default currency"
+            android:textStyle="italic"
+            android:textSize="14sp"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/red"
             />
 
 
