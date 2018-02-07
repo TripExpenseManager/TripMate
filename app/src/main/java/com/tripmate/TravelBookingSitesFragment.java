@@ -21,11 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
 import com.ramotion.foldingcell.FoldingCell;
 import com.squareup.picasso.Picasso;
 
@@ -35,9 +34,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.ScaleInAnimator;
+import okhttp3.OkHttpClient;
 
 
 /**
@@ -60,6 +61,14 @@ public class TravelBookingSitesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_travel_booking_sites, container, false);
+
+        OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                . writeTimeout(120, TimeUnit.SECONDS)
+                .build();
+
+        AndroidNetworking.initialize(getContext(),okHttpClient);
 
         ((MainActivity) getActivity()).getSupportActionBar().setTitle("Travel Booking Sites");
 
@@ -98,39 +107,37 @@ public class TravelBookingSitesFragment extends Fragment {
         return view;
     }
 
+    public void sendRequest(){
 
-    private void sendRequest(){
-
-        StringRequest stringRequest = new StringRequest(JSON_URL,
-                new Response.Listener<String>() {
+        AndroidNetworking.get(JSON_URL)
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONArray(new JSONArrayRequestListener() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONArray response) {
+                        // do anything with response
+
+                        SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                        SharedPreferences.Editor editor = app_preferences.edit();
+                        editor.putString("get_travel",response.toString());
+                        editor.apply();
+
                         try {
-
-                            SharedPreferences app_preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                            SharedPreferences.Editor editor = app_preferences.edit();
-                            editor.putString("get_travel", response);
-                            editor.apply();
-
-                            showJSON(response);
-                            pd.dismiss();
-                            mWaveSwipeRefreshLayout.setRefreshing(false);
+                            showJSON(response.toString());
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        mWaveSwipeRefreshLayout.setRefreshing(false);
+                        pd.dismiss();
                     }
-                },
-                new Response.ErrorListener() {
                     @Override
-                    public void onErrorResponse(VolleyError error) {
+                    public void onError(ANError error) {
                         pd.dismiss();
                         mWaveSwipeRefreshLayout.setRefreshing(false);
                         Toast.makeText(getActivity(),error.getMessage(),Toast.LENGTH_LONG).show();
                     }
                 });
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(stringRequest);
     }
 
     private void showJSON(String json) throws JSONException {
@@ -162,9 +169,6 @@ public class TravelBookingSitesFragment extends Fragment {
 
         travelBookingRV.setAdapter(adapter);
     }
-
-
-
 
     class TravelAdapter extends RecyclerView.Adapter<TravelAdapter.TravelViewHolder>{
 

@@ -128,6 +128,8 @@ public class AddExpense extends AppCompatActivity {
 
         // Setting Default Time and Date
         expense_date = mDay + "-" + (mMonth + 1) + "-" + mYear;
+
+
         tvDate.setText(expense_date);
 
         SimpleDateFormat f1 = new SimpleDateFormat("dd-MM-yyyy");
@@ -270,7 +272,7 @@ public class AddExpense extends AppCompatActivity {
 
             String tempPersons = persons[0];
             for(int i=1;i<persons.length;i++){
-                tempPersons = tempPersons + ", "+persons[i];
+                tempPersons = tempPersons + Utils.DELIMITER_FOR_EXP_PERSONS +persons[i];
             }
 
             descriptionSelected = descTv.getText().toString();
@@ -313,12 +315,11 @@ public class AddExpense extends AppCompatActivity {
             //amount type = 1 refers to deposit money spent
             //amount type = 2 refers to personal money spent
 
+
             amount_type = 1;
             if(fromDepositExpenseET.getText().toString().equalsIgnoreCase("")){
                 Toast.makeText(this, "Please select expense amount.", Toast.LENGTH_SHORT).show();
             }else{
-
-
                 Double deposit_amount_remaining = dataBaseHelper.getDepositMoneyRemaining(trip_id);
                 Double fromDepositExpense = Double.parseDouble(fromDepositExpenseET.getText().toString());
 
@@ -359,7 +360,6 @@ public class AddExpense extends AppCompatActivity {
                     Snackbar.make(findViewById(android.R.id.content), "Please select expense amount", Snackbar.LENGTH_LONG).show();
                 }else{
                     //icon_add expense
-
                     if(dataBaseHelper.addExpense(trip_id,descriptionSelected,categorySelected,dateSelected,expShareByPersonsSelected,amount_type,expenseByPersonGlobalList,null,date_value)){
                         Toast.makeText(this, "Expense added successfully", Toast.LENGTH_SHORT).show();
                         finish();

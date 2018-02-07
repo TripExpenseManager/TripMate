@@ -1,15 +1,36 @@
-<RelativeLayout
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.tripmate.Persons">
+    android:layout_height="match_parent">
 
-
-    <android.support.v7.widget.RecyclerView
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/persons_recyclerview"
-        />
+        android:orientation="vertical"
+        tools:context="com.tripmate.Persons">
 
-</RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/persons_recyclerview"
+            android:nestedScrollingEnabled="false"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:id="@+id/tvCurrencyNotice"
+            android:text="*all the above values are in Default currency"
+            android:textStyle="italic"
+            android:textSize="14sp"
+            android:textColor="@color/red"
+            />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

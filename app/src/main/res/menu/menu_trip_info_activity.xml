@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/action_edit"
-        android:icon="@drawable/icon_edit"
-        android:title="Edit Trip"
-        app:showAsAction="ifRoom"
-        android:orderInCategory="100" />
+
     <item
         android:id="@+id/action_ok"
         android:icon="@drawable/icon_tick"

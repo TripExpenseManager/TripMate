@@ -107,7 +107,7 @@ public class TripDesk extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TripDesk.this,AddExpense.class);
+                Intent intent = new Intent(TripDesk.this,AddExpenseNew.class);
                 intent.putExtra("trip_id",trip_id);
 
 
@@ -298,10 +298,18 @@ public class TripDesk extends AppCompatActivity {
             final View view = getLayoutInflater().inflate(R.layout.layout_add_person, null);
             final TextInputLayout tilPersonName, tilPersonDeposit, tilPersonMobile, tilPersonEmail;
             final AutoCompleteTextView actvPersonName,actvPersonDeposit,actvPersonMobile,actvPersonEmail;
+            TextView tvDepositMoneyCurrencyNotice;
             tilPersonName = (TextInputLayout) view.findViewById(R.id.tilPersonName);
             tilPersonDeposit = (TextInputLayout) view.findViewById(R.id.tilPersonDeposit);
             tilPersonMobile = (TextInputLayout) view.findViewById(R.id.tilPersonMobile);
             tilPersonEmail = (TextInputLayout) view.findViewById(R.id.tilPersonEmail);
+            tvDepositMoneyCurrencyNotice = (TextView) view.findViewById(R.id.tvDepositMoneyCurrencyNotice);
+
+
+
+            DataBaseHelper db = new DataBaseHelper(TripDesk.this);
+
+            tvDepositMoneyCurrencyNotice.setText("*Deposit money value is in "+Utils.getCorrespondingCurrencyName(db.getTripData(trip_id).getTripcurrency())+" - "+db.getTripData(trip_id).getTripcurrency());
 
 
             TextView note1 = (TextView) view.findViewById(R.id.note1);
@@ -314,7 +322,6 @@ public class TripDesk extends AppCompatActivity {
             actvPersonMobile = (AutoCompleteTextView) view.findViewById(R.id.actvPersonMobile);
             actvPersonEmail = (AutoCompleteTextView) view.findViewById(R.id.actvPersonEmail);
 
-            DataBaseHelper db = new DataBaseHelper(TripDesk.this);
             ArrayList<PersonModel> allPersons = db.getAllPersons();
 
             final ArrayList<String> allPersonsNames = new ArrayList<>();
@@ -395,10 +402,10 @@ public class TripDesk extends AppCompatActivity {
 
                             personModel.setTrip_id(trip_id);
 
-                            if(tilPersonDeposit.getEditText().getText().toString().equalsIgnoreCase("")){
-                                personModel.setDeposit(0.0);
-                            }else{
+                            try{
                                 personModel.setDeposit(Double.valueOf(tilPersonDeposit.getEditText().getText().toString()));
+                            }catch (Exception e){
+                                personModel.setDeposit(0.0);
                             }
                             personModel.setMobile(tempMobile);
                             personModel.setEmail(tempEmail);

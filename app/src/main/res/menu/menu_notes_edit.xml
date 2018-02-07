@@ -9,4 +9,14 @@
         android:orderInCategory="100">
     </item>
 
+    <item
+        android:id="@+id/action_share"
+        app:showAsAction="always"
+        android:title="Share"
+        android:icon="@drawable/icon_share"
+        android:orderInCategory="101">
+    </item>
+
+
+
 </menu>

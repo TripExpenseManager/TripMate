@@ -7,10 +7,14 @@ import java.io.Serializable;
  */
 
 public class ExpenseModel implements Serializable{
-    String tripId,itemId,itemName,expBy,shareBy,category,date;
-    Double amount;
-    int amountType;
+    String tripId,itemId,itemName,expBy,shareBy,category,date,currency;
+    Double amount,currencyConversionRate;
+    int amountType,expByType,shareByType;
     long dateValue;
+
+    //only for persons wise expense list generation
+    String personNameForGeneration = "";
+    Double amountByPersonForGeneration = 0.0;
 
 
 
@@ -20,6 +24,88 @@ public class ExpenseModel implements Serializable{
     //below types were removed as adding person in middle of the trip is becoming messy
     //shareByType = 1 refers to shared by all
     //shareByType = 2 refers to shared by some people
+
+    //Now again added due to some extra feaatures
+    //shareByType = 1 refers to shared equally
+    //shareByType = 2 refers to shared unequally
+    //shareByType = 2 refers to shared by shares
+
+    //expByType = 1 refers exp by single person
+    //expByType = 1 refers exp by multiple persons
+
+
+    public ExpenseModel(ExpenseModel model) {
+        this.tripId = model.tripId;
+        this.itemId = model.itemId;
+        this.itemName = model.itemName;
+        this.expBy = model.expBy;
+        this.shareBy = model.shareBy;
+        this.category = model.category;
+        this.date = model.date;
+        this.currency = model.currency;
+        this.amount = model.amount;
+        this.currencyConversionRate = model.currencyConversionRate;
+        this.amountType = model.amountType;
+        this.expByType = model.expByType;
+        this.shareByType = model.shareByType;
+        this.dateValue = model.dateValue;
+        this.personNameForGeneration = model.personNameForGeneration;
+        this.amountByPersonForGeneration = model.amountByPersonForGeneration;
+    }
+
+    public ExpenseModel(){
+
+    }
+
+    public String getPersonNameForGeneration() {
+        return personNameForGeneration;
+    }
+
+    public void setPersonNameForGeneration(String personNameForGeneration) {
+        this.personNameForGeneration = personNameForGeneration;
+    }
+
+    public Double getAmountByPersonForGeneration() {
+        return amountByPersonForGeneration;
+    }
+
+    public void setAmountByPersonForGeneration(Double amountByPersonForGeneration) {
+        this.amountByPersonForGeneration = amountByPersonForGeneration;
+    }
+
+    public Double getCurrencyConversionRate() {
+        return currencyConversionRate;
+    }
+
+
+    public void setCurrencyConversionRate(Double currencyConversionRate) {
+        this.currencyConversionRate = currencyConversionRate;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public int getExpByType() {
+        return expByType;
+    }
+
+    public void setExpByType(int expByType) {
+        this.expByType = expByType;
+    }
+
+    public void setShareByType(int shareByType) {
+        this.shareByType = shareByType;
+    }
+
+    public int getShareByType() {
+        return shareByType;
+    }
+
 
     public String getTripId() {
         return tripId;

@@ -31,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            android:focusableInTouchMode="true"
             >
 
             <LinearLayout
@@ -155,7 +156,7 @@
                        android:id="@+id/llDate"
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
-                       android:layout_marginBottom="10dp"
+                       android:layout_marginBottom="5dp"
                        android:layout_marginTop="15dp"
                        android:gravity="center_vertical"
                        android:orientation="horizontal">
@@ -164,6 +165,7 @@
                            android:id="@+id/ivDate"
                            android:layout_width="30dp"
                            android:layout_height="30dp"
+                           android:padding="3dp"
                            android:layout_marginRight="10dp"
                            android:tint="?attr/colorPrimary"
                            app:srcCompat="@drawable/icon_calendar"/>
@@ -172,7 +174,6 @@
                            android:id="@+id/tvDate"
                            android:layout_width="0dp"
                            android:layout_height="match_parent"
-                           android:layout_marginLeft="10dp"
                            android:layout_weight="1"
                            android:gravity="center_vertical"
                            android:maxLines="1"
@@ -181,10 +182,96 @@
 
                    </LinearLayout>
 
+                   <LinearLayout
+                       android:id="@+id/llCurrency"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:gravity="center_vertical"                       android:orientation="horizontal">
+
+                       <ImageView
+                           android:layout_width="30dp"
+                           android:layout_height="30dp"
+                           android:padding="3dp"
+                           android:layout_gravity="center"
+                           android:src="@drawable/icon_currency"
+                           android:tint="?attr/colorPrimary" />
+
+                       <TextView
+                           android:id="@+id/tvCurrencyName"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_gravity="center"
+                           android:layout_margin="10dp"
+                           android:layout_weight="1"
+                           android:background="@android:color/transparent"
+                           android:text="Currency"
+                           android:textColor="?attr/customTextColor"
+                            />
+
+                       <ImageView
+                           android:layout_width="20dp"
+                           android:layout_height="20dp"
+                           android:layout_gravity="center"
+                           android:src="@drawable/icon_arrow_down"
+                           android:tint="?attr/customTextColor" />
+
+                   </LinearLayout>
 
 
                </LinearLayout>
            </android.support.v7.widget.CardView>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusableInTouchMode="true"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="@dimen/cardview_default_elevation"
+                    android:layout_margin="15dp"
+                    app:cardCornerRadius="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Person Details"
+                                android:textColor="?attr/colorPrimary"
+                                android:padding="3dp"
+                                android:textSize="14sp"/>
+
+                        </RelativeLayout>
+
+                        <!--<View-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="1dp"-->
+                            <!--android:background="?attr/customGrayColor"-->
+                            <!--android:layout_marginTop="2dp" />-->
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rvPersonDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:nestedScrollingEnabled="false"
+                            />
+
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
 
 
 
@@ -192,15 +279,18 @@
 
 
 
+
+
+
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabForward"
-        android:layout_width="@dimen/fab_size_normal"
-        android:layout_height="@dimen/fab_size_normal"
-        android:layout_margin="@dimen/fab_margin"
+        android:id="@+id/fabAddPerson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        app:srcCompat="@drawable/icon_arrow_forward"/>
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@drawable/icon_add_person" />
 
 
 </android.support.design.widget.CoordinatorLayout>

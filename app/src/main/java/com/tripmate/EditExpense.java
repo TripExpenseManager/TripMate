@@ -229,7 +229,7 @@ public class EditExpense extends AppCompatActivity {
         });
 
         String selectedPersonsTemp = model.getShareBy();
-        String selectedPersonsTempArray[] = selectedPersonsTemp.split(",");
+        String selectedPersonsTempArray[] = selectedPersonsTemp.split(Utils.DELIMITER_FOR_EXP_PERSONS);
         for(int j=0;j<selectedPersonsTempArray.length;j++){
             selectedPersonsTempArray[j] = selectedPersonsTempArray[j].trim();
         }
@@ -306,7 +306,7 @@ public class EditExpense extends AppCompatActivity {
 
             String tempPersons = persons[0];
             for(int i=1;i<persons.length;i++){
-                tempPersons = tempPersons + ", "+persons[i];
+                tempPersons = tempPersons + Utils.DELIMITER_FOR_EXP_PERSONS + persons[i];
             }
 
             descriptionSelected = descTv.getText().toString();

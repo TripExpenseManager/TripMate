@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/username"
-        android:textSize="16dp"
+        android:textSize="14dp"
         android:maxLines="1"
         android:ellipsize="end"
         android:paddingTop="@dimen/nav_header_vertical_spacing"

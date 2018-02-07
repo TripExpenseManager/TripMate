@@ -1,0 +1,27 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/tvValue"
+        android:text="Category"
+        android:id="@+id/tvName"
+        android:textColor="?attr/customTextColor"
+        android:textSize="14dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14dp"
+        android:text="10000"
+        android:id="@+id/tvValue"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentRight="true"/>
+
+
+</RelativeLayout>

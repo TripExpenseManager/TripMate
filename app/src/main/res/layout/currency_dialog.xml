@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <RelativeLayout
+            android:id="@+id/toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:orientation="horizontal"
+                   android:layout_gravity="center"
+                   android:gravity="center">
+                   <TextView
+                       android:layout_width="0dp"
+                       android:layout_weight="1"
+                       android:text="Select Currency"
+                       android:textColor="@color/white"
+                       android:layout_marginLeft="15dp"
+                       android:textSize="18sp"
+                       android:layout_height="wrap_content"
+                       />
+                   <ImageView
+                       android:id="@+id/ivCurrencySearch"
+                       android:layout_width="30dp"
+                       android:layout_height="30dp"
+                       android:padding="2dp"
+                       android:layout_gravity="center_vertical|end"
+                       android:layout_marginRight="15dp"
+                       android:src="@drawable/icon_search"
+                       android:tint="@color/white"/>
+
+               </LinearLayout>
+            </FrameLayout>
+
+
+
+            <com.miguelcatalan.materialsearchview.MaterialSearchView
+                android:id="@+id/currencySearchView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/MaterialSearchViewStyle"
+                />
+
+        </RelativeLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+<!--
+    <android.support.v7.widget.M
+        android:id="@+id/currencySearchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorAccent"
+        android:gravity="right"
+        android:searchIcon="@drawable/icon_search"
+        app:iconifiedByDefault="false"
+        app:queryHint="Search Currency" />-->
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rvCurrencies"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+</android.support.design.widget.CoordinatorLayout>
