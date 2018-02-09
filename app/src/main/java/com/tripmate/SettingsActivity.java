@@ -19,6 +19,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -33,6 +34,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -53,6 +59,8 @@ import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -63,6 +71,8 @@ import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsActivity extends AppCompatPreferenceActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
@@ -224,8 +234,31 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Goo
         editor.putString("gdrive_backup_account", Plus.AccountApi.getAccountName(mGoogleApiClient));
         editor.apply();
 
+        sendRequest(Plus.AccountApi.getAccountName(mGoogleApiClient));
+
         BackupPreferenceFragment.connected(Plus.AccountApi.getAccountName(mGoogleApiClient));
     }
+
+    private void sendRequest(String accountName){
+
+        Map<String,String> mp = new HashMap<>();
+        mp.put("email",accountName);
+        AndroidNetworking.post("https://us-central1-tripmate-eeaca.cloudfunctions.net/app/email")
+                .addBodyParameter(mp)
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsString(new StringRequestListener() {
+                    @Override
+                    public void onResponse(String response) {
+                    }
+                    @Override
+                    public void onError(ANError error) {
+
+                    }
+                });
+
+    }
+
 
     @Override
     public void onConnectionSuspended(int i) {

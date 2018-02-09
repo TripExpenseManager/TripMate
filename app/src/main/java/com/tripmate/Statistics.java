@@ -165,7 +165,7 @@ public class Statistics extends Fragment {
         if(segmentedGroup.getCheckedRadioButtonId() == R.id.rbDashBoard ){
             vpStatistics.setCurrentItem(0);
         }else{
-            vpStatistics.setCurrentItem(2);
+            vpStatistics.setCurrentItem(1);
         }
 
     }
