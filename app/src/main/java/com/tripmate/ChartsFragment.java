@@ -112,6 +112,8 @@ public class ChartsFragment extends Fragment{
             }
         });
 
+        // Adding colors
+
         colors = new ArrayList<>();
 
         for (int c : ColorTemplate.VORDIPLOM_COLORS)
@@ -128,7 +130,7 @@ public class ChartsFragment extends Fragment{
         // Charts
         pieChart = (PieChart) customview.findViewById(R.id.pieChart);
 
-        //Setting Legend(actually removing the legend)
+        // Setting Legend(actually removing the legend)
         pieChart.getLegend().setEnabled(false);
         pieChart.getDescription().setEnabled(false);
         pieChart.setEntryLabelColor(Color.BLACK);

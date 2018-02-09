@@ -7,7 +7,10 @@ import android.app.models.ParentExpenseItemModel;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
@@ -54,6 +57,10 @@ import com.bignerdranch.expandablerecyclerview.ParentViewHolder;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,7 +96,7 @@ public class Expenses extends Fragment {
 
     RelativeLayout expensesRL;
 
-    Spinner spinner;
+    Spinner spinner,spExpenses;
 
     String trip_id,tempPersons="";
 
@@ -97,6 +104,8 @@ public class Expenses extends Fragment {
     TextView persons_deposit_spent;
 
     DataBaseHelper dataBaseHelper;
+
+    ArrayList<String> personsList = new ArrayList<>();
 
     String defaultCurrencyCode ="" ;
 
@@ -114,6 +123,7 @@ public class Expenses extends Fragment {
         View view = inflater.inflate(R.layout.fragment_expenses, container, false);
 
         dataBaseHelper  = new DataBaseHelper(getActivity());
+
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.expensesRecyclerView);
         expensesRL = (RelativeLayout) view.findViewById(R.id.expensesRL);
@@ -152,6 +162,47 @@ public class Expenses extends Fragment {
                 }
             }
         });
+
+        personsList.clear();
+        personsList.addAll(Arrays.asList(dataBaseHelper.getPersonsListAsString(trip_id)));
+
+
+
+        spExpenses = (Spinner) view.findViewById(R.id.spExpenses);
+
+        String[] arr = {"Total","By person","For person","Category","Date"};
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getActivity(),R.layout.spinner_item_for_expenses_menu,arr);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spExpenses.setAdapter(spinnerAdapter);
+        spExpenses.setSelection(previouslySelected);
+
+        spExpenses.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position ==0){
+                    displayExpenses(allList);
+                    previouslySelected = 0;
+                }else if(position == 1){
+                    displayExpenses(byPersonsList);
+                    previouslySelected = 1;
+                }else if(position == 2){
+                    displayExpenses(forPersonsList);
+                    previouslySelected = 2;
+                }else if(position == 3){
+                    displayExpenses(categoriesList);
+                    previouslySelected = 3;
+                }else if(position == 4){
+                    displayExpenses(datesList);
+                    previouslySelected = 4;
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
 
 
@@ -399,7 +450,6 @@ public class Expenses extends Fragment {
         expenseDetailsCardview = (CardView) promptsView.findViewById(R.id.expenseDetailsCardview);
 
 
-
         tvDescName.setText(expenseModel.getItemName());
         toBeShared+= expenseModel.getItemName()+" - ";
 
@@ -483,7 +533,7 @@ public class Expenses extends Fragment {
             toBeShared+=expenseModel.getCurrencyConversionRate()+"\n";
 
             toBeShared+="Actual amount entered : ";
-            toBeShared+= expenseModel.getCurrency() +" "+expenseModel.getAmount();
+            toBeShared+= expenseModel.getCurrency() +" "+expenseModel.getAmount()+"\n";
 
             tvCurrency.setText(expenseModel.getCurrency());
             tvConversionRate.setText(expenseModel.getCurrencyConversionRate()+"");
@@ -1032,7 +1082,7 @@ public class Expenses extends Fragment {
         }
 
 
-        MenuItem item = menu.findItem(R.id.spinner);
+     /*   MenuItem item = menu.findItem(R.id.spinner);
         spinner = (Spinner) MenuItemCompat.getActionView(item);
 
         String[] arr = {"Total","By person","For person","Category","Date"};
@@ -1067,7 +1117,7 @@ public class Expenses extends Fragment {
 
             }
         });
-
+*/
 
 
         MenuItem item1 = menu.findItem(R.id.action_share);
@@ -1135,9 +1185,8 @@ public class Expenses extends Fragment {
             }
         });
 
-        ArrayList spinnerItems = new ArrayList();
-        spinnerItems.addAll(Arrays.asList(dataBaseHelper.getPersonsListAsString(trip_id)));
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(),R.layout.spinner_item,spinnerItems);
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(),R.layout.spinner_item,personsList);
         spPersons.setAdapter(spinnerAdapter);
 
         spPersons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -1152,15 +1201,299 @@ public class Expenses extends Fragment {
             }
         });
 
-
-        btnShare.setOnClickListener(new View.OnClickListener() {
+        rbExpFor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    someShareFlag = 1;
+                }
+            }
+        });
+
+        rbExpBy.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    someShareFlag = 2;
+                }
 
 
             }
         });
 
+
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String stringToShare = "";
+
+                if(isAllExpListShare){
+                    stringToShare+= "All Expenses \n \n";
+                    stringToShare+=shareAllExpenses();
+                }else{
+                    if(someShareFlag == 1) {
+                        // for person
+                        String selectedPersonName=personsList.get(personSelectedForSharing);
+                        stringToShare+= "All Expenses for "+ selectedPersonName + "\n \n";
+                        ParentExpenseItemModel itemModel = new ParentExpenseItemModel();
+                        for(ParentExpenseItemModel model : forPersonsList){
+                            if(model.getName().equalsIgnoreCase(selectedPersonName))
+                                itemModel = model;
+                        }
+                        ArrayList<ExpenseModel> expenseModelArrayList = itemModel.getExpenseList();
+                        for(int i=0;i<expenseModelArrayList.size();i++){
+                            stringToShare+=shareExpense(expenseModelArrayList.get(i),false,true,i+1);
+                            stringToShare+="\n\n";
+                        }
+                        stringToShare+="\n";
+
+                    }else{
+                        // by person
+                        String selectedPersonName=personsList.get(personSelectedForSharing);
+                        stringToShare+= "All Expenses by "+ selectedPersonName + "\n \n";
+                        ParentExpenseItemModel itemModel = new ParentExpenseItemModel();
+                        for(ParentExpenseItemModel model : byPersonsList){
+                            if(model.getName().equalsIgnoreCase(selectedPersonName))
+                                itemModel = model;
+                        }
+                        ArrayList<ExpenseModel> expenseModelArrayList = itemModel.getExpenseList();
+                        for(int i=0;i<expenseModelArrayList.size();i++){
+                            stringToShare+=shareExpense(expenseModelArrayList.get(i),true,false,i+1);
+                            stringToShare+="\n\n";
+                        }
+                        stringToShare+="\n";
+                    }
+                }
+
+
+
+/*
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, stringToShare);
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);*/
+
+                /** Directory that files are to be read from and written to **/
+                  final File DATABASE_DIRECTORY =
+                        new File(Environment.getExternalStorageDirectory(),"Trip Mate");
+
+                /** File path of Db to be imported **/
+                  final File IMPORT_FILE =
+                        new File(DATABASE_DIRECTORY,"Expenses.txt");
+
+
+                FileWriter writer = null;
+                try {
+                    writer = new FileWriter(IMPORT_FILE);
+                    writer.append(stringToShare);
+                    writer.flush();
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+
+           //     File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + "abc.txt");
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("text/*");
+                sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + IMPORT_FILE.getAbsolutePath()));
+                startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+            }
+        });
+
+
+    }
+
+
+    String shareAllExpenses(){
+        String shareAllExpenses = "";
+
+        for(ParentExpenseItemModel itemModel : allList){
+            shareAllExpenses+=itemModel.getName() + " : " + itemModel.getAmount() +  "\n \n";
+            ArrayList<ExpenseModel> expenseModelArrayList = itemModel.getExpenseList();
+            for(int i=0;i<expenseModelArrayList.size();i++){
+                shareAllExpenses+=shareExpense(expenseModelArrayList.get(i),false,false,i+1);
+                shareAllExpenses+="\n\n";
+            }
+            shareAllExpenses+="\n";
+        }
+        return shareAllExpenses;
+    }
+
+
+
+
+    String shareExpense(ExpenseModel expenseModel,boolean byPerson , boolean forPerson ,int num){
+        String shareSingleExpense = "";
+        boolean isCurrencyChanged=false;
+        if(!defaultCurrencyCode.equalsIgnoreCase(expenseModel.getCurrency())){
+            isCurrencyChanged = true;
+        }
+
+
+        if(num!=0){
+            shareSingleExpense+= num  + ". ";
+        }
+        shareSingleExpense+= expenseModel.getItemName()+" - ";
+
+        if(byPerson || forPerson){
+
+            shareSingleExpense += defaultCurrencyCode + " "+ expenseModel.getAmountByPersonForGeneration()+"\n\n";
+
+            shareSingleExpense += "Expense Details : \n";
+
+            if(byPerson){
+                shareSingleExpense += "Paid by : ";
+            }else{
+                shareSingleExpense += "Paid for : ";
+            }
+            shareSingleExpense += expenseModel.getPersonNameForGeneration()+"\n";
+
+            if(!defaultCurrencyCode.equalsIgnoreCase(expenseModel.getCurrency())){
+                shareSingleExpense += "Actual amount entered : ";
+                shareSingleExpense += expenseModel.getCurrency() +" "
+                        +roundOff(expenseModel.getAmountByPersonForGeneration()/expenseModel.getCurrencyConversionRate()) +"\n\n";
+            }
+
+
+
+        }else{
+            shareSingleExpense += defaultCurrencyCode + " "+
+                    roundOff(expenseModel.getAmount()*expenseModel.getCurrencyConversionRate())+"\n";
+        }
+
+
+        shareSingleExpense += "Full expense details : \n";
+        shareSingleExpense += "Category : ";
+        shareSingleExpense += expenseModel.getCategory()+"\n";
+
+        String dateToDisplay = new SimpleDateFormat("MMM d, yyyy, hh:mm a").format(expenseModel.getDateValue());
+        shareSingleExpense += "Date and Time :";
+        shareSingleExpense += dateToDisplay + "\n";
+
+        shareSingleExpense += "Total Amount :";
+        shareSingleExpense += defaultCurrencyCode+" "
+                +roundOff(expenseModel.getAmount()*expenseModel.getCurrencyConversionRate()) + "\n";
+
+
+        if(!defaultCurrencyCode.equalsIgnoreCase(expenseModel.getCurrency())){
+
+            shareSingleExpense+="Currency : ";
+            shareSingleExpense+=expenseModel.getCurrency()+"\n";
+
+            shareSingleExpense+="Conversion rate : ";
+            shareSingleExpense+=expenseModel.getCurrencyConversionRate()+"\n";
+
+            shareSingleExpense+="Actual amount entered : ";
+            shareSingleExpense+= expenseModel.getCurrency() +" "+expenseModel.getAmount()+"\n";
+        }
+
+
+
+        if(expenseModel.getShareByType() == 1){
+            shareSingleExpense += "Shared by (equally)\n";
+
+            String persons[] = expenseModel.getShareBy().split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSONS));
+            double amountSharedBy = roundOff(expenseModel.getAmount()/persons.length);
+            for(String person : persons){
+                shareSingleExpense+=(person + " : " + roundOff(amountSharedBy*expenseModel.getCurrencyConversionRate()));
+                shareSingleExpense+=(" "+defaultCurrencyCode);
+                if(isCurrencyChanged){
+                    shareSingleExpense+=("("+ amountSharedBy+" " + expenseModel.getCurrency()+")");
+                }
+                shareSingleExpense+="\n";
+            }
+
+
+        }else if(expenseModel.getShareByType() == 2){
+            shareSingleExpense += "Shared by (unequally)\n";
+
+            String personsAndAmountList[] = expenseModel.getShareBy().split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSONS));
+
+            for (String aPersonsAndAmount : personsAndAmountList) {
+                String eachPersonAndAmount[] = aPersonsAndAmount.split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSON_AND_AMOUNT));
+                shareSingleExpense+=(eachPersonAndAmount[0] + " : " + roundOff(Double.parseDouble(eachPersonAndAmount[1])*
+                        expenseModel.getCurrencyConversionRate()));
+                shareSingleExpense+=(" "+defaultCurrencyCode);
+                if(isCurrencyChanged){
+                    shareSingleExpense+=("("+ roundOff(Double.parseDouble(eachPersonAndAmount[1]))+" " + expenseModel.getCurrency()+")");
+                }
+                shareSingleExpense+="\n";
+
+            }
+
+        }else if(expenseModel.getShareByType() == 3){
+            shareSingleExpense += "Shared by (shares)\n";
+
+            String personsAndAmountList[] = expenseModel.getShareBy().split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSONS));
+
+            int totalShares=0;
+            for (String aPersonsAndAmount : personsAndAmountList) {
+                String eachPersonAndAmount[] = aPersonsAndAmount.split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSON_AND_AMOUNT));
+                totalShares+=Integer.parseInt(eachPersonAndAmount[1]);
+            }
+
+            //  double amountPerShare = roundOff();
+
+            for (String aPersonsAndAmount : personsAndAmountList) {
+                String eachPersonAndAmount[] = aPersonsAndAmount.split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSON_AND_AMOUNT));
+
+                int noOfShares =Integer.parseInt(eachPersonAndAmount[1]);
+
+                shareSingleExpense+=(eachPersonAndAmount[0] + " : " + roundOff(noOfShares*expenseModel.getAmount()/totalShares
+                        *expenseModel.getCurrencyConversionRate())
+                        + "("+ noOfShares + ")");
+
+                shareSingleExpense+=(" "+defaultCurrencyCode);
+                if(isCurrencyChanged){
+                    shareSingleExpense+=("("+ roundOff(noOfShares*expenseModel.getAmount()/totalShares)+" " + expenseModel.getCurrency()+")");
+                }
+                shareSingleExpense+="\n";
+
+
+            }
+        }
+
+
+
+        if(expenseModel.getExpByType() == 1){
+            shareSingleExpense += "Paid by (single)\n";
+            shareSingleExpense+=(expenseModel.getExpBy() + " : " + roundOff(expenseModel.getAmount()*
+                    expenseModel.getCurrencyConversionRate()));
+
+            shareSingleExpense+=(" "+defaultCurrencyCode);
+            if(isCurrencyChanged){
+                shareSingleExpense+=("("+ expenseModel.getAmount()+" " + expenseModel.getCurrency()+")");
+            }
+            shareSingleExpense+="\n";
+
+        }else  if(expenseModel.getExpByType() == 2){
+            shareSingleExpense += "Paid by (multiple)\n";
+
+            String personsAndAmountList[] = expenseModel.getExpBy().split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSONS));
+
+            for (String aPersonsAndAmount : personsAndAmountList) {
+                String eachPersonAndAmount[] = aPersonsAndAmount.split(Pattern.quote(Utils.DELIMITER_FOR_EXP_PERSON_AND_AMOUNT));
+
+
+                shareSingleExpense+=(eachPersonAndAmount[0] + " : " + roundOff(Double.parseDouble(eachPersonAndAmount[1])*
+                        expenseModel.getCurrencyConversionRate()));
+                shareSingleExpense+=(" "+defaultCurrencyCode);
+                if(isCurrencyChanged){
+                    shareSingleExpense+=("("+ roundOff(Double.parseDouble(eachPersonAndAmount[1]))+" " + expenseModel.getCurrency()+")");
+                }
+                shareSingleExpense+="\n";
+
+            }
+
+        }
+
+
+        return  shareSingleExpense;
 
     }
 

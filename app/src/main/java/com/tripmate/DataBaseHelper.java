@@ -134,10 +134,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             values.put(CATEGORIES_COLUMN_CAT_NAME, cat);
             db.insert(CATEGORIES_TABLE_NAME, null, values);
         }
-/*
         //adding sample trip
         String trip_id = "TRIP"+ UUID.randomUUID().toString();
-        TripModel trip = new TripModel("Sample trip","Place 1$@#Place 2$@#Place 3$@#Place 4$@#Place5",1 + "-" + 1 + "-" + 2018);
+        TripModel trip = new TripModel("Sample trip","Place 1$@#Place 2$@#Place 3$@#Place 4$@#Place5",
+                25 + "-" + 1 + "-" + 2018);
         trip.setTrip_id(trip_id);
         trip.setTotal_persons(5);
         trip.setTripcurrency("INR");
@@ -156,39 +156,39 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         tripPersonModels.add(model1);
 
         PersonModel model2 = new PersonModel();
-        model1.setTrip_id(trip_id);
-        model1.setAdmin(0);
-        model1.setDeposit(200.0);
-        model1.setEmail("person2@gmail.com");
-        model1.setMobile("9999999998");
-        model1.setName("Person 2");
+        model2.setTrip_id(trip_id);
+        model2.setAdmin(0);
+        model2.setDeposit(200.0);
+        model2.setEmail("person2@gmail.com");
+        model2.setMobile("9999999998");
+        model2.setName("Person 2");
         tripPersonModels.add(model2);
 
         PersonModel model3 = new PersonModel();
-        model1.setTrip_id(trip_id);
-        model1.setAdmin(0);
-        model1.setDeposit(200.0);
-        model1.setEmail("person3@gmail.com");
-        model1.setMobile("9999999997");
-        model1.setName("Person 3");
+        model3.setTrip_id(trip_id);
+        model3.setAdmin(0);
+        model3.setDeposit(200.0);
+        model3.setEmail("person3@gmail.com");
+        model3.setMobile("9999999997");
+        model3.setName("Person 3");
         tripPersonModels.add(model3);
 
         PersonModel model4 = new PersonModel();
-        model1.setTrip_id(trip_id);
-        model1.setAdmin(0);
-        model1.setDeposit(100.0);
-        model1.setEmail("person4@gmail.com");
-        model1.setMobile("9999999996");
-        model1.setName("Person 4");
+        model4.setTrip_id(trip_id);
+        model4.setAdmin(0);
+        model4.setDeposit(100.0);
+        model4.setEmail("person4@gmail.com");
+        model4.setMobile("9999999996");
+        model4.setName("Person 4");
         tripPersonModels.add(model4);
 
         PersonModel model5 = new PersonModel();
-        model1.setTrip_id(trip_id);
-        model1.setAdmin(0);
-        model1.setDeposit(100.0);
-        model1.setEmail("person5@gmail.com");
-        model1.setMobile("9999999995");
-        model1.setName("Person 5");
+        model5.setTrip_id(trip_id);
+        model5.setAdmin(0);
+        model5.setDeposit(100.0);
+        model5.setEmail("person5@gmail.com");
+        model5.setMobile("9999999995");
+        model5.setName("Person 5");
         tripPersonModels.add(model5);
 
         addPersons(trip_id, tripPersonModels,db);
@@ -250,7 +250,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         modelToBeAdded.setCurrencyConversionRate(1.0);
 
 
-        addExpenseNew(modelToBeAdded,db);*/
+        addExpenseNew(modelToBeAdded,db);
 
     }
 

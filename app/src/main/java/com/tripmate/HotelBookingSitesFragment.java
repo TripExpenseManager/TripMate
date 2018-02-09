@@ -49,7 +49,9 @@ public class HotelBookingSitesFragment extends Fragment {
     HotelsAdapter mAdapter;
     ArrayList<HotelsTravelModel> hotelsModels = new ArrayList<>();
 
-    public static final String JSON_URL = "http://tripmateandroid.000webhostapp.com/gethotels.php";
+
+  // public static final String JSON_URL = "http://tripmateandroid.000webhostapp.com/gethotels.php";
+   public static final String JSON_URL = "https://tripmate-eeaca.firebaseio.com/hotels.json";
     SwipeRefreshLayout mWaveSwipeRefreshLayout;
 
     ProgressDialog pd;
