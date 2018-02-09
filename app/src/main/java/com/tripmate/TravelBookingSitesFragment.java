@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,8 @@ public class TravelBookingSitesFragment extends Fragment {
     TravelAdapter mAdapter;
     ArrayList<HotelsTravelModel> travelModels = new ArrayList<>();
 
-    public static final String JSON_URL = "http://tripmateandroid.000webhostapp.com/gettravel.php";
+  //  public static final String JSON_URL = "http://tripmateandroid.000webhostapp.com/gettravel.php";
+    public static final String JSON_URL = "https://tripmate-eeaca.firebaseio.com/travel.json";
     SwipeRefreshLayout mWaveSwipeRefreshLayout;
     ProgressDialog pd;
 
@@ -121,6 +123,7 @@ public class TravelBookingSitesFragment extends Fragment {
                         SharedPreferences.Editor editor = app_preferences.edit();
                         editor.putString("get_travel",response.toString());
                         editor.apply();
+                        Log.d("vinn",response.toString());
 
                         try {
                             showJSON(response.toString());

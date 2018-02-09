@@ -1,9 +1,11 @@
-<LinearLayout android:layout_width="match_parent"
+<LinearLayout
+    xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/transparent"
-    xmlns:segmentedgroup="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
     >
 
     <info.hoang8f.android.segmented.SegmentedGroup
@@ -41,8 +43,8 @@
     </info.hoang8f.android.segmented.SegmentedGroup>
 
     <android.support.v4.view.ViewPager
+        android:id="@+id/vpStatistics"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/vpStatistics"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>
