@@ -1607,11 +1607,19 @@ public class EditExpenseNew extends AppCompatActivity {
 
         SimpleDateFormat f1 = new SimpleDateFormat("dd-MM-yyyy");
         Date d1 = null;
+        Date d2 = null;
         try {
             d1 = f1.parse(expense_date);
+            d2 = new Date(date_value);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy");
+            mYear = Integer.parseInt(df.format(d2));
+            mMonth = d2.getMonth();
+            mDay = d2.getDate();
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+
 
 
         final long time_to_add = date_value - d1.getTime();

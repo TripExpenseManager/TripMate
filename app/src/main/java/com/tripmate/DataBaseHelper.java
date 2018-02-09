@@ -1051,6 +1051,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor = db.query(ITEMS_TABLE_NAME,null,ITEMS_COLUMN_TRIP_ID + "=?",new String[]{trip_id},null,null,null);
 
+        ArrayList<String> categoriesList = new ArrayList<>();
+        categoriesList.addAll(Arrays.asList(getCategories()));
+
         if(cursor!=null && cursor.moveToFirst()){
             do {
 
@@ -1061,7 +1064,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 expenseModel.setAmount(cursor.getDouble(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_AMOUNT)));
                 expenseModel.setExpByType(cursor.getInt(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_EXP_BY_TYPE)));
                 expenseModel.setExpBy(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_EXP_BY)));
-                expenseModel.setCategory(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_CAT)));
+
+                String currCat = cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_CAT));
+                if(categoriesList.contains(currCat)) expenseModel.setCategory(currCat);
+                else expenseModel.setCategory("Miscellaneous");
+
                 expenseModel.setDate(cursor.getString(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE)));
                 expenseModel.setDateValue(cursor.getLong(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_DATE_VALUE)));
                 expenseModel.setShareByType(cursor.getInt(cursor.getColumnIndex(ITEMS_COLUMN_ITEM_SHARE_BY_TYPE)));

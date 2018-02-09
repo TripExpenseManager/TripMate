@@ -57,6 +57,8 @@ public class ChartsFragment extends Fragment{
 
     TextView tvCurrencyNotice;
 
+    int lastClicked = 0;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,6 +92,7 @@ public class ChartsFragment extends Fragment{
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String category =  spinnerItems.get(position);
+                lastClicked = position;
                 switch (category){
                     case "Person":
                         populateGraph(personGraphItems,"Persons");
@@ -153,6 +156,22 @@ public class ChartsFragment extends Fragment{
             categoryGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphCategory(trip_id);
             dateGraphItems = dataBaseHelper.getPersonWiseExpensesSummaryForGraphDate(trip_id);
             tripTotalAmount = dataBaseHelper.getTotalExpensesAmount(trip_id);
+
+            switch (lastClicked){
+                case 0:
+                    populateGraph(personGraphItems,"Persons");
+                    break;
+                case 1:
+                    populateGraph(categoryGraphItems,"Category");
+                    break;
+                case 2:
+                    populateGraph(dateGraphItems,"Date");
+                    break;
+                default:
+                    break;
+            }
+
+
         }
 
     }
@@ -191,6 +210,13 @@ public class ChartsFragment extends Fragment{
 
         GraphItemAdapter graphItemAdapter = new GraphItemAdapter(getContext(),graphItems,Label);
         rvGraphItems.setAdapter(graphItemAdapter);
+
+        pieChart.getLegend().setEnabled(false);
+        pieChart.getDescription().setEnabled(false);
+        pieChart.setEntryLabelColor(Color.BLACK);
+        pieChart.setRotationEnabled(false);
+        pieChart.setCenterText("Total Expenses \n " + RoundOff(tripTotalAmount));
+        pieChart.animateY(1000);
 
 
     }

@@ -23,6 +23,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.androidnetworking.interfaces.StringRequestListener;
 
 
 import org.json.JSONObject;
@@ -43,8 +44,8 @@ public class ReportRequestActivity extends AppCompatActivity {
 
     ProgressDialog pd;
 
-    public static final String URL_FEATURE = "http://tripmateandroid.000webhostapp.com/requestfeature.php";
-    public static final String URL_BUG = "gs://tripmate-172019.appspot.com/report_bug.php";
+    public static final String URL_FEATURE = "https://us-central1-tripmate-eeaca.cloudfunctions.net/app/requestFeature";
+    public static final String URL_BUG = "https://us-central1-tripmate-eeaca.cloudfunctions.net/app/bugReport";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,9 +151,9 @@ public class ReportRequestActivity extends AppCompatActivity {
                 .addBodyParameter(mp)
                 .setPriority(Priority.MEDIUM)
                 .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
+                .getAsString(new StringRequestListener() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
 
                         // do anything with response
                         tilMessage.getEditText().setText("");

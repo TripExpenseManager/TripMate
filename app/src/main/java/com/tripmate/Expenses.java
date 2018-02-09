@@ -96,7 +96,7 @@ public class Expenses extends Fragment {
 
     RelativeLayout expensesRL;
 
-    Spinner spinner,spExpenses;
+    Spinner spExpenses;
 
     String trip_id,tempPersons="";
 
@@ -903,8 +903,8 @@ public class Expenses extends Fragment {
         categoriesList = dataBaseHelper.getExpensesCategoryWiseToDisplay(trip_id);
         datesList = dataBaseHelper.getExpensesDateWiseToDisplay(trip_id);
 
-        if(spinner!=null){
-            spinner.setSelection(previouslySelected);
+        if(spExpenses!=null){
+            spExpenses.setSelection(previouslySelected);
             if(previouslySelected ==0){
                 displayExpenses(allList,lastExpandedPosition,0);
             }else if(previouslySelected == 1){
@@ -997,7 +997,7 @@ public class Expenses extends Fragment {
             lastExpandedPosition = -1;
         }
 
-        spinner.setSelection(spinnerPosition);
+        spExpenses.setSelection(spinnerPosition);
 
         mAdapter.setExpandCollapseListener(new ExpandableRecyclerAdapter.ExpandCollapseListener() {
 
