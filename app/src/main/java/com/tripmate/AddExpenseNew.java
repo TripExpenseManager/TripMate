@@ -70,7 +70,7 @@ public class AddExpenseNew extends AppCompatActivity {
 
     RecyclerView rvESBEqually,rvESBUnequally,rvESBShares;
     LinearLayout llESBEqually,llESBUnequally,llESBShares;
-    LinearLayout llDate,llCategory,llCurrency,llCurrencyConversionRate,llExpByDetail;
+    LinearLayout llDate,llCategory,llCurrency,llCurrencyConversionRate,llExpByDetail,llDescFocus,llAmountFocus;
 
     Spinner spSharedBy;
     CheckBox cbExpFromDepMoney;
@@ -207,6 +207,8 @@ public class AddExpenseNew extends AppCompatActivity {
         llESBEqually = (LinearLayout) findViewById(R.id.llESBEqually);
         llESBUnequally = (LinearLayout) findViewById(R.id.llESBUnequally);
         llESBShares = (LinearLayout) findViewById(R.id.llESBShares);
+        llDescFocus = (LinearLayout) findViewById(R.id.llDescFocus);
+        llAmountFocus = (LinearLayout) findViewById(R.id.llAmountFocus);
 
         llShowOrHideESB = (LinearLayout) findViewById(R.id.llShowOrHideESB);
 
@@ -276,6 +278,20 @@ public class AddExpenseNew extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 openCurrenciesDialog();
+            }
+        });
+
+        llDescFocus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etDesc.requestFocus();
+            }
+        });
+
+        llAmountFocus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etAmountSpent.requestFocus();
             }
         });
 
@@ -1787,6 +1803,13 @@ public class AddExpenseNew extends AppCompatActivity {
         return  super.onCreateOptionsMenu(menu);
     }
 
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -1794,6 +1817,7 @@ public class AddExpenseNew extends AppCompatActivity {
             onBackPressed();
         }
         else if(item.getItemId() == R.id.action_add_expense){
+                hideSoftKeyboard();
                 addExpenseToTheDatabase();
         }
 

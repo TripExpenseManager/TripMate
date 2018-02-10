@@ -51,6 +51,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        android:id="@+id/llDescFocus"
                         android:orientation="horizontal"
                         android:padding="5dp">
 
@@ -88,8 +89,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:id="@+id/llAmountFocus"
                         android:padding="5dp"
-                        android:weightSum="10">
+                     >
 
                         <ImageView
                             android:layout_width="20dp"
