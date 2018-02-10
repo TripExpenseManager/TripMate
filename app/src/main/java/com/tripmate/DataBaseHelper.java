@@ -1777,7 +1777,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         tempModel.setAmount(RoundOff(tempModel.getAmount()+RoundOff(model.getAmount()*model.getCurrencyConversionRate())));
 
                         ArrayList<ExpenseModel> tempExpOnlyList = tempModel.getExpenseList();
-                        tempExpOnlyList.add(model);
+
+                        ExpenseModel updatedModel = new ExpenseModel(model);
+                        updatedModel.setPersonNameForGeneration(model.getExpBy());
+                        updatedModel.setAmountByPersonForGeneration(model.getAmount());
+                        tempExpOnlyList.add(updatedModel);
                         tempModel.setExpenseList(tempExpOnlyList);
 
                         hashMapExpense.put(model.getExpBy(),tempModel);
@@ -1788,7 +1792,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                         tempModel.setAmount(RoundOff(model.getAmount()*model.getCurrencyConversionRate()));
 
                         ArrayList<ExpenseModel> tempExpOnlyList = new ArrayList<>();
-                        tempExpOnlyList.add(model);
+
+                        ExpenseModel updatedModel = new ExpenseModel(model);
+                        updatedModel.setPersonNameForGeneration(model.getExpBy());
+                        updatedModel.setAmountByPersonForGeneration(model.getAmount());
+                        tempExpOnlyList.add(updatedModel);
                         tempModel.setExpenseList(tempExpOnlyList);
 
                         hashMapExpense.put(model.getExpBy(),tempModel);
@@ -1813,7 +1821,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             tempModel1.setAmount(RoundOff(tempModel1.getAmount()+tempModel.getAmountByPersonForGeneration()));
 
                             ArrayList<ExpenseModel> tempExpOnlyList = tempModel1.getExpenseList();
-                            tempExpOnlyList.add(tempModel);
+
+                            ExpenseModel updatedModel = new ExpenseModel(model);
+                            updatedModel.setPersonNameForGeneration(eachPersonAndAmount[0]);
+                            updatedModel.setAmountByPersonForGeneration(Double.parseDouble(eachPersonAndAmount[1]));
+                            tempExpOnlyList.add(updatedModel);
                             tempModel1.setExpenseList(tempExpOnlyList);
 
                             hashMapExpense.put(tempModel.getPersonNameForGeneration(),tempModel1);
@@ -1824,7 +1836,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                             tempModel1.setAmount(tempModel.getAmountByPersonForGeneration());
 
                             ArrayList<ExpenseModel> tempExpOnlyList = new ArrayList<>();
-                            tempExpOnlyList.add(tempModel);
+
+                            ExpenseModel updatedModel = new ExpenseModel(model);
+                            updatedModel.setPersonNameForGeneration(eachPersonAndAmount[0]);
+                            updatedModel.setAmountByPersonForGeneration(Double.parseDouble(eachPersonAndAmount[1]));
+                            tempExpOnlyList.add(updatedModel);
                             tempModel1.setExpenseList(tempExpOnlyList);
 
                             hashMapExpense.put(tempModel.getPersonNameForGeneration(),tempModel1);
