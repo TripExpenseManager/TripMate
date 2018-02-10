@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
-                android:text="TripMate v2.0"
+                android:text="TripMate v2.1"
                 android:textColor="?attr/customTextColor"
                 android:textSize="18dp" />
 

@@ -71,7 +71,7 @@ public class EditExpenseNew extends AppCompatActivity {
 
     RecyclerView rvESBEqually,rvESBUnequally,rvESBShares;
     LinearLayout llESBEqually,llESBUnequally,llESBShares;
-    LinearLayout llDate,llCategory,llCurrency,llCurrencyConversionRate,llExpByDetail;
+    LinearLayout llDate,llCategory,llCurrency,llCurrencyConversionRate,llExpByDetail,llDescFocus,llAmountFocus;
 
     Spinner spSharedBy;
     CheckBox cbExpFromDepMoney;
@@ -212,6 +212,8 @@ public class EditExpenseNew extends AppCompatActivity {
         llESBEqually = (LinearLayout) findViewById(R.id.llESBEqually);
         llESBUnequally = (LinearLayout) findViewById(R.id.llESBUnequally);
         llESBShares = (LinearLayout) findViewById(R.id.llESBShares);
+        llDescFocus = (LinearLayout) findViewById(R.id.llDescFocus);
+        llAmountFocus = (LinearLayout) findViewById(R.id.llAmountFocus);
 
         llShowOrHideESB = (LinearLayout) findViewById(R.id.llShowOrHideESB);
 
@@ -248,6 +250,20 @@ public class EditExpenseNew extends AppCompatActivity {
         categoriesList.clear();
         categoriesList.addAll(Arrays.asList(dataBaseHelper.getCategories()));
         categoriesList.add("@#Add@#");
+
+        llDescFocus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etDesc.requestFocus();
+            }
+        });
+
+        llAmountFocus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                etAmountSpent.requestFocus();
+            }
+        });
 
         llCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1932,6 +1948,13 @@ public class EditExpenseNew extends AppCompatActivity {
         return  super.onCreateOptionsMenu(menu);
     }
 
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -1939,6 +1962,7 @@ public class EditExpenseNew extends AppCompatActivity {
             onBackPressed();
         }
         else if(item.getItemId() == R.id.action_add_expense){
+            hideSoftKeyboard();
             addExpenseToTheDatabase();
         }
 
