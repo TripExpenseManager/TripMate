@@ -107,15 +107,7 @@ public class NotesEditActivity extends AppCompatActivity {
                 enableEditing();
             }
         });
-
-
-
-
     }
-
-
-
-
 
     public void saveNotes(){
 
@@ -144,15 +136,6 @@ public class NotesEditActivity extends AppCompatActivity {
             disableEditing();
             invalidateOptionsMenu();
 
-
-           /* Toast.makeText(getApplicationContext(),"Notes Added Successfully",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(NotesEditActivity.this,NotesEditActivity.class);
-            intent.putExtra("tripId",tripId);
-            intent.putExtra("editOrAdd","view");
-            intent.putExtra("notesId",note_id);
-            intent.putExtra("anim","no");
-            startActivity(intent);
-            finish();*/
         }else{
             NotesModel notesModel = new NotesModel();
             notesModel.setNote_TripId(tripId);
@@ -179,15 +162,6 @@ public class NotesEditActivity extends AppCompatActivity {
             disableEditing();
             invalidateOptionsMenu();
 
-
-           /* Toast.makeText(getApplicationContext(),"Notes Updated Successfully",Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(NotesEditActivity.this,NotesEditActivity.class);
-            intent.putExtra("tripId",tripId);
-            intent.putExtra("editOrAdd","view");
-            intent.putExtra("notesId",notesId);
-            intent.putExtra("anim","no");
-            startActivity(intent);
-            finish();*/
         }
     }
 
