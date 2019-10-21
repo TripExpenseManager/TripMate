@@ -98,6 +98,25 @@ public class Statistics extends Fragment {
 
         return customview;
     }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == TRIP_DETAILS_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                trip_date = data.getStringExtra("tripDate");
+                trip_name = data.getStringExtra("tripName");
+                if(getSupportActionBar()!=null){
+                    getSupportActionBar().setTitle(trip_name);
+                    getSupportActionBar().setSubtitle(trip_date);
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+
+            }
+        }
+    }
 
 
     @Override
