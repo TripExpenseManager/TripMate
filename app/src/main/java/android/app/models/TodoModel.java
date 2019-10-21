@@ -7,6 +7,11 @@ package android.app.models;
 public class TodoModel {
     private String name="";
     private boolean isCompleted;
+    private  int note_ContentType; // 1 - Notes 2 - CheckList
+
+    public int getNote_ContentType() {
+        return note_ContentType;
+    }
 
     public TodoModel() {
     }
