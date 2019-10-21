@@ -128,30 +128,7 @@ public class Notes extends Fragment {
     }
 
 
-    @Override
-    public void onResume() {
-
-        DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
-
-        notesModels.clear();
-        notesModels.addAll(dataBaseHelper.getNotes(trip_id));
-
-        if(notesModels.size() == 0){
-            no_notes_RL.setVisibility(View.VISIBLE);
-        }else{
-            no_notes_RL.setVisibility(View.GONE);
-        }
-
-        mAdapter.notifyDataSetChanged();
-
-        //hiding fab
-        final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
-        fab.hide();
-        fab.setVisibility(View.GONE);
-
-        super.onResume();
-
-    }
+    
 
     public ArrayList<TodoModel>  decryptTodos(String noteContent){
         String[] todosModelsasStrings = noteContent.split(Pattern.quote(Utils.DELIMETER_FOR_TODOS));
