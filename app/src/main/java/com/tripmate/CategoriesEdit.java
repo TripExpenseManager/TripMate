@@ -141,6 +141,31 @@ public class CategoriesEdit extends AppCompatActivity {
             View view = getLayoutInflater().inflate(R.layout.list_item_edit_categories,parent,false);
             return new CategoryViewHolder(view);
         }
+        
+        @Override
+        public void onResume() {
+
+            DataBaseHelper dataBaseHelper = new DataBaseHelper(getActivity());
+
+            notesModels.clear();
+            notesModels.addAll(dataBaseHelper.getNotes(trip_id));
+
+            if(notesModels.size() == 0){
+                no_notes_RL.setVisibility(View.VISIBLE);
+            }else{
+                no_notes_RL.setVisibility(View.GONE);
+            }
+
+            mAdapter.notifyDataSetChanged();
+
+            //hiding fab
+            final FloatingActionButton fab = (FloatingActionButton)  getActivity().findViewById(R.id.fab);
+            fab.hide();
+            fab.setVisibility(View.GONE);
+
+            super.onResume();
+
+        }
 
         @Override
         public void onBindViewHolder(CategoryViewHolder holder, int position) {
